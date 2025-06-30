@@ -1,51 +1,81 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
   background: linear-gradient(135deg, #2c3e50, #34495e);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  padding: 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .container {
   text-align: center;
   background-color: rgba(255, 255, 255, 0.05);
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  width: 90%;
-  max-width: 500px;
+  padding: 40px 30px;
+  border-radius: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 100%;
+  backdrop-filter: blur(10px);
 }
 
 h1 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin-bottom: 30px;
+  color: #ecf0f1;
 }
 
 #question-text {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
+  font-size: 1.25rem;
+  margin-bottom: 25px;
+  line-height: 1.5;
 }
 
 .options {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
 .option-btn {
   background-color: #1abc9c;
   border: none;
-  padding: 15px;
-  border-radius: 12px;
+  padding: 20px 25px;
+  border-radius: 16px;
   color: white;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .option-btn:hover {
   background-color: #16a085;
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.option-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) inset;
+}
+
+/* 모바일 대응 */
+@media (max-width: 500px) {
+  .option-btn {
+    font-size: 1rem;
+    padding: 16px 20px;
+  }
+
+  #question-text {
+    font-size: 1.1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
 }
