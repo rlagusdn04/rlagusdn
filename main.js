@@ -40,9 +40,9 @@ class Animation {
   }
 }
 
-let idleAnim, currentAnim;
+let idleAnim, levelUpAnim, currentAnim;
 let lastTime = 0;
-const SCALE = 0.25; // 128 * 0.25 = 32 크기로 축소 (4배 축소)
+const SCALE = 0.25; // 128x128 → 32x32 크기
 
 image.onload = () => {
   const idleFrames = [
@@ -51,18 +51,27 @@ image.onload = () => {
     { sx: 256, sy: 0, sw: 128, sh: 128 }
   ];
 
+  const levelUpFrames = [
+    { sx: 0, sy: 256, sw: 128, sh: 128 },
+    { sx: 128, sy: 256, sw: 128, sh: 128 },
+    { sx: 256, sy: 256, sw: 128, sh: 128 }
+  ];
+
   idleAnim = new Animation(idleFrames, 200);
+  levelUpAnim = new Animation(levelUpFrames, 100);
   currentAnim = idleAnim;
 
   requestAnimationFrame(loop);
 };
 
 document.addEventListener('mousedown', () => {
-  // 눌러도 변화 없음. 계속 idle 애니메이션 재생
+  levelUpAnim.reset();
+  currentAnim = levelUpAnim;
 });
 
 document.addEventListener('mouseup', () => {
-  // 마찬가지, idle 유지
+  idleAnim.reset();
+  currentAnim = idleAnim;
 });
 
 function loop(timestamp) {
