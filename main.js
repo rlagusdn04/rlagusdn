@@ -97,3 +97,18 @@ function loop(timestamp) {
 
   requestAnimationFrame(loop);
 }
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// Handle visibility change to pause animation when the tab is not visible
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    currentAnim.reset();
+  } else {
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+  }
+});
