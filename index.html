@@ -17,6 +17,7 @@
 
   <!-- ABOUT 버튼 -->
   <button id="about-toggle">ABOUT ME</button>
+  <div id="current-time" style="display:none; position:fixed; top:30px; right:30px; font-size:1.1rem; font-weight:600; color:#222; background:rgba(255,255,255,0.7); border-radius:10px; padding:10px 18px; z-index:101; font-family:'Segoe UI','Noto Sans KR',sans-serif; letter-spacing:1px;"></div>
 
   <!-- canvas 캐릭터 애니메이션 -->
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
@@ -24,7 +25,39 @@
   <script>
     document.getElementById('about-toggle').addEventListener('click', function() {
       document.getElementById('about-section').scrollIntoView({ behavior: 'smooth' });
+      hideAboutShowTime();
     });
+    // about-section이 화면에 보이면 버튼 숨기고 시계 표시
+    function isAboutSectionInView() {
+      const about = document.getElementById('about-section');
+      const rect = about.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    }
+    function hideAboutShowTime() {
+      document.getElementById('about-toggle').style.display = 'none';
+      document.getElementById('current-time').style.display = 'block';
+      updateTime();
+    }
+    function updateTime() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      const mm = m < 10 ? '0'+m : m;
+      document.getElementById('current-time').textContent = `${ampm}: ${h}:${mm}`;
+    }
+    window.addEventListener('scroll', function() {
+      if (isAboutSectionInView()) {
+        hideAboutShowTime();
+      }
+    });
+    setInterval(function() {
+      if (document.getElementById('current-time').style.display === 'block') {
+        updateTime();
+      }
+    }, 1000);
   </script>
 
   <!-- ABOUT ME 하단 섹션 -->

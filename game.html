@@ -82,19 +82,35 @@
       }
     ];
 
+    // Fisher-Yates shuffle 함수 추가
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
     let current = 0;
     let score = 0;
+    let quizShuffled = [];
+
+    function startQuiz() {
+      quizShuffled = shuffle([...quiz]);
+      current = 0;
+      score = 0;
+      showQuestion();
+    }
 
     function showQuestion() {
-      if (current >= quiz.length) {
-        // 결과창 보여주기
+      if (current >= quizShuffled.length) {
         document.getElementById("question-box").style.display = "none";
         document.getElementById("result-box").style.display = "flex";
-        document.getElementById("result-score").textContent = `유사도: ${score} / ${quiz.length}`;
+        document.getElementById("result-score").textContent = `유사도: ${score} / ${quizShuffled.length}`;
         return;
       }
 
-      const q = quiz[current];
+      const q = quizShuffled[current];
       document.getElementById("question-text").textContent = q.question;
 
       const container = document.getElementById("options-container");
@@ -106,7 +122,6 @@
         btn.className = "option-btn";
 
         btn.onclick = () => {
-          // answer가 빈 문자열이면 무조건 정답 처리
           if (q.answer === "" || option === q.answer) {
             score++;
           }
@@ -118,21 +133,20 @@
       });
     }
 
-    showQuestion();
-
     // 결과창 버튼 이벤트
     document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("retry-btn").onclick = function() {
-        current = 0;
-        score = 0;
         document.getElementById("result-box").style.display = "none";
         document.getElementById("question-box").style.display = "block";
-        showQuestion();
+        startQuiz();
       };
       document.getElementById("go-title-btn").onclick = function() {
         window.location.href = "index.html";
       };
     });
+
+    // 퀴즈 시작
+    startQuiz();
   </script>
 </body>
 </html>
