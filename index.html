@@ -2,108 +2,17 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Yours</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>:)</h1>
-    <div id="question-box">
-      <p id="question-text">질문을 불러오는 중...</p>
-      <div class="options" id="options-container"></div>
+    <h1 style="font-size: 3rem; margin-bottom: 50px;">Title</h1>
+    <div class="options">
+      <a href="game.html" class="option-btn">🎮 Choose Yours</a>
+      <a href="https://github.com/rlagusdn04" target="_blank" class="option-btn">🔗 GitHub Page</a>
     </div>
   </div>
-
-  <script>
-    const quiz = [
-      {
-        question: "추억을 떠올리는 감각은?",
-        options: ["냄새", "소리", "촉각(온도, 질감)", "미각"],
-        answer: ""
-      },
-      {
-        question: "가장 그리운 시절은?",
-        options: ["걱정 없던 어린 시절", "자각 없이 지나간 어느 때", "후회가 많던 순간들", "지금 이 무렵"],
-        answer: ""
-      },
-      {
-        question: "선호하는 공간의 분위기는?",
-        options: ["포근함", "웅장함", "경건함", "낯섬"],
-        answer: ""
-      },
-      {
-        question: "선호하는 시간의 체감은?",
-        options: ["여유로움", "뿌듯함", "자유로움", "일상적임"],
-        answer: ""
-      },
-      {
-        question: "편한 대화 상대는?",
-        options: [
-          "서로의 침묵도 편안한 사람",
-          "활기차고 시끄러운 분위기의 사람",
-          "무슨 생각인지 알기 어려운 사람",
-          "익숙하고 반복되는 이야기의 사람",
-        ],
-        answer: ""
-      },
-      {
-        question: "당신이 가장 좋아하는 빛은?",
-        options: ["햇빛", "달빛", "형광등 불빛", "촛불, 모닥불"],
-        answer: ""
-      },
-      {
-        question: "지쳤을 때 찾는 것은?",
-        options: ["위로해줄 누군가", "치유받는 장소", "즐거움, 쾌락", "혼자만의 시간"],
-        answer: ""
-      },
-      {
-        question: "지금 가장 필요한 감정은?",
-        options: ["위로", "자극", "안정", "몰입"],
-        answer: ""
-      },
-      {
-        question: "기억을 선명하게 만드는 것은?",
-        options: ["날씨", "사진", "익숙한 장소", "꿈"],
-        answer: ""
-      }
-    ];
-
-    let current = 0;
-    let score = 0;
-
-    function showQuestion() {
-      if (current >= quiz.length) {
-        alert(`${score} / ${quiz.length}`);
-        current = 0;
-        score = 0;
-      }
-
-      const q = quiz[current];
-      document.getElementById("question-text").textContent = q.question;
-
-      const container = document.getElementById("options-container");
-      container.innerHTML = "";
-
-      q.options.forEach(option => {
-        const btn = document.createElement("button");
-        btn.textContent = option;
-        btn.className = "option-btn";
-
-        btn.onclick = () => {
-          // answer가 빈 문자열이면 무조건 정답 처리
-          if (q.answer === "" || option === q.answer) {
-            score++;
-          }
-          current++;
-          showQuestion();
-        };
-
-        container.appendChild(btn);
-      });
-    }
-
-    showQuestion();
-  </script>
 </body>
 </html>
