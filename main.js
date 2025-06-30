@@ -20,18 +20,13 @@ class Animation {
     this.speed = speed;
     this.current = 0;
     this.timer = 0;
-    this.playing = true;
   }
 
   update(dt) {
-    if (!this.playing) return;
     this.timer += dt;
     if (this.timer > this.speed) {
       this.timer = 0;
-      this.current++;
-      if (this.current >= this.frames.length) {
-        this.current = 0;
-      }
+      this.current = (this.current + 1) % this.frames.length;
     }
   }
 
@@ -42,13 +37,12 @@ class Animation {
   reset() {
     this.current = 0;
     this.timer = 0;
-    this.playing = true;
   }
 }
 
-let idleAnim, levelUpAnim, currentAnim;
+let idleAnim, currentAnim;
 let lastTime = 0;
-const SCALE = 0.625; // 128 -> 80 크기 비율
+const SCALE = 0.25; // 128 * 0.25 = 32 크기로 축소 (4배 축소)
 
 image.onload = () => {
   const idleFrames = [
@@ -57,30 +51,18 @@ image.onload = () => {
     { sx: 256, sy: 0, sw: 128, sh: 128 }
   ];
 
-  const levelUpFrames = [
-    { sx: 0, sy: 256, sw: 128, sh: 128 },
-    { sx: 128, sy: 256, sw: 128, sh: 128 },
-    { sx: 256, sy: 256, sw: 128, sh: 128 }
-  ];
-
   idleAnim = new Animation(idleFrames, 200);
-  levelUpAnim = new Animation(levelUpFrames, 100);
   currentAnim = idleAnim;
 
   requestAnimationFrame(loop);
 };
 
-let mouseDown = false;
-
 document.addEventListener('mousedown', () => {
-  mouseDown = true;
-  levelUpAnim.reset();
-  currentAnim = levelUpAnim;
+  // 눌러도 변화 없음. 계속 idle 애니메이션 재생
 });
 
 document.addEventListener('mouseup', () => {
-  mouseDown = false;
-  currentAnim = idleAnim;
+  // 마찬가지, idle 유지
 });
 
 function loop(timestamp) {

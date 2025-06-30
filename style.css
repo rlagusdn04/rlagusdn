@@ -112,13 +112,14 @@ body {
 }
 
 .profile-img img {
-  width: 100px;
-  height: 100px;
+  width: 50px;        /* 아주 작게 축소 */
+  height: 50px;
   object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #d9cbb5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 50%; /* 동그랗게 */
+  border: 2px solid #d9cbb5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 .profile-info {
   flex: 1;
