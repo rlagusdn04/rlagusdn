@@ -12,7 +12,7 @@ document.addEventListener('mousemove', (e) => {
 });
 
 const image = new Image();
-image.src = "assets/ditto.png";
+image.src = "/rlagusdn.github.io/assets/ditto.png";
 
 class Animation {
   constructor(frames, speed) {

@@ -13,7 +13,20 @@
       <p id="question-text">질문을 불러오는 중...</p>
       <div class="options" id="options-container"></div>
     </div>
+    <div id="result-box" style="display:none;">
+      <div class="result-card">
+        <h2 id="result-title">결과</h2>
+        <p id="result-score"></p>
+        <div class="options">
+          <button id="retry-btn" class="option-btn">다시 하기</button>
+          <button id="go-title-btn" class="option-btn">타이틀로</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <canvas id="mouseCanvas" width="600" height="600"></canvas>
+  <script src="main.js"></script>
 
   <script>
     const quiz = [
@@ -74,9 +87,11 @@
 
     function showQuestion() {
       if (current >= quiz.length) {
-        alert(`${score} / ${quiz.length}`);
-        current = 0;
-        score = 0;
+        // 결과창 보여주기
+        document.getElementById("question-box").style.display = "none";
+        document.getElementById("result-box").style.display = "flex";
+        document.getElementById("result-score").textContent = `당신의 점수: ${score} / ${quiz.length}`;
+        return;
       }
 
       const q = quiz[current];
@@ -104,6 +119,20 @@
     }
 
     showQuestion();
+
+    // 결과창 버튼 이벤트
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("retry-btn").onclick = function() {
+        current = 0;
+        score = 0;
+        document.getElementById("result-box").style.display = "none";
+        document.getElementById("question-box").style.display = "block";
+        showQuestion();
+      };
+      document.getElementById("go-title-btn").onclick = function() {
+        window.location.href = "index.html";
+      };
+    });
   </script>
 </body>
 </html>
