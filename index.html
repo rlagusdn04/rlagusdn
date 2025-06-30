@@ -21,6 +21,11 @@
   <!-- canvas 캐릭터 애니메이션 -->
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
   <script src="main.js"></script>
+  <script>
+    document.getElementById('about-toggle').addEventListener('click', function() {
+      document.getElementById('about-section').scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
 
   <!-- ABOUT ME 하단 섹션 -->
   <section id="about-section">
