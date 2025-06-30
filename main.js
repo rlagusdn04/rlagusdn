@@ -43,6 +43,7 @@ class Animation {
 let idleAnim, levelUpAnim, currentAnim;
 let lastTime = 0;
 const SCALE = 0.25; // 128x128 → 32x32 크기
+let isFlipped = false;
 
 image.onload = () => {
   const idleFrames = [
@@ -71,6 +72,7 @@ image.onload = () => {
 document.addEventListener('mousedown', () => {
   levelUpAnim.reset();
   currentAnim = levelUpAnim;
+  isFlipped = !isFlipped;
 });
 
 document.addEventListener('mouseup', () => {
@@ -86,14 +88,29 @@ function loop(timestamp) {
 
   currentAnim.update(dt);
   const frame = currentAnim.getFrame();
-  const x = mouseX - (frame.sw * SCALE) / 2;
-  const y = mouseY - (frame.sh * SCALE) / 2;
 
-  ctx.drawImage(
-    image,
-    frame.sx, frame.sy, frame.sw, frame.sh,
-    x, y, frame.sw * SCALE, frame.sh * SCALE
-  );
+  const w = frame.sw * SCALE;
+  const h = frame.sh * SCALE;
+  let x = mouseX - w / 2;
+  let y = mouseY - h / 2;
+
+  ctx.save();
+  if (isFlipped) {
+    ctx.translate(mouseX, mouseY);
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      image,
+      frame.sx, frame.sy, frame.sw, frame.sh,
+      -w / 2, -h / 2, w, h
+    );
+  } else {
+    ctx.drawImage(
+      image,
+      frame.sx, frame.sy, frame.sw, frame.sh,
+      x, y, w, h
+    );
+  }
+  ctx.restore();
 
   requestAnimationFrame(loop);
 }
