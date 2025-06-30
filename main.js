@@ -14,6 +14,7 @@ document.addEventListener('mousemove', (e) => {
 const image = new Image();
 image.src = "/rlagusdn.github.io/assets/ditto.png";
 
+let isMouseDown = false;
 class Animation {
   constructor(frames, speed) {
     this.frames = frames;
@@ -27,6 +28,9 @@ class Animation {
     if (this.timer > this.speed) {
       this.timer = 0;
       this.current = (this.current + 1) % this.frames.length;
+      if (isMouseDown && currentAnim === levelUpAnim) {
+        isFlipped = !isFlipped;
+      }
     }
   }
 
@@ -72,12 +76,14 @@ image.onload = () => {
 document.addEventListener('mousedown', () => {
   levelUpAnim.reset();
   currentAnim = levelUpAnim;
+  isMouseDown = true;
   isFlipped = !isFlipped;
 });
 
 document.addEventListener('mouseup', () => {
   idleAnim.reset();
   currentAnim = idleAnim;
+  isMouseDown = false;
 });
 
 function loop(timestamp) {
