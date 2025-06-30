@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="main-container">
     <h1>:)</h1>
     <div id="question-box">
       <p id="question-text">질문을 불러오는 중...</p>
@@ -104,7 +104,7 @@
 
     function showQuestion() {
       if (current >= quizShuffled.length) {
-        document.getElementById("question-box").style.display = "none";
+        document.getElementById("main-container").classList.add("result-mode");
         document.getElementById("result-box").style.display = "flex";
         document.getElementById("result-score").textContent = `유사도: ${score} / ${quizShuffled.length}`;
         return;
@@ -137,7 +137,7 @@
     document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("retry-btn").onclick = function() {
         document.getElementById("result-box").style.display = "none";
-        document.getElementById("question-box").style.display = "block";
+        document.getElementById("main-container").classList.remove("result-mode");
         startQuiz();
       };
       document.getElementById("go-title-btn").onclick = function() {

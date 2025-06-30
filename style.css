@@ -32,6 +32,11 @@ body {
   position: relative;
 }
 
+.container.result-mode {
+  background: #c9e4de !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
 /* 타이틀 */
 .main-title {
   font-size: 3rem;
