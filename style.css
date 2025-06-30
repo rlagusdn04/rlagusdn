@@ -59,12 +59,14 @@ body {
   text-align: center;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  cursor: none; /* 버튼 위에서도 기본 마우스 숨기기 */
+  cursor: pointer; /* 커서 스타일을 포인터로 변경 */
+  position: relative;
 }
 
 .option-btn:hover {
   background-color: #a9d6c8;
   transform: scale(1.05);
+  z-index: 20;
 }
 
 /* ABOUT ME 버튼 */
