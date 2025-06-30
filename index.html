@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>투표 테스트</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>당신의 선택은?</h1>
+    <div class="options">
+      <div class="option" onclick="vote('A')">
+        <button>선택 A</button>
+        <p id="countA">0명</p>
+      </div>
+      <div class="option" onclick="vote('B')">
+        <button>선택 B</button>
+        <p id="countB">0명</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let countA = 0;
+    let countB = 0;
+
+    function vote(option) {
+      if (option === 'A') {
+        countA++;
+        document.getElementById('countA').innerText = countA + '명';
+      } else if (option === 'B') {
+        countB++;
+        document.getElementById('countB').innerText = countB + '명';
+      }
+    }
+  </script>
+</body>
+</html>
