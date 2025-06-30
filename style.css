@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  cursor: none; /* 기본 마우스 커서 숨기기 */
 }
 
 body {
@@ -120,7 +121,6 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-
 .profile-info {
   flex: 1;
 }
@@ -148,15 +148,6 @@ body {
 }
 
 /* canvas 위치 고정 */
-canvas#mouseCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-
 canvas#mouseCanvas {
   position: fixed;
   top: 0;

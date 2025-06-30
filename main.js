@@ -56,7 +56,9 @@ image.onload = () => {
     { sx: 128, sy: 128*8, sw: 128, sh: 128 },
     { sx: 256, sy: 128*8, sw: 128, sh: 128 },
     { sx: 128*3, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 128*4, sy: 128*8, sw: 128, sh: 128 }
+    { sx: 128*4, sy: 128*8, sw: 128, sh: 128 },
+    { sx: 128*5, sy: 128*8, sw: 128, sh: 128 },
+    { sx: 128*6, sy: 128*8, sw: 128, sh: 128 }
   ];
 
   idleAnim = new Animation(idleFrames, 200);
