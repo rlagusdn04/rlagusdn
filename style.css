@@ -3,7 +3,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  cursor: none; /* 기본 마우스 커서 숨기기 */
 }
 
 body {
@@ -15,6 +14,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: none; /* 여기로 이동 */
 }
 
 /* 메인 컨테이너 */
@@ -59,6 +59,7 @@ body {
   text-align: center;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  cursor: none; /* 버튼 위에서도 기본 마우스 숨기기 */
 }
 
 .option-btn:hover {
@@ -78,7 +79,7 @@ body {
   font-weight: bold;
   border: none;
   border-radius: 10px;
-  cursor: pointer;
+  cursor: none; /* 여기도 숨김 처리 */
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease-in-out;
@@ -110,13 +111,14 @@ body {
   align-items: center;
   gap: 20px;
   animation: fadeIn 0.3s ease-out;
+  cursor: none; /* 카드 위에서도 커서 숨김 */
 }
 
 .profile-img img {
-  width: 50px;        /* 아주 작게 축소 */
+  width: 50px;
   height: 50px;
   object-fit: cover;
-  border-radius: 50%; /* 동그랗게 */
+  border-radius: 50%;
   border: 2px solid #d9cbb5;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -153,5 +155,5 @@ canvas#mouseCanvas {
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 9999; /* 아주 크게 */
+  z-index: 9999;
 }
