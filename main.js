@@ -52,9 +52,11 @@ image.onload = () => {
   ];
 
   const levelUpFrames = [
-    { sx: 0, sy: 256, sw: 128, sh: 128 },
-    { sx: 128, sy: 256, sw: 128, sh: 128 },
-    { sx: 256, sy: 256, sw: 128, sh: 128 }
+    { sx: 0, sy: 128*8, sw: 128, sh: 128 },
+    { sx: 128, sy: 128*8, sw: 128, sh: 128 },
+    { sx: 256, sy: 128*8, sw: 128, sh: 128 },
+    { sx: 128*3, sy: 128*8, sw: 128, sh: 128 },
+    { sx: 128*4, sy: 128*8, sw: 128, sh: 128 }
   ];
 
   idleAnim = new Animation(idleFrames, 200);
