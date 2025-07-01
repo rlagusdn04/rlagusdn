@@ -20,15 +20,16 @@
   <!-- 사이드바(탭) -->
   <nav id="sidebar" class="sidebar">
     <div class="sidebar-content">
-      <div id="sidebar-time" class="neon-time sidebar-time"></div>
-      <div style="height: 60px;"></div> <!-- 시계와 음악 사이 여백 -->
+      <div id="sidebar-time" class="sidebar-time"></div>
+      <div style="height: 60px;"></div>
       <div class="sidebar-music-card">
-        <h3 class="sidebar-music-title">🎵 Music Player</h3>
+        <h3 class="sidebar-music-title">Music Player</h3>
         <div class="sidebar-music-player">
           <span class="sidebar-music-info">Unwaved Heart</span>
           <div class="sidebar-music-controls">
             <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지" style="background:#111; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:none;"></button>
             <button class="sidebar-vol-btn" id="sidebar-vol-down" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:10px;">-</button>
+            <span id="sidebar-vol-value" style="margin:0 6px; font-size:1.05rem; color:#222; min-width:32px; display:inline-block; text-align:center;">50%</span>
             <button class="sidebar-vol-btn" id="sidebar-vol-up" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:4px;">+</button>
           </div>
           <audio class="sidebar-audio-player" src="Music/Heart.mp3"></audio>
@@ -72,12 +73,16 @@
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     const sidebarVolDown = document.getElementById('sidebar-vol-down');
     const sidebarVolUp = document.getElementById('sidebar-vol-up');
+    const sidebarVolValue = document.getElementById('sidebar-vol-value');
     // 기본 볼륨 50%
     sidebarAudio.volume = 0.5;
     let isPlaying = false;
     function updateToggleBtn() {
       sidebarToggleBtn.textContent = '';
       sidebarToggleBtn.style.background = isPlaying ? '#222' : '#bbb';
+    }
+    function updateVolValue() {
+      sidebarVolValue.textContent = Math.round(sidebarAudio.volume * 100) + '%';
     }
     sidebarToggleBtn.addEventListener('click', () => {
       if (isPlaying) {
@@ -96,11 +101,14 @@
     });
     sidebarVolDown.addEventListener('click', () => {
       sidebarAudio.volume = Math.max(0, Math.round((sidebarAudio.volume - 0.1)*10)/10);
+      updateVolValue();
     });
     sidebarVolUp.addEventListener('click', () => {
       sidebarAudio.volume = Math.min(1, Math.round((sidebarAudio.volume + 0.1)*10)/10);
+      updateVolValue();
     });
     updateToggleBtn();
+    updateVolValue();
   </script>
 
   <!-- ABOUT ME는 Classic만 남김 -->
