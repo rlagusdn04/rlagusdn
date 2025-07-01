@@ -179,6 +179,14 @@
         container.appendChild(btn);
       });
     }
+    // 스크롤에 따라 body 배경 그라데이션 각도 변화
+    window.addEventListener('scroll', () => {
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      const scrollRatio = window.scrollY / maxScroll;
+      // 135~495deg 사이에서 각도 변화
+      const deg = 135 + 360 * scrollRatio;
+      document.body.style.background = `linear-gradient(${deg}deg, #f7f6f2 0%, #e5eaf5 30%, #b3e5fc 60%, #e1bee7 100%)`;
+    });
   </script>
 
   <!-- ABOUT ME는 Classic만 남김 -->

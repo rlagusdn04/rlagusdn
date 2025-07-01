@@ -6,7 +6,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #f7f6f2, #e5eaf5);
+  background: linear-gradient(135deg, #f7f6f2 0%, #e5eaf5 30%, #b3e5fc 60%, #e1bee7 100%);
   font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
   color: #333;
   height: 100vh;
@@ -27,7 +27,7 @@ body {
   width: 90%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   text-align: center;
-  margin-top: 10vh;
+  margin-top: 4vh;
   z-index: 10;
   position: relative;
 }
@@ -179,7 +179,8 @@ body {
   padding: 60px 0;
   display: flex;
   justify-content: center;
-  background: transparent;
+  background: linear-gradient(135deg, #e1bee7 0%, #c9e4de 100%);
+  scroll-behavior: smooth;
 }
 
 .about-card {
