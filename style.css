@@ -31,7 +31,7 @@ body.main-bg {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   text-align: center;
   margin-top: 4vh;
-  z-index: 10;
+  z-index: 1;
   position: relative;
 }
 
@@ -605,8 +605,21 @@ canvas#mouseCanvas {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 .content-card:hover {
   transform: translateY(-6px) scale(1.03);
   box-shadow: 0 8px 32px #b3e5fc99, 0 2px 16px #e1bee7aa;
+}
+
+.main-bg-gradient {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 55vh;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, #eaffd0 0%, #b6fcb6 40%, #7be495 80%, #57cc99 100%);
+  filter: blur(0.5px);
+  box-shadow: 0 40px 60px 0 #b6fcb6cc;
+  mask-image: linear-gradient(to bottom, #fff 80%, transparent 100%);
 }
