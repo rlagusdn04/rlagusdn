@@ -6,7 +6,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #f7f6f2 0%, #e5eaf5 30%, #b3e5fc 60%, #e1bee7 100%);
+  background: #fff;
   font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
   color: #333;
   height: 100vh;
@@ -15,6 +15,9 @@ body {
   flex-direction: column;
   align-items: center;
   cursor: none; /* 여기로 이동 */
+}
+body.main-bg {
+  background: linear-gradient(135deg, #f7f6f2 0%, #e5eaf5 30%, #b3e5fc 60%, #e1bee7 100%);
 }
 
 /* 메인 컨테이너 */
