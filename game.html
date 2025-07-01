@@ -27,6 +27,30 @@
     </div>
   </div>
 
+  <!-- 왼쪽 상단 메뉴 버튼 -->
+  <button id="menu-btn" class="menu-btn">☰</button>
+  <!-- 사이드바(탭) -->
+  <nav id="sidebar" class="sidebar">
+    <div class="sidebar-content">
+      <div id="sidebar-time" class="neon-time sidebar-time" style="position:absolute; left:60px; top:24px; font-size:1.1rem; min-width:60px;"></div>
+      <div style="height: 60px;"></div>
+      <div class="sidebar-music-card">
+        <div class="sidebar-music-player">
+          <span class="sidebar-music-info" id="sidebar-music-title">Unwaved Heart</span>
+          <button id="sidebar-shuffle-btn" title="셔플" style="margin-left:10px; background:#b3e5fc; color:#222; border:none; border-radius:8px; font-size:1.2rem; padding:4px 10px; cursor:pointer;">🎲</button>
+          <div class="sidebar-music-controls">
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지" style="background:#111; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:none;"></button>
+            <button class="sidebar-vol-btn" id="sidebar-vol-down" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:10px;">-</button>
+            <span id="sidebar-vol-value" style="margin:0 6px; font-size:1.05rem; color:#222; min-width:32px; display:inline-block; text-align:center;">50%</span>
+            <button class="sidebar-vol-btn" id="sidebar-vol-up" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:4px;">+</button>
+          </div>
+          <audio class="sidebar-audio-player" id="sidebar-audio-player" src="Music/Heart.mp3"></audio>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div id="current-time" class="neon-time" style="left:30px; top:30px; right:auto; position:fixed;"></div>
+
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
   <script src="main.js"></script>
 
@@ -176,6 +200,106 @@
 
     // 퀴즈 시작
     startQuiz();
+
+    // 메뉴 버튼/사이드바 동작
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      if (sidebar.classList.contains('open')) {
+        menuBtn.style.display = 'none';
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+        sidebar.classList.remove('open');
+        menuBtn.style.display = 'block';
+      }
+    });
+    sidebar.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // 시계: 시/분/초까지 표시, 사이드바와 화면에 각각 표시
+    function updateTime() {
+      const now = new Date();
+      let h = now.getHours();
+      let m = now.getMinutes();
+      let s = now.getSeconds();
+      h = h < 10 ? '0'+h : h;
+      m = m < 10 ? '0'+m : m;
+      s = s < 10 ? '0'+s : s;
+      document.getElementById('current-time').textContent = `${h}:${m}:${s}`;
+      document.getElementById('sidebar-time').textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // 음악 셔플/재생/볼륨 기능
+    const musicList = [
+      {title: 'Heart', src: 'Music/Heart.mp3'},
+      {title: 'ame', src: 'Music/ame.mp3'},
+      {title: 'La nuit', src: 'Music/La nuit.mp3'},
+      {title: 'Time to Start Another Day', src: 'Music/Time to Start Another Day.mp3'},
+      {title: 'Triste', src: 'Music/Triste.mp3'},
+      {title: 'watercity', src: 'Music/watercity.mp3'}
+    ];
+    let currentMusicIdx = 0;
+    const sidebarAudio = document.getElementById('sidebar-audio-player');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebarVolDown = document.getElementById('sidebar-vol-down');
+    const sidebarVolUp = document.getElementById('sidebar-vol-up');
+    const sidebarVolValue = document.getElementById('sidebar-vol-value');
+    const sidebarMusicTitle = document.getElementById('sidebar-music-title');
+    const sidebarShuffleBtn = document.getElementById('sidebar-shuffle-btn');
+    sidebarAudio.volume = 0.5;
+    let isPlaying = false;
+    function updateToggleBtn() {
+      sidebarToggleBtn.textContent = isPlaying ? '⏸' : '▶';
+      sidebarToggleBtn.style.background = isPlaying ? '#222' : '#bbb';
+    }
+    function updateVolValue() {
+      sidebarVolValue.textContent = Math.round(sidebarAudio.volume * 100) + '%';
+    }
+    function updateMusicInfo() {
+      sidebarMusicTitle.textContent = musicList[currentMusicIdx].title;
+      sidebarAudio.src = musicList[currentMusicIdx].src;
+    }
+    sidebarToggleBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        sidebarAudio.pause();
+      } else {
+        sidebarAudio.play();
+      }
+    });
+    sidebarAudio.addEventListener('play', () => {
+      isPlaying = true;
+      updateToggleBtn();
+    });
+    sidebarAudio.addEventListener('pause', () => {
+      isPlaying = false;
+      updateToggleBtn();
+    });
+    sidebarVolDown.addEventListener('click', () => {
+      sidebarAudio.volume = Math.max(0, Math.round((sidebarAudio.volume - 0.1)*10)/10);
+      updateVolValue();
+    });
+    sidebarVolUp.addEventListener('click', () => {
+      sidebarAudio.volume = Math.min(1, Math.round((sidebarAudio.volume + 0.1)*10)/10);
+      updateVolValue();
+    });
+    sidebarShuffleBtn.addEventListener('click', () => {
+      let nextIdx;
+      do {
+        nextIdx = Math.floor(Math.random() * musicList.length);
+      } while (nextIdx === currentMusicIdx && musicList.length > 1);
+      currentMusicIdx = nextIdx;
+      updateMusicInfo();
+      sidebarAudio.play();
+    });
+    updateToggleBtn();
+    updateVolValue();
+    updateMusicInfo();
   </script>
 </body>
 </html>
