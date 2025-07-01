@@ -120,7 +120,7 @@
     let quizShuffled = [];
 
     function startQuiz() {
-      quizShuffled = shuffle([...quiz]);
+      quizShuffled = shuffle([...quiz]).slice(0, 10);
       current = 0;
       score = 0;
       showQuestion();
@@ -150,7 +150,7 @@
         btn.className = "option-btn";
 
         btn.onclick = () => {
-          if (q.answer === "" || option === q.answer) {
+          if (Array.isArray(q.answer) && q.answer.includes(option)) {
             score++;
           }
           current++;
