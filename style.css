@@ -255,7 +255,6 @@ canvas#mouseCanvas {
   color: #222;
   border-radius: 20px;
   padding: 48px 60px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   font-size: 1.3rem;
   text-align: center;
   animation: fadeIn 0.3s ease-out;
@@ -543,9 +542,10 @@ canvas#mouseCanvas {
 }
 
 #progress {
-  margin-bottom: 12px;
+  margin-top: 18px;
   font-weight: bold;
   color: #4fc3a1;
   font-size: 1.1rem;
   letter-spacing: 1px;
+  text-align: center;
 }
