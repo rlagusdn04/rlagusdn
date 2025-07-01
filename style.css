@@ -31,6 +31,7 @@ body.main-bg {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   text-align: center;
   margin-top: 4vh;
+  margin-bottom: 80px;
   z-index: 1;
   position: relative;
 }
@@ -182,7 +183,7 @@ body.main-bg {
   background-size: 340px 340px;
   border-radius: 32px;
   box-shadow: 0 8px 32px #d9cbb555, 0 2px 16px #e1bee7aa;
-  margin-top: 60px;
+  margin-top: 100px;
   padding-bottom: 60px;
   display: flex;
   justify-content: center;
@@ -580,7 +581,7 @@ canvas#mouseCanvas {
 #content-section {
   width: 100%;
   max-width: 900px;
-  margin: 60px auto 60px auto;
+  margin: 80px auto 100px auto;
   display: flex;
   flex-wrap: wrap;
   gap: 32px;
@@ -607,19 +608,20 @@ canvas#mouseCanvas {
   justify-content: center;
   position: relative;
   z-index: 1;
+  opacity: 0;
+  transform: translateY(32px) scale(0.96);
+  filter: blur(6px);
+  transition:
+    opacity 0.7s cubic-bezier(.4,0,.2,1),
+    transform 0.7s cubic-bezier(.4,0,.2,1),
+    filter 0.7s cubic-bezier(.4,0,.2,1);
 }
 .content-card:hover {
   transform: translateY(-6px) scale(1.03);
   box-shadow: 0 8px 32px #b3e5fc99, 0 2px 16px #e1bee7aa;
 }
-
-.main-bg-gradient {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 55vh;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(135deg, #eaffd0 0%, #b6fcb6 40%, #7be495 80%, #57cc99 100%);
-  filter: blur(0.5px);
-  box-shadow: 0 40px 60px 0 #b6fcb6cc;
-  mask-image: linear-gradient(to bottom, #fff 80%, transparent 100%);
+.content-card.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
 }
