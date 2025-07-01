@@ -19,7 +19,7 @@ body {
 
 /* 메인 컨테이너 */
 .container {
-  background: rgba(255, 255, 255, 0.65);
+  background: none;
   backdrop-filter: blur(12px);
   border-radius: 32px;
   padding: 50px 40px;
@@ -179,12 +179,12 @@ body {
   padding: 60px 0;
   display: flex;
   justify-content: center;
-  background: linear-gradient(135deg, #e1bee7 0%, #c9e4de 100%);
+  background: none;
   scroll-behavior: smooth;
 }
 
 .about-card {
-  background: #f8f1e6;
+  background: none !important;
   color: #444;
   border-radius: 20px;
   padding: 30px 40px;
@@ -252,7 +252,7 @@ canvas#mouseCanvas {
 }
 
 .result-card {
-  background: #c9e4de;
+  background: none !important;
   color: #222;
   border-radius: 20px;
   padding: 48px 60px;
@@ -374,7 +374,7 @@ canvas#mouseCanvas {
   background: linear-gradient(135deg, #e0f7fa 60%, #b3e5fc 100%);
 }
 .music-card.concept-music {
-  background: rgba(255,255,255,0.85);
+  background: none !important;
   border-radius: 32px;
   box-shadow: 0 8px 32px #b3e5fc99, 0 0 32px #4fc3f744;
   padding: 48px 60px 36px 60px;
@@ -493,7 +493,7 @@ canvas#mouseCanvas {
   letter-spacing: 1px;
 }
 .sidebar-music-card {
-  background: #fff;
+  background: none !important;
   border-radius: 20px;
   box-shadow: 0 4px 16px #eee;
   padding: 28px 20px 20px 20px;
