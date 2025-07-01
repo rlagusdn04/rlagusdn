@@ -553,3 +553,20 @@ canvas#mouseCanvas {
   letter-spacing: 1px;
   text-align: center;
 }
+
+/* 사이드바 시계 위치 및 폰트 미니멀하게 */
+#sidebar-time, .sidebar-time {
+  left: 24px !important;
+  top: 22px !important;
+  font-family: 'Montserrat', 'Noto Sans KR', sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 0.98rem !important;
+  letter-spacing: 0.5px !important;
+  color: #222 !important;
+  text-shadow: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
