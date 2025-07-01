@@ -10,11 +10,12 @@
   <div class="container">
     <h1 class="main-title">Title</h1>
     <div class="options">
-      <a href="game.html" class="option-btn"> 유사도</a>
+      
       <a href="https://github.com/rlagusdn04" class="option-btn" target="_blank">🔗 GitHub 이동</a>
       <a href="#" class="option-btn">🎵 음원 추출하기 (준비중)</a>
       <a href="#" class="option-btn">🗂️ 파일 변환 (준비중)</a>
-      <a href="#" class="option-btn">🤖 rlagu(bot) 실행 (준비중)</a>
+      <a href="game.html" class="option-btn"> 유사도</a>
+      <a href="#" class="option-btn"> bot 실행 (준비중)</a>
     </div>
   </div>
 
@@ -34,7 +35,7 @@
             <span id="sidebar-vol-value" style="margin:0 6px; font-size:1.05rem; color:#222; min-width:32px; display:inline-block; text-align:center;">50%</span>
             <button class="sidebar-vol-btn" id="sidebar-vol-up" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:4px;">+</button>
           </div>
-          <audio class="sidebar-audio-player" src="Music/Heart.mp3"></audio>
+          <audio class="sidebar-audio-player" src="Music/Time to Start Another Day.mp3"></audio>
         </div>
       </div>
     </div>
@@ -49,12 +50,18 @@
     const sidebar = document.getElementById('sidebar');
     menuBtn.addEventListener('click', () => {
       sidebar.classList.toggle('open');
+      if (sidebar.classList.contains('open')) {
+        menuBtn.style.display = 'none';
+      }
     });
-    // 사이드바 바깥 클릭 시 닫힘
     document.addEventListener('click', (e) => {
       if (!sidebar.contains(e.target) && e.target !== menuBtn) {
         sidebar.classList.remove('open');
+        menuBtn.style.display = 'block';
       }
+    });
+    sidebar.addEventListener('click', (e) => {
+      e.stopPropagation();
     });
     // 시계: 시/분/초까지 표시, 사이드바와 화면에 각각 표시
     function updateTime() {
