@@ -15,105 +15,56 @@
     </div>
   </div>
 
-  <div id="current-time" class="neon-time"></div>
+  <div id="current-time" class="neon-time" style="left:30px; top:30px; right:auto; position:fixed;"></div>
   <!-- canvas 캐릭터 애니메이션 -->
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
   <script src="main.js"></script>
   <script>
-    // 시간 표시 및 클릭 시 스크롤
+    // 시계: 시/분/초까지 표시, 왼쪽 상단 고정
     function updateTime() {
       const now = new Date();
       let h = now.getHours();
-      const m = now.getMinutes();
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12;
-      if (h === 0) h = 12;
-      const mm = m < 10 ? '0'+m : m;
-      document.getElementById('current-time').textContent = `${ampm}: ${h}:${mm}`;
+      let m = now.getMinutes();
+      let s = now.getSeconds();
+      h = h < 10 ? '0'+h : h;
+      m = m < 10 ? '0'+m : m;
+      s = s < 10 ? '0'+s : s;
+      document.getElementById('current-time').textContent = `${h}:${m}:${s}`;
     }
     setInterval(updateTime, 1000);
     updateTime();
   </script>
 
   <!-- MUSIC 화면 (음악 관련 모든 기능) -->
-  <section id="music-section">
-    <div class="music-card">
+  <section id="music-section" style="margin-top: 60vh; min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <div class="music-card concept-music">
       <h2 class="music-title">🎵 Music Player</h2>
       <div class="music-player">
-        <button class="music-menu-btn" data-player="player1">☰</button>
-        <span class="music-info" id="info-player1"></span>
-        <label style="display:block; margin-top:8px;">음악 선택: <select class="music-select" data-player="player1"></select></label>
-        <div class="music-controls" id="controls-player1" style="display:none; margin-top:8px;">
+        <span class="music-info" id="info-player1">Unwaved Heart</span>
+        <div class="music-controls" id="controls-player1" style="display:flex; margin-top:18px;">
           <button class="play-btn">▶️</button>
           <button class="pause-btn">⏸️</button>
-          <input type="range" class="seek-bar" min="0" max="100" value="0">
           <input type="range" class="volume-bar" min="0" max="1" step="0.01" value="1">
         </div>
-        <audio class="audio-player" id="player1"></audio>
+        <audio class="audio-player" id="player1" src="Music/Heart.mp3"></audio>
       </div>
     </div>
   </section>
   <script>
-    // Music 폴더에서 mp3 파일 목록을 불러와서 select에 추가 (예시: 파일명 하드코딩, 실제 서버라면 fetch로 처리)
-    const musicFiles = [
-      { name: 'Unwaved Heart', file: 'Music/Heart.mp3' },
-      { name: 'la nuit', file: 'Music/La nuit.mp3' },
-      { name: 'ame', file: 'Music/ame.mp3' },
-      { name: 'watercity', file: 'Music/watercity.mp3' }
-    ];
-    document.querySelectorAll('.music-select').forEach(select => {
-      musicFiles.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.file;
-        opt.textContent = m.name;
-        select.appendChild(opt);
-      });
-      select.addEventListener('change', function() {
-        const playerId = select.getAttribute('data-player');
-        const audio = document.getElementById(playerId);
-        const info = document.getElementById('info-' + playerId);
-        const selected = musicFiles.find(m => m.file === select.value);
-        audio.src = select.value;
-        info.textContent = selected ? `${selected.name}` : '';
-        audio.play();
-      });
-    });
-    // 메뉴 버튼 토글
-    document.querySelectorAll('.music-menu-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const playerId = btn.getAttribute('data-player');
-        const controls = document.getElementById('controls-' + playerId);
-        controls.style.display = controls.style.display === 'none' ? 'flex' : 'none';
-      });
-    });
-    // 음악 컨트롤 기능
+    // 음악 컨트롤 기능 (고정 곡, 소리 조절만 가능)
     document.querySelectorAll('.music-player').forEach(mp => {
       const audio = mp.querySelector('.audio-player');
       const playBtn = mp.querySelector('.play-btn');
       const pauseBtn = mp.querySelector('.pause-btn');
-      const seekBar = mp.querySelector('.seek-bar');
       const volumeBar = mp.querySelector('.volume-bar');
-      const info = mp.querySelector('.music-info');
-      const select = mp.querySelector('.music-select');
       if (!audio) return;
       playBtn.addEventListener('click', () => audio.play());
       pauseBtn.addEventListener('click', () => audio.pause());
       volumeBar.addEventListener('input', () => audio.volume = volumeBar.value);
-      audio.addEventListener('timeupdate', () => {
-        if (audio.duration) seekBar.value = (audio.currentTime / audio.duration) * 100;
-      });
-      seekBar.addEventListener('input', () => {
-        if (audio.duration) audio.currentTime = (seekBar.value / 100) * audio.duration;
-      });
-      // 곡명만 표시(초기)
-      select.addEventListener('change', function() {
-        const selected = musicFiles.find(m => m.file === select.value);
-        info.textContent = selected ? `${selected.name}` : '';
-      });
     });
   </script>
 
-  <!-- ABOUT ME는 맨 마지막에만 위치, 음악 관련 요소 없음 -->
+  <!-- ABOUT ME는 Classic만 남김 -->
   <section id="about-section">
     <div class="about-card concept1">
       <div class="profile-img">
@@ -127,15 +78,6 @@
           <li><strong>연락처:</strong> 010-6756-2344</li>
           <li><strong>이메일:</strong> rlagusdn04@korea.ac.kr</li>
         </ul>
-      </div>
-    </div>
-    <div class="about-card concept2">
-      <div class="profile-img">
-        <img src="assets/profile.jpg" alt="프로필 이미지">
-      </div>
-      <div class="profile-info">
-        <h2>ABOUT ME - Modern</h2>
-        <ul></ul>
       </div>
     </div>
   </section>

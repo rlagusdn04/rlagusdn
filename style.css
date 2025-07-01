@@ -254,15 +254,17 @@ canvas#mouseCanvas {
   background: #c9e4de;
   color: #222;
   border-radius: 20px;
-  padding: 40px 50px;
+  padding: 48px 60px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   text-align: center;
   animation: fadeIn 0.3s ease-out;
   border: none;
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .result-card h2 {
@@ -360,4 +362,74 @@ canvas#mouseCanvas {
 }
 .music-controls .volume-bar {
   width: 60px;
+}
+
+#music-section {
+  margin-top: 60vh;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0f7fa 60%, #b3e5fc 100%);
+}
+.music-card.concept-music {
+  background: rgba(255,255,255,0.85);
+  border-radius: 32px;
+  box-shadow: 0 8px 32px #b3e5fc99, 0 0 32px #4fc3f744;
+  padding: 48px 60px 36px 60px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  margin: 0 auto;
+  position: relative;
+  border: 2.5px solid #b3e5fc;
+  animation: fadeIn 0.7s;
+}
+.music-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #4fc3f7;
+  text-shadow: 0 0 12px #b3e5fc, 0 0 32px #4fc3f7;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+}
+.music-player {
+  margin-top: 10px;
+}
+.music-info {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #039be5;
+  text-shadow: 0 0 8px #b3e5fc88;
+}
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #e0f7fa;
+  border-radius: 12px;
+  padding: 12px 18px;
+  box-shadow: 0 2px 8px #b2ebf2;
+  justify-content: center;
+}
+.music-controls button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #039be5;
+  transition: color 0.2s;
+}
+.music-controls button:hover {
+  color: #0288d1;
+}
+.music-controls .volume-bar {
+  width: 100px;
+}
+
+#result-box .result-card + .result-card {
+  display: none !important;
 }
