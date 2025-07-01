@@ -9,6 +9,7 @@
 <body>
   <div class="container" id="main-container">
     <h1>:)</h1>
+    <div id="progress" style="margin-bottom:12px; font-weight:bold; color:#4fc3f7;"></div>
     <div id="question-box">
       <p id="question-text">질문을 불러오는 중...</p>
       <div class="options" id="options-container"></div>
@@ -18,8 +19,8 @@
         <h2 id="result-title">결과</h2>
         <p id="result-score"></p>
         <div class="options">
-          <button id="retry-btn" class="option-btn">다시 하기</button>
-          <button id="go-title-btn" class="option-btn">타이틀로</button>
+          <button id="retry-btn" class="option-btn">다시하기</button>
+          <button id="go-title-btn" class="option-btn">홈으로</button>
         </div>
       </div>
     </div>
@@ -41,8 +42,8 @@
         answer: ""
       },
       {
-        question: "선호하는 공간의 분위기는?",
-        options: ["포근함", "웅장함", "경건함", "낯섬"],
+        question: "좋아하는 날씨는?",
+        options: ["맑음", "비", "눈", "흐림"],
         answer: ""
       },
       {
@@ -54,7 +55,7 @@
         question: "편한 대화 상대는?",
         options: [
           "서로의 침묵도 편안한 사람",
-          "활기차고 시끄러운 분위기의 사람",
+          "활기차고 즐거운 분위기의 사람",
           "무슨 생각인지 알기 어려운 사람",
           "익숙하고 반복되는 이야기의 사람",
         ],
@@ -106,9 +107,13 @@
       if (current >= quizShuffled.length) {
         document.getElementById("main-container").classList.add("result-mode");
         document.getElementById("result-box").style.display = "flex";
-        document.getElementById("result-score").textContent = `유사도: ${score} / ${quizShuffled.length}`;
+        document.getElementById("question-box").style.display = "none";
+        const percent = Math.round((score / quizShuffled.length) * 100);
+        document.getElementById("result-score").textContent = `유사도: ${percent}%`;
         return;
       }
+      document.getElementById("question-box").style.display = "block";
+      document.getElementById("progress").textContent = `${current+1} / ${quizShuffled.length}`;
 
       const q = quizShuffled[current];
       document.getElementById("question-text").textContent = q.question;
@@ -138,6 +143,7 @@
       document.getElementById("retry-btn").onclick = function() {
         document.getElementById("result-box").style.display = "none";
         document.getElementById("main-container").classList.remove("result-mode");
+        document.getElementById("question-box").style.display = "block";
         startQuiz();
       };
       document.getElementById("go-title-btn").onclick = function() {
