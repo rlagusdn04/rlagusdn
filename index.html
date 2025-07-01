@@ -7,13 +7,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="main-bg">
-  <div class="bg-title"></div>
-  <div class="bg-content"></div>
-  <div class="bg-about"></div>
   <div class="container">
     <h1 class="main-title">Title</h1>
     <div class="options">
-      
       <a href="https://github.com/rlagusdn04" class="option-btn" target="_blank">🔗 GitHub 이동</a>
       <a href="#" class="option-btn">🎵 음원 추출하기 (준비중)</a>
       <a href="#" class="option-btn">🗂️ 파일 변환 (준비중)</a>
@@ -24,15 +20,9 @@
 
   <!-- 메인 카드와 about me 사이에 자료 섹션 -->
   <section id="content-section">
-    <div class="content-slider-wrapper">
-      <button class="slider-btn slider-btn-left" aria-label="이전">&#8592;</button>
-      <div class="content-slider">
-        <div class="content-card">여기에 자료가 들어갑니다 1</div>
-        <div class="content-card">여기에 자료가 들어갑니다 2</div>
-        <div class="content-card">여기에 자료가 들어갑니다 3</div>
-      </div>
-      <button class="slider-btn slider-btn-right" aria-label="다음">&#8594;</button>
-    </div>
+    <div class="content-card">여기에 자료가 들어갑니다 1</div>
+    <div class="content-card">여기에 자료가 들어갑니다 2</div>
+    <div class="content-card">여기에 자료가 들어갑니다 3</div>
   </section>
 
   <!-- 왼쪽 상단 메뉴 버튼 -->
@@ -40,11 +30,9 @@
   <!-- 사이드바(탭) -->
   <nav id="sidebar" class="sidebar">
     <div class="sidebar-content">
+      <a href="index.html" class="option-btn" style="width:100%;margin-bottom:18px;">🏠 홈으로 가기</a>
       <div id="sidebar-time" class="neon-time sidebar-time" style="position:absolute; left:60px; top:24px; font-size:1.1rem; min-width:60px;"></div>
       <div style="height: 60px;"></div>
-      <a href="index.html" class="sidebar-home-btn" style="display:block; margin-bottom:24px; text-decoration:none;">
-        <span style="display:inline-block; background:#c9e4de; color:#222; border-radius:12px; box-shadow:0 2px 8px #b3e5fc55; padding:10px 28px; font-size:1.15rem; font-weight:600; letter-spacing:1px; transition:background 0.18s;">🏠 홈으로 가기</span>
-      </a>
       <div class="sidebar-music-card">
         <div class="sidebar-music-player">
           <span class="sidebar-music-info" id="sidebar-music-title" style="cursor:pointer;">Unwaved Heart</span>
@@ -162,74 +150,6 @@
     });
     updateToggleBtn();
     updateVolValue();
-    function showQuestion() {
-      if (current >= quizShuffled.length) {
-        document.getElementById("main-container").classList.add("result-mode");
-        document.getElementById("result-box").style.display = "flex";
-        document.getElementById("question-box").style.display = "none";
-        const percent = Math.round((score / quizShuffled.length) * 100);
-        document.getElementById("result-score").textContent = `유사도: ${percent}%`;
-        return;
-      }
-      document.getElementById("question-box").style.display = "block";
-      document.getElementById("progress").textContent = `${current+1} / ${quizShuffled.length}`;
-
-      const q = quizShuffled[current];
-      document.getElementById("question-text").textContent = q.question;
-
-      const container = document.getElementById("options-container");
-      container.innerHTML = "";
-
-      q.options.forEach(option => {
-        const btn = document.createElement("button");
-        btn.textContent = option;
-        btn.className = "option-btn";
-
-        btn.onclick = () => {
-          if (Array.isArray(q.answer) && q.answer.includes(option)) {
-            score++;
-          } else if (q.answer === option) {
-            score++;
-          }
-          current++;
-          showQuestion();
-        };
-
-        container.appendChild(btn);
-      });
-    }
-    // 스크롤에 따라 body 배경 그라데이션 각도 변화
-    window.addEventListener('scroll', () => {
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      const scrollRatio = window.scrollY / maxScroll;
-      // 135~495deg 사이에서 각도 변화
-      const deg = 135 + 360 * scrollRatio;
-      document.body.style.background = `linear-gradient(${deg}deg, #f7f6f2 0%, #e5eaf5 30%, #b3e5fc 60%, #e1bee7 100%)`;
-    });
-    // 자료 카드 스크롤 애니메이션 (Intersection Observer)
-    const cards = document.querySelectorAll('.content-card');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.15 });
-    cards.forEach(card => observer.observe(card));
-    // 자료 슬라이더 버튼 기능
-    const slider = document.querySelector('.content-slider');
-    const cardsArr = Array.from(document.querySelectorAll('.content-card'));
-    let currentIdx = 0;
-    function scrollToCard(idx) {
-      if (idx < 0) idx = 0;
-      if (idx > cardsArr.length - 1) idx = cardsArr.length - 1;
-      currentIdx = idx;
-      cardsArr[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
-    document.querySelector('.slider-btn-left').onclick = () => scrollToCard(currentIdx - 1);
-    document.querySelector('.slider-btn-right').onclick = () => scrollToCard(currentIdx + 1);
-    // 초기 첫 번째 카드 중앙 정렬
-    scrollToCard(0);
   </script>
 
   <!-- ABOUT ME는 Classic만 남김 -->
