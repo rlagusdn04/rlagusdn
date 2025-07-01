@@ -15,12 +15,44 @@
     </div>
   </div>
 
+  <!-- 왼쪽 상단 메뉴 버튼 -->
+  <button id="menu-btn" class="menu-btn">☰</button>
+  <!-- 사이드바(탭) -->
+  <nav id="sidebar" class="sidebar">
+    <div class="sidebar-content">
+      <div id="sidebar-time" class="neon-time sidebar-time"></div>
+      <div class="sidebar-music-card">
+        <h3 class="sidebar-music-title">🎵 Music Player</h3>
+        <div class="sidebar-music-player">
+          <span class="sidebar-music-info">Unwaved Heart</span>
+          <div class="sidebar-music-controls">
+            <button class="sidebar-play-btn">▶️</button>
+            <button class="sidebar-pause-btn">⏸️</button>
+            <input type="range" class="sidebar-volume-bar" min="0" max="1" step="0.01" value="1">
+          </div>
+          <audio class="sidebar-audio-player" src="Music/Heart.mp3"></audio>
+        </div>
+      </div>
+    </div>
+  </nav>
   <div id="current-time" class="neon-time" style="left:30px; top:30px; right:auto; position:fixed;"></div>
   <!-- canvas 캐릭터 애니메이션 -->
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
   <script src="main.js"></script>
   <script>
-    // 시계: 시/분/초까지 표시, 왼쪽 상단 고정
+    // 메뉴 버튼/사이드바 동작
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+    // 사이드바 바깥 클릭 시 닫힘
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+        sidebar.classList.remove('open');
+      }
+    });
+    // 시계: 시/분/초까지 표시, 사이드바와 화면에 각각 표시
     function updateTime() {
       const now = new Date();
       let h = now.getHours();
@@ -30,38 +62,18 @@
       m = m < 10 ? '0'+m : m;
       s = s < 10 ? '0'+s : s;
       document.getElementById('current-time').textContent = `${h}:${m}:${s}`;
+      document.getElementById('sidebar-time').textContent = `${h}:${m}:${s}`;
     }
     setInterval(updateTime, 1000);
     updateTime();
-  </script>
-
-  <!-- MUSIC 화면 (음악 관련 모든 기능) -->
-  <section id="music-section" style="margin-top: 60vh; min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <div class="music-card concept-music">
-      <h2 class="music-title">🎵 Music Player</h2>
-      <div class="music-player">
-        <span class="music-info" id="info-player1">Unwaved Heart</span>
-        <div class="music-controls" id="controls-player1" style="display:flex; margin-top:18px;">
-          <button class="play-btn">▶️</button>
-          <button class="pause-btn">⏸️</button>
-          <input type="range" class="volume-bar" min="0" max="1" step="0.01" value="1">
-        </div>
-        <audio class="audio-player" id="player1" src="Music/Heart.mp3"></audio>
-      </div>
-    </div>
-  </section>
-  <script>
-    // 음악 컨트롤 기능 (고정 곡, 소리 조절만 가능)
-    document.querySelectorAll('.music-player').forEach(mp => {
-      const audio = mp.querySelector('.audio-player');
-      const playBtn = mp.querySelector('.play-btn');
-      const pauseBtn = mp.querySelector('.pause-btn');
-      const volumeBar = mp.querySelector('.volume-bar');
-      if (!audio) return;
-      playBtn.addEventListener('click', () => audio.play());
-      pauseBtn.addEventListener('click', () => audio.pause());
-      volumeBar.addEventListener('input', () => audio.volume = volumeBar.value);
-    });
+    // 음악 컨트롤 기능 (사이드바)
+    const sidebarAudio = document.querySelector('.sidebar-audio-player');
+    const sidebarPlayBtn = document.querySelector('.sidebar-play-btn');
+    const sidebarPauseBtn = document.querySelector('.sidebar-pause-btn');
+    const sidebarVolumeBar = document.querySelector('.sidebar-volume-bar');
+    sidebarPlayBtn.addEventListener('click', () => sidebarAudio.play());
+    sidebarPauseBtn.addEventListener('click', () => sidebarAudio.pause());
+    sidebarVolumeBar.addEventListener('input', () => sidebarAudio.volume = sidebarVolumeBar.value);
   </script>
 
   <!-- ABOUT ME는 Classic만 남김 -->

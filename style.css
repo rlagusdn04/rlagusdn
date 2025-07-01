@@ -433,3 +433,108 @@ canvas#mouseCanvas {
 #result-box .result-card + .result-card {
   display: none !important;
 }
+
+.menu-btn {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  z-index: 2000;
+  background: #b3e5fc;
+  color: #222;
+  border: none;
+  border-radius: 12px;
+  font-size: 2.1rem;
+  padding: 8px 18px 8px 16px;
+  box-shadow: 0 2px 16px #b3e5fc99, 0 0 8px #4fc3f7;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  text-shadow: 0 0 8px #b3e5fc, 0 0 16px #4fc3f7;
+}
+.menu-btn:hover {
+  background: #4fc3f7;
+  color: #fff;
+  box-shadow: 0 4px 32px #4fc3f7, 0 0 16px #b3e5fc;
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+  background: linear-gradient(135deg, #e0f7fa 60%, #b3e5fc 100%);
+  box-shadow: 4px 0 32px #b3e5fc99;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.sidebar.open {
+  transform: translateX(0);
+}
+.sidebar-content {
+  padding: 38px 28px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+}
+.sidebar-time {
+  margin-bottom: 32px;
+  font-size: 2.1rem;
+  text-align: left;
+  color: #b3e5fc;
+  text-shadow: 0 0 12px #b3e5fc, 0 0 32px #4fc3f7;
+  font-weight: bold;
+}
+.sidebar-music-card {
+  background: rgba(255,255,255,0.92);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px #b3e5fc99, 0 0 32px #4fc3f744;
+  padding: 32px 24px 24px 24px;
+  margin-bottom: 24px;
+  text-align: center;
+  border: 2px solid #b3e5fc;
+  animation: fadeIn 0.7s;
+}
+.sidebar-music-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4fc3f7;
+  text-shadow: 0 0 8px #b3e5fc, 0 0 16px #4fc3f7;
+  margin-bottom: 18px;
+  letter-spacing: 1px;
+}
+.sidebar-music-info {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #039be5;
+  text-shadow: 0 0 8px #b3e5fc88;
+}
+.sidebar-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #e0f7fa;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 8px #b2ebf2;
+  justify-content: center;
+}
+.sidebar-music-controls button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #039be5;
+  transition: color 0.2s;
+}
+.sidebar-music-controls button:hover {
+  color: #0288d1;
+}
+.sidebar-music-controls .sidebar-volume-bar {
+  width: 100px;
+}
