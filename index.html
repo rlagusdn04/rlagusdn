@@ -10,7 +10,7 @@
   <div class="container">
     <h1 class="main-title">Title</h1>
     <div class="options">
-      <a href="game.html" class="option-btn">🎮 유사도</a>
+      <a href="game.html" class="option-btn"> 유사도</a>
       <a href="https://github.com/rlagusdn04" class="option-btn" target="_blank">🔗 GitHub 이동</a>
     </div>
   </div>
@@ -27,7 +27,7 @@
         <div class="sidebar-music-player">
           <span class="sidebar-music-info">Unwaved Heart</span>
           <div class="sidebar-music-controls">
-            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" style="background:#111; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:none;">▶️</button>
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지" style="background:#111; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:none;"></button>
             <button class="sidebar-vol-btn" id="sidebar-vol-down" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:10px;">-</button>
             <button class="sidebar-vol-btn" id="sidebar-vol-up" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:4px;">+</button>
           </div>
@@ -76,7 +76,8 @@
     sidebarAudio.volume = 0.5;
     let isPlaying = false;
     function updateToggleBtn() {
-      sidebarToggleBtn.textContent = isPlaying ? '⏸️' : '▶️';
+      sidebarToggleBtn.textContent = '';
+      sidebarToggleBtn.style.background = isPlaying ? '#222' : '#bbb';
     }
     sidebarToggleBtn.addEventListener('click', () => {
       if (isPlaying) {
