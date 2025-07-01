@@ -547,7 +547,7 @@ canvas#mouseCanvas {
 #progress {
   margin-top: 18px;
   font-weight: bold;
-  color: #4fc3a1;
+  color: #4fc3a1 !important;
   font-size: 1.1rem;
   letter-spacing: 1px;
   text-align: center;
