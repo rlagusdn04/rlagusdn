@@ -21,9 +21,15 @@
 
   <!-- 메인 카드와 about me 사이에 자료 섹션 -->
   <section id="content-section">
-    <div class="content-card">여기에 자료가 들어갑니다 1</div>
-    <div class="content-card">여기에 자료가 들어갑니다 2</div>
-    <div class="content-card">여기에 자료가 들어갑니다 3</div>
+    <div class="content-slider-wrapper">
+      <button class="slider-btn slider-btn-left" aria-label="이전">&#8592;</button>
+      <div class="content-slider">
+        <div class="content-card">여기에 자료가 들어갑니다 1</div>
+        <div class="content-card">여기에 자료가 들어갑니다 2</div>
+        <div class="content-card">여기에 자료가 들어갑니다 3</div>
+      </div>
+      <button class="slider-btn slider-btn-right" aria-label="다음">&#8594;</button>
+    </div>
   </section>
 
   <!-- 왼쪽 상단 메뉴 버튼 -->
@@ -207,6 +213,20 @@
       });
     }, { threshold: 0.15 });
     cards.forEach(card => observer.observe(card));
+    // 자료 슬라이더 버튼 기능
+    const slider = document.querySelector('.content-slider');
+    const cardsArr = Array.from(document.querySelectorAll('.content-card'));
+    let currentIdx = 0;
+    function scrollToCard(idx) {
+      if (idx < 0) idx = 0;
+      if (idx > cardsArr.length - 1) idx = cardsArr.length - 1;
+      currentIdx = idx;
+      cardsArr[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+    document.querySelector('.slider-btn-left').onclick = () => scrollToCard(currentIdx - 1);
+    document.querySelector('.slider-btn-right').onclick = () => scrollToCard(currentIdx + 1);
+    // 초기 첫 번째 카드 중앙 정렬
+    scrollToCard(0);
   </script>
 
   <!-- ABOUT ME는 Classic만 남김 -->
