@@ -479,17 +479,17 @@ canvas#mouseCanvas {
   align-items: flex-start;
   height: 100%;
 }
-.sidebar-time {
-  margin-bottom: 32px;
-  font-size: 2.1rem;
-  text-align: left;
-  color: #111;
-  text-shadow: none;
-  font-weight: bold;
+.sidebar-time, .neon-time {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #222 !important;
+  text-shadow: none !important;
+  font-size: 1.05rem !important;
+  font-weight: 500;
+  padding: 0;
+  margin: 0 0 0 0;
   letter-spacing: 1px;
-  background: none;
-  position: relative;
-  z-index: 10;
 }
 .sidebar-music-card {
   background: #fff;
