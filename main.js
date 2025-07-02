@@ -174,12 +174,18 @@ spinRouletteBtn.addEventListener('click', () => {
   const totalSpins = 30;
   const minDelay = 30; // 가장 빠를 때 딜레이(ms)
   const maxDelay = 300; // 가장 느릴 때 딜레이(ms)
+  const slowDownRatio = 0.7; // 느려지는 구간을 더 길게
 
-  function easeInOut(t) {
-    // t: 0~1
-    return t < 0.5
-      ? 2 * t * t
-      : -1 + (4 - 2 * t) * t;
+  function customEase(t) {
+    // 느려지는 구간을 더 길게: t가 slowDownRatio 이상일 때 더 급격히 느려짐
+    if (t < (1 - slowDownRatio)) {
+      // 초반: 빠르게 가속
+      return 2 * t * t;
+    } else {
+      // 후반: 더 천천히 감속
+      const slowT = (t - (1 - slowDownRatio)) / slowDownRatio;
+      return 1 - Math.pow(1 - slowT, 2);
+    }
   }
 
   function spinRoulette() {
@@ -194,15 +200,18 @@ spinRouletteBtn.addEventListener('click', () => {
     }
 
     if (spinCount < totalSpins) {
-      // 0~1로 정규화
       const t = spinCount / totalSpins;
-      // 처음엔 느리게, 중간엔 빠르게, 마지막엔 다시 느리게
-      const delay = minDelay + (maxDelay - minDelay) * (1 - easeInOut(t));
+      const delay = minDelay + (maxDelay - minDelay) * customEase(t);
       setTimeout(spinRoulette, delay);
     } else {
       spinRouletteBtn.disabled = false;
       const finalIndex = Math.floor(Math.random() * menuItems.length);
       rouletteDisplay.textContent = menuItems[finalIndex];
+      // 빛나는 효과
+      rouletteDisplay.classList.add('roulette-flash');
+      setTimeout(() => {
+        rouletteDisplay.classList.remove('roulette-flash');
+      }, 400);
     }
   }
 

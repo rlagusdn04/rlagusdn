@@ -576,6 +576,11 @@ body.utest-page {
   justify-content: center;
 }
 
+.roulette-flash {
+  box-shadow: 0 0 24px 8px #fffbe6, 0 0 60px 16px #ffe066;
+  background: #fffbe6;
+  transition: box-shadow 0.2s, background 0.2s;
+}
 
 /* Music Section */
 .music-controls-container {
