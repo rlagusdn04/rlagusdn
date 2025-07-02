@@ -36,6 +36,21 @@
       </div>
     </section>
 
+    <section id="music-player" class="section music-section">
+      <h2 class="section-title">Background Music</h2>
+      <div class="music-controls-container">
+        <span id="music-title" class="music-title"></span>
+        <div class="music-player-controls">
+          <button id="play-pause-btn" class="music-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="volume-slider">
+          <span id="volume-value" class="volume-value">50%</span>
+        </div>
+        <audio id="audio-player" src="Music/Time to Start Another Day.mp3"></audio>
+      </div>
+    </section>
+
     <section id="projects" class="section projects-section">
       <h2 class="section-title">My Projects</h2>
       <div class="project-grid">
@@ -128,32 +143,12 @@
         <a href="Utest.html" class="btn primary-btn">테스트 시작 &rarr;</a>
       </div>
     </section>
-        </div>
-      </div>
-    </section>
-
-    
 
     <section id="daily-menu-roulette" class="section daily-menu-roulette-section">
       <h2 class="section-title">오늘 뭐 먹지?</h2>
       <div class="roulette-container">
         <p id="roulette-display" class="roulette-display">메뉴를 돌려보세요!</p>
         <button id="spin-roulette" class="btn primary-btn">Click</button>
-      </div>
-    </section>
-
-    <section id="music-player" class="section music-section">
-      <h2 class="section-title">Background Music</h2>
-      <div class="music-controls-container">
-        <span id="music-title" class="music-title"></span>
-        <div class="music-player-controls">
-          <button id="play-pause-btn" class="music-btn">
-            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
-          </button>
-          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="volume-slider">
-          <span id="volume-value" class="volume-value">50%</span>
-        </div>
-        <audio id="audio-player" src="Music/Time to Start Another Day.mp3"></audio>
       </div>
     </section>
 
