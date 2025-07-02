@@ -12,14 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
         nameHighlight.classList.add('animating');
 
         intervalId = setInterval(() => {
-            nameHighlight.innerText = originalName.split('')
-                .map((letter, index) => {
-                    if(index < iteration) {
-                        return originalName[index];
-                    }
-                    return chars[Math.floor(Math.random() * chars.length)]
-                })
-                .join('');
+            let displayedText = '';
+            for (let i = 0; i < originalName.length; i++) {
+                if (i < iteration) {
+                    displayedText += originalName[i];
+                } else {
+                    displayedText += chars[Math.floor(Math.random() * chars.length)];
+                }
+            }
+            nameHighlight.innerText = displayedText;
             
             if(iteration >= originalName.length){
                 clearInterval(intervalId);
@@ -30,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 500);
             }
             
-            iteration += 1 / 10;
-        }, 100);
+            iteration += 1 / 10; // Slower animation
+        }, 100); // Slower interval
     }
 
     runRouletteAnimation();
@@ -50,6 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.classList.remove('open');
         }
     });
+
+    // Sidebar Time Display
+    const sidebarTimeDisplay = document.getElementById('sidebar-time-display');
+
+    function updateSidebarTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        sidebarTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    setInterval(updateSidebarTime, 1000);
+    updateSidebarTime();
 
     // Music Player
     const musicList = [
@@ -127,7 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const image = new Image();
-    image.src = "../assets/ditto.png"; // Corrected relative path
+    image.src = "../assets/ditto.png"; 
+
+    image.onload = () => {
+        console.log("Ditto image loaded successfully.");
+        requestAnimationFrame(loop);
+    };
+
+    image.onerror = () => {
+        console.error("Failed to load Ditto image at: " + image.src);
+    };
 
     let isMouseDown = false;
     class Animation {
@@ -161,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SCALE = 0.25; 
     let isFlipped = false;
 
+    // Initialize animations after image loads
     image.onload = () => {
       const idleFrames = [
         { sx: 0, sy: 0, sw: 128, sh: 128 },
@@ -204,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (currentAnim) {
+      if (currentAnim && image.complete && image.naturalHeight !== 0) {
           currentAnim.update(dt);
           const frame = currentAnim.getFrame();
 
@@ -235,23 +260,29 @@ document.addEventListener('DOMContentLoaded', () => {
       requestAnimationFrame(loop);
     }
 
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
     // Fractal Background Animation
     const bgCanvas = document.getElementById('background-canvas');
     const bgCtx = bgCanvas.getContext('2d');
     let width, height;
+    let lastScrollY = window.scrollY;
 
-    function setup() {
+    function setupBgCanvas() {
         width = bgCanvas.width = window.innerWidth;
         height = bgCanvas.height = window.innerHeight;
         bgCtx.clearRect(0, 0, width, height);
         drawFractal(); // Initial draw
     }
 
-    function drawBranch(x, y, len, angle, branchWidth, scrollY) {
+    function drawBranch(x, y, len, angle, branchWidth, currentScrollY) {
         bgCtx.beginPath();
         bgCtx.save();
         
-        const hue = 180 + (scrollY / 10);
+        const hue = 180 + (currentScrollY / 10); // Hue changes with scroll
         const gradient = bgCtx.createLinearGradient(0, 0, 0, -len);
         gradient.addColorStop(0, `hsl(${hue}, 100%, 50%)`);
         gradient.addColorStop(1, `hsl(${hue + 40}, 100%, 70%)`);
@@ -269,32 +300,60 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const wave = Math.sin(scrollY * 0.005) * (len * 0.1);
+        // Wave effect based on scroll
+        const wave = Math.sin(currentScrollY * 0.005) * (len * 0.1);
 
-        drawBranch(0, -len, len * 0.85, angle + wave, branchWidth * 0.8, scrollY);
-        drawBranch(0, -len, len * 0.85, angle - wave, branchWidth * 0.8, scrollY);
+        drawBranch(0, -len, len * 0.85, angle + wave, branchWidth * 0.8, currentScrollY);
+        drawBranch(0, -len, len * 0.85, angle - wave, branchWidth * 0.8, currentScrollY);
 
         bgCtx.restore();
     }
 
     function drawFractal() {
-        const scrollY = window.scrollY;
+        const currentScrollY = window.scrollY;
         bgCtx.clearRect(0, 0, width, height);
         
         // Draw multiple branches from the bottom to make it wider
-        const initialLength = height / 6; // Shorter branches
-        const branches = 5;
+        const initialLength = height / 8; // Shorter branches
+        const branches = 7; // More branches for wider spread
         for (let i = 0; i < branches; i++) {
             const startX = (width / (branches + 1)) * (i + 1);
-            drawBranch(startX, height, initialLength, -90, 8, scrollY);
+            drawBranch(startX, height, initialLength, -90, 8, currentScrollY);
         }
     }
 
     window.addEventListener('scroll', () => {
-        requestAnimationFrame(drawFractal);
+        // Only redraw if scroll position has changed significantly to avoid excessive redraws
+        if (Math.abs(window.scrollY - lastScrollY) > 5) {
+            requestAnimationFrame(drawFractal);
+            lastScrollY = window.scrollY;
+        }
     });
 
-    window.addEventListener('resize', setup);
+    window.addEventListener('resize', setupBgCanvas);
 
-    setup();
+    setupBgCanvas();
+    drawFractal(); // Initial draw
+
+    // Scroll Animation (Intersection Observer)
+    const sections = document.querySelectorAll('section');
+
+    const observerOptions = {
+        root: null, // viewport
+        rootMargin: '0px',
+        threshold: 0.1 // 10% of the section is visible
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in');
+                observer.unobserve(entry.target); // Stop observing once it's animated
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
 });

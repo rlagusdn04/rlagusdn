@@ -77,6 +77,14 @@ main {
 section {
     margin-bottom: 6rem;
     text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+section.fade-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 #hero {
@@ -198,24 +206,24 @@ footer {
 /* Sidebar and Menu Button */
 .menu-btn {
   position: fixed;
-  top: 10px; /* Adjusted position */
+  top: 5px; /* Adjusted position */
   left: 28px;
   z-index: 2000;
-  background: #fff;
+  background: none; /* Removed background */
   color: #222;
-  border: none;
-  border-radius: 12px;
+  border: none; /* Removed border */
+  border-radius: 0; /* Removed border-radius */
   font-size: 2.1rem;
   padding: 8px 18px 8px 16px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 8px rgba(0,0,0,0.05);
+  box-shadow: none; /* Removed box-shadow */
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: color 0.2s;
 }
 
 .menu-btn:hover {
-  background: #f5f5f5;
-  color: #111;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.1), 0 0 16px rgba(0,0,0,0.05);
+  background: none;
+  color: var(--highlight-color);
+  box-shadow: none;
 }
 
 .sidebar {
@@ -245,6 +253,14 @@ footer {
   align-items: flex-start;
   height: 100%;
   width: 100%;
+}
+
+.sidebar-time-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    align-self: center;
 }
 
 .sidebar-music-card {
