@@ -3,299 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Title</title>
+  <title>Developer Portfolio</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* 사이드바 홈 버튼 작고 심플하게 */
-    .sidebar-home-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 72px;
-      height: 38px;
-      font-size: 1.1rem;
-      background: #a9d6c8;
-      color: #222;
-      border: none;
-      border-radius: 18px;
-      box-shadow: 0 2px 8px #b2ebf2;
-      margin-bottom: 18px;
-      margin-top: 10px;
-      margin-left: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: 1px;
-      transition: background 0.18s, box-shadow 0.18s;
-      padding: 0 18px;
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 4000;
-    }
-    .sidebar-home-btn:hover {
-      background: #89c9b8;
-      color: #111;
-      box-shadow: 0 4px 16px #a9d6c8;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="main-bg">
-  <canvas id="bgFractal" style="position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:-1;"></canvas>
-  <div class="container" style="margin-bottom: 12vh !important;">
-    <h1 class="main-title">Title</h1>
-    <div class="options">
-      <a href="https://github.com/rlagusdn04" class="option-btn" target="_blank">🔗 GitHub 이동</a>
-      <a href="#" class="option-btn">🎵 음원 추출하기 (준비중)</a>
-      <a href="#" class="option-btn">🗂️ 파일 변환 (준비중)</a>
-      <a href="game.html" class="option-btn"> 유사도</a>
-      <a href="#" class="option-btn"> bot 실행 (준비중)</a>
-    </div>
-  </div>
+<body class="dark-theme">
+  <canvas id="bgFractal" class="background-canvas"></canvas>
+  <div class="container">
+    <header class="header">
+      <h1 class="site-title">Developer Portfolio</h1>
+      <nav class="main-nav">
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#about" class="nav-link">About Me</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+    </header>
 
-  <!-- 메인 카드와 about me 사이에 자료 섹션 -->
-  <section id="content-section" class="no-scrollbar">
-    <div class="content-card">여기에 자료가 들어갑니다 1</div>
-    <div class="content-card">여기에 자료가 들어갑니다 2</div>
-    <div class="content-card">여기에 자료가 들어갑니다 3</div>
-  </section>
-
-  <!-- 왼쪽 상단 메뉴 버튼 -->
-  <button id="menu-btn" class="menu-btn">☰</button>
-  <!-- 사이드바(탭) -->
-  <nav id="sidebar" class="sidebar">
-    <div class="sidebar-content" style="position:relative;">
-      <div style="display:flex; align-items:center; gap:32px; margin-bottom:18px;">
-        <a href="index.html" class="sidebar-home-btn">홈으로</a>
-        <span id="sidebar-time-minimal" class="sidebar-time-modern"></span>
-      </div>
-      <div style="height: 60px;"></div>
-      <div class="sidebar-music-card">
-        <div class="sidebar-music-player">
-          <span class="sidebar-music-info" id="sidebar-music-title" style="cursor:pointer;">Unwaved Heart</span>
-          <div class="sidebar-music-controls">
-            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지" style="background:#111; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:none;"></button>
-            <button class="sidebar-vol-btn" id="sidebar-vol-down" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:10px;">-</button>
-            <span id="sidebar-vol-value" style="margin:0 6px; font-size:1.05rem; color:#222; min-width:32px; display:inline-block; text-align:center;">50%</span>
-            <button class="sidebar-vol-btn" id="sidebar-vol-up" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:4px;">+</button>
-          </div>
-          <audio class="sidebar-audio-player" id="sidebar-audio-player" src="Music/Time to Start Another Day.mp3"></audio>
+    <section id="hero" class="hero-section">
+      <div class="hero-content">
+        <h2 class="hero-title">Hello, I'm <span class="highlight">Hyunwoo Kim</span></h2>
+        <p class="hero-subtitle">A passionate developer building innovative solutions.</p>
+        <div class="hero-actions">
+          <a href="https://github.com/rlagusdn04" class="btn primary-btn" target="_blank">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.372 0 0 5.372 0 12c0 5.303 3.438 9.799 8.207 11.387.6.11.82-.26.82-.577 0-.285-.01-1.04-.015-2.04-3.338.725-4.043-1.61-4.043-1.61-.546-1.387-1.334-1.757-1.334-1.757-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.238 1.838 1.238 1.07 1.835 2.809 1.305 3.492.998.108-.775.418-1.305.762-1.605-2.665-.3-5.464-1.33-5.464-5.93 0-1.31.465-2.38 1.235-3.22-.12-.3-.535-1.525.117-3.175 0 0 1.008-.32 3.301 1.23.957-.266 1.983-.4 3.003-.405 1.02.005 2.046.139 3.003.405 2.29-1.55 3.297-1.23 3.297-1.23.653 1.65.238 2.875.118 3.175.77.84 1.233 1.91 1.233 3.22 0 4.61-2.8 5.62-5.475 5.92.43.37.81 1.1.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .318.21.69.825.57C20.565 21.8 24 17.303 24 12c0-6.628-5.372-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="#" class="btn secondary-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+            Contact Me
+          </a>
         </div>
       </div>
-    </div>
-  </nav>
-  <div id="current-time" class="neon-time" style="left:30px; top:30px; right:auto; position:fixed;"></div>
-  <!-- canvas 캐릭터 애니메이션 -->
-  <canvas id="mouseCanvas" width="600" height="600"></canvas>
-  <script src="main.js"></script>
-  <script src="fractal-bg.js"></script>
-  <script>
-    // 메뉴 버튼/사이드바 동작
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      if (sidebar.classList.contains('open')) {
-        menuBtn.style.display = 'none';
-      }
-    });
-    document.addEventListener('click', (e) => {
-      if (!sidebar.contains(e.target) && e.target !== menuBtn) {
-        sidebar.classList.remove('open');
-        menuBtn.style.display = 'block';
-      }
-    });
-    sidebar.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
-    // 시계: 시/분/초까지 표시, 사이드바와 화면에 각각 표시
-    function updateTime() {
-      const now = new Date();
-      let h = now.getHours();
-      let m = now.getMinutes();
-      let s = now.getSeconds();
-      h = h < 10 ? '0'+h : h;
-      m = m < 10 ? '0'+m : m;
-      s = s < 10 ? '0'+s : s;
-      document.getElementById('current-time').textContent = `${h}:${m}:${s}`;
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-    // 시간 폰트 랜덤 변경
-    const timeFonts = [
-      'Segoe UI', 'Noto Sans KR', 'Montserrat', 'Nanum Gothic', 'Orbitron', 'Do Hyeon', 'Jua', 'Black Han Sans', 'Gugi', 'Sunflower', 'Poor Story', 'East Sea Dokdo', 'Diphylleia', 'Gamja Flower', 'Indie Flower', 'cursive'
-    ];
-    function randomFont() {
-      return timeFonts[Math.floor(Math.random() * timeFonts.length)];
-    }
-    function updateTimeFont() {
-      const font = randomFont();
-      document.getElementById('current-time').style.fontFamily = font;
-    }
-    setInterval(updateTimeFont, 2000);
-    updateTimeFont();
-    // 음악 리스트 및 셔플/제목 표시 기능 추가
-    const musicList = [
-      {title: 'Heart', src: 'Music/Heart.mp3'},
-      {title: 'ame', src: 'Music/ame.mp3'},
-      {title: 'La nuit', src: 'Music/La nuit.mp3'},
-      {title: 'Time to Start Another Day', src: 'Music/Time to Start Another Day.mp3'},
-      {title: 'Triste', src: 'Music/Triste.mp3'},
-      {title: 'watercity', src: 'Music/watercity.mp3'}
-    ];
-    let currentMusicIdx = 3; // Time to Start Another Day
-    const sidebarAudio = document.getElementById('sidebar-audio-player');
-    const sidebarMusicTitle = document.getElementById('sidebar-music-title');
-    function updateMusicInfo() {
-      sidebarMusicTitle.textContent = musicList[currentMusicIdx].title;
-      sidebarAudio.src = musicList[currentMusicIdx].src;
-    }
-    sidebarMusicTitle.addEventListener('click', () => {
-      let nextIdx;
-      do {
-        nextIdx = Math.floor(Math.random() * musicList.length);
-      } while (nextIdx === currentMusicIdx && musicList.length > 1);
-      currentMusicIdx = nextIdx;
-      updateMusicInfo();
-      sidebarAudio.play();
-    });
-    updateMusicInfo();
-    // 음악 컨트롤 기능 (사이드바, 토글/볼륨)
-    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
-    const sidebarVolDown = document.getElementById('sidebar-vol-down');
-    const sidebarVolUp = document.getElementById('sidebar-vol-up');
-    const sidebarVolValue = document.getElementById('sidebar-vol-value');
-    // 기본 볼륨 50%
-    sidebarAudio.volume = 0.5;
-    let isPlaying = false;
-    function updateToggleBtn() {
-      sidebarToggleBtn.textContent = '';
-      sidebarToggleBtn.style.background = isPlaying ? '#222' : '#bbb';
-    }
-    function updateVolValue() {
-      sidebarVolValue.textContent = Math.round(sidebarAudio.volume * 100) + '%';
-    }
-    sidebarToggleBtn.addEventListener('click', () => {
-      if (isPlaying) {
-        sidebarAudio.pause();
-      } else {
-        sidebarAudio.play();
-      }
-    });
-    sidebarAudio.addEventListener('play', () => {
-      isPlaying = true;
-      updateToggleBtn();
-    });
-    sidebarAudio.addEventListener('pause', () => {
-      isPlaying = false;
-      updateToggleBtn();
-    });
-    sidebarVolDown.addEventListener('click', () => {
-      sidebarAudio.volume = Math.max(0, Math.round((sidebarAudio.volume - 0.1)*10)/10);
-      updateVolValue();
-    });
-    sidebarVolUp.addEventListener('click', () => {
-      sidebarAudio.volume = Math.min(1, Math.round((sidebarAudio.volume + 0.1)*10)/10);
-      updateVolValue();
-    });
-    updateToggleBtn();
-    updateVolValue();
-    // 자료 카드 스크롤 시 active 애니메이션 적용
-    function updateActiveCard() {
-      const section = document.getElementById('content-section');
-      const cards = section.querySelectorAll('.content-card');
-      const sectionRect = section.getBoundingClientRect();
-      let minDiff = Infinity, activeIdx = 0;
-      cards.forEach((card, idx) => {
-        const rect = card.getBoundingClientRect();
-        const diff = Math.abs((rect.left + rect.right) / 2 - (sectionRect.left + sectionRect.right) / 2);
-        if (diff < minDiff) {
-          minDiff = diff;
-          activeIdx = idx;
-        }
-      });
-      cards.forEach((card, idx) => {
-        if (idx === activeIdx) card.classList.add('active');
-        else card.classList.remove('active');
-      });
-    }
-    const contentSection = document.getElementById('content-section');
-    contentSection.addEventListener('scroll', () => {
-      window.requestAnimationFrame(updateActiveCard);
-    });
-    window.addEventListener('resize', updateActiveCard);
-    window.addEventListener('DOMContentLoaded', updateActiveCard);
-    // 마우스 드래그/터치로 좌우 스크롤
-    let isDown = false;
-    let startX, scrollLeft;
-    contentSection.addEventListener('mousedown', (e) => {
-      isDown = true;
-      contentSection.classList.add('dragging');
-      startX = e.pageX - contentSection.offsetLeft;
-      scrollLeft = contentSection.scrollLeft;
-    });
-    contentSection.addEventListener('mouseleave', () => {
-      isDown = false;
-      contentSection.classList.remove('dragging');
-    });
-    contentSection.addEventListener('mouseup', () => {
-      isDown = false;
-      contentSection.classList.remove('dragging');
-    });
-    contentSection.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - contentSection.offsetLeft;
-      const walk = (x - startX) * 1.2; // 스크롤 속도 조절
-      contentSection.scrollLeft = scrollLeft - walk;
-    });
-    // 터치 지원
-    let touchStartX = 0, touchScrollLeft = 0;
-    contentSection.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].pageX;
-      touchScrollLeft = contentSection.scrollLeft;
-    });
-    contentSection.addEventListener('touchmove', (e) => {
-      const x = e.touches[0].pageX;
-      const walk = (x - touchStartX) * 1.2;
-      contentSection.scrollLeft = touchScrollLeft - walk;
-    });
-    // 자동재생 시도
-    setTimeout(() => {
-      sidebarAudio.play().catch(()=>{});
-    }, 300);
-    // 자료 카드 클릭 시 옆 카드로 부드럽게 이동
-    const cards = contentSection.querySelectorAll('.content-card');
-    cards.forEach((card, idx) => {
-      card.addEventListener('click', () => {
-        const nextIdx = idx + 1 < cards.length ? idx + 1 : 0;
-        const nextCard = cards[nextIdx];
-        nextCard.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
-      });
-    });
-  </script>
+    </section>
 
-  <!-- ABOUT ME는 Classic만 남김 -->
-  <section id="about-section">
-    <div class="about-card concept1">
-      <div class="profile-img">
-        <img src="assets/profile.jpg" alt="프로필 이미지">
+    <section id="projects" class="section projects-section">
+      <h2 class="section-title">My Projects</h2>
+      <div class="project-grid">
+        <div class="project-card">
+          <h3>Project One</h3>
+          <p>A brief description of Project One, highlighting its key features and technologies used.</p>
+          <a href="#" class="project-link">View Project &rarr;</a>
+        </div>
+        <div class="project-card">
+          <h3>Project Two</h3>
+          <p>A brief description of Project Two, highlighting its key features and technologies used.</p>
+          <a href="#" class="project-link">View Project &rarr;</a>
+        </div>
+        <div class="project-card">
+          <h3>Project Three</h3>
+          <p>A brief description of Project Three, highlighting its key features and technologies used.</p>
+          <a href="#" class="project-link">View Project &rarr;</a>
+        </div>
       </div>
-      <div class="profile-info">
-        <h2>ABOUT ME - Classic</h2>
-        <ul>
-          <li><strong>이름:</strong> 김현우</li>
-          <li><strong>생년월일:</strong> 2004.12.28</li>
-          <li><strong>연락처:</strong> 010-6756-2344</li>
-          <li><strong>이메일:</strong> rlagusdn04@korea.ac.kr</li>
-        </ul>
+    </section>
+
+    <section id="about" class="section about-section">
+      <h2 class="section-title">About Me</h2>
+      <div class="about-content">
+        <div class="profile-image-container">
+          <img src="assets/profile.jpg" alt="Profile Image" class="profile-image">
+        </div>
+        <div class="about-text">
+          <p>Hello! I'm Hyunwoo Kim, a passionate developer with a strong interest in web technologies and problem-solving. I enjoy building robust and scalable applications that make a difference.</p>
+          <p>My journey in development started with a curiosity for how things work, leading me to explore various programming languages and frameworks. I'm always eager to learn new technologies and improve my skills.</p>
+          <p>When I'm not coding, you can find me exploring new music, reading tech blogs, or contributing to open-source projects.</p>
+          <ul class="contact-info">
+            <li><strong>Name:</strong> Hyunwoo Kim</li>
+            <li><strong>Birthdate:</strong> 2004.12.28</li>
+            <li><strong>Phone:</strong> 010-6756-2344</li>
+            <li><strong>Email:</strong> rlagusdn04@korea.ac.kr</li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </section>
-  <div class="section-fade"></div>
-  <section id="content-section" class="no-scrollbar">
-  </section>
-  <div class="section-fade-up"></div>
-  <section id="about-section" style="margin-top: 160px !important;">
-  </section>
+    </section>
+
+    <section id="music-player" class="section music-section">
+      <h2 class="section-title">My Music</h2>
+      <div class="music-controls-container">
+        <span id="music-title" class="music-title"></span>
+        <div class="music-player-controls">
+          <button id="play-pause-btn" class="music-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="volume-slider">
+          <span id="volume-value" class="volume-value">50%</span>
+        </div>
+        <audio id="audio-player" src="Music/Time to Start Another Day.mp3"></audio>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact-section">
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="contact-description">Feel free to reach out if you have any questions or just want to connect!</p>
+      <form class="contact-form">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn primary-btn">Send Message</button>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2025 Hyunwoo Kim. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <canvas id="mouseCanvas" class="mouse-canvas"></canvas>
+  <script src="fractal-bg.js"></script>
+  <script src="mouse-animation.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
