@@ -652,3 +652,25 @@ canvas#mouseCanvas {
   min-width: 48px;
   text-align: left;
 }
+
+.sidebar-time-modern {
+  font-family: 'Orbitron', 'Montserrat', 'Noto Sans KR', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
+  border-radius: 18px;
+  padding: 8px 24px;
+  box-shadow: 0 2px 16px #a1c4fd55, 0 0 8px #c2e9fb88;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 8px #7faaff88, 0 0 2px #fff;
+  display: inline-block;
+  min-width: 120px;
+  margin-left: 0;
+  margin-right: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.sidebar-time-modern:hover {
+  background: linear-gradient(90deg, #c2e9fb 0%, #a1c4fd 100%);
+  box-shadow: 0 4px 24px #c2e9fb99, 0 0 16px #a1c4fdcc;
+}

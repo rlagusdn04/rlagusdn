@@ -184,17 +184,21 @@ document.addEventListener('visibilitychange', () => {
 
 // --- 사이드바 홈 옆 미니멀 시간 표시 ---
 (function(){
-  function updateSidebarTimeMinimal() {
+  function updateSidebarTimeModern() {
     const now = new Date();
     let h = now.getHours();
-    let m = now.getMinutes();
-    h = h < 10 ? '0'+h : h;
-    m = m < 10 ? '0'+m : m;
-    const el = document.getElementById('sidebar-time-minimal');
-    if (el) el.textContent = `${h}:${m}`;
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const ampm = h < 12 ? 'AM' : 'PM';
+    let h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    const pad = n => n < 10 ? '0'+n : n;
+    const timeStr = `${ampm} ${h12}:${pad(m)}:${pad(s)}`;
+    const el = document.getElementById('sidebar-time-minimal') || document.getElementById('sidebar-time-modern');
+    if (el) el.textContent = timeStr;
   }
-  setInterval(updateSidebarTimeMinimal, 1000);
-  updateSidebarTimeMinimal();
+  setInterval(updateSidebarTimeModern, 1000);
+  updateSidebarTimeModern();
 })();
 
 (function(){
