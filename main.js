@@ -142,16 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const image = new Image();
-    image.src = "../assets/ditto.png"; 
-
-    image.onload = () => {
-        console.log("Ditto image loaded successfully.");
-        requestAnimationFrame(loop);
-    };
-
-    image.onerror = () => {
-        console.error("Failed to load Ditto image at: " + image.src);
-    };
+    image.src = "../assets/ditto.png"; // Changed to relative path for local file system
 
     let isMouseDown = false;
     class Animation {
@@ -185,42 +176,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const SCALE = 0.25; 
     let isFlipped = false;
 
-    // Initialize animations after image loads
     image.onload = () => {
-      const idleFrames = [
-        { sx: 0, sy: 0, sw: 128, sh: 128 },
-        { sx: 128, sy: 0, sw: 128, sh: 128 },
-        { sx: 256, sy: 0, sw: 128, sh: 128 }
-      ];
+        console.log("Ditto image loaded successfully.");
+        const idleFrames = [
+            { sx: 0, sy: 0, sw: 128, sh: 128 },
+            { sx: 128, sy: 0, sw: 128, sh: 128 },
+            { sx: 256, sy: 0, sw: 128, sh: 128 }
+        ];
 
-      const levelUpFrames = [
-        { sx: 0, sy: 128*8, sw: 128, sh: 128 },
-        { sx: 128, sy: 128*8, sw: 128, sh: 128 },
-        { sx: 256, sy: 128*8, sw: 128, sh: 128 },
-        { sx: 128*3, sy: 128*8, sw: 128, sh: 128 },
-        { sx: 128*4, sy: 128*8, sw: 128, sh: 128 },
-        { sx: 128*5, sy: 128*8, sw: 128, sh: 128 },
-        { sx: 128*6, sy: 128*8, sw: 128, sh: 128 }
-      ];
+        const levelUpFrames = [
+            { sx: 0, sy: 128*8, sw: 128, sh: 128 },
+            { sx: 128, sy: 128*8, sw: 128, sh: 128 },
+            { sx: 256, sy: 128*8, sw: 128, sh: 128 },
+            { sx: 128*3, sy: 128*8, sw: 128, sh: 128 },
+            { sx: 128*4, sy: 128*8, sw: 128, sh: 128 },
+            { sx: 128*5, sy: 128*8, sw: 128, sh: 128 },
+            { sx: 128*6, sy: 128*8, sw: 128, sh: 128 }
+        ];
 
-      idleAnim = new Animation(idleFrames, 200);
-      levelUpAnim = new Animation(levelUpFrames, 100);
-      currentAnim = idleAnim;
+        idleAnim = new Animation(idleFrames, 200);
+        levelUpAnim = new Animation(levelUpFrames, 100);
+        currentAnim = idleAnim;
 
-      requestAnimationFrame(loop);
+        requestAnimationFrame(loop);
+    };
+
+    image.onerror = () => {
+        console.error("Failed to load Ditto image at: " + image.src);
     };
 
     document.addEventListener('mousedown', () => {
-      levelUpAnim.reset();
-      currentAnim = levelUpAnim;
-      isMouseDown = true;
-      isFlipped = !isFlipped;
+      if (levelUpAnim) {
+        levelUpAnim.reset();
+        currentAnim = levelUpAnim;
+        isMouseDown = true;
+        isFlipped = !isFlipped;
+      }
     });
 
     document.addEventListener('mouseup', () => {
-      idleAnim.reset();
-      currentAnim = idleAnim;
-      isMouseDown = false;
+      if (idleAnim) {
+        idleAnim.reset();
+        currentAnim = idleAnim;
+        isMouseDown = false;
+      }
     });
 
     function loop(timestamp) {
