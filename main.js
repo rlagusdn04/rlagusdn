@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById('mouseCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -12,7 +13,8 @@ document.addEventListener('mousemove', (e) => {
 });
 
 const image = new Image();
-image.src = "/rlagusdn.github.io/assets/ditto.png";
+// 중요: ditto.png 파일이 mydev/assets 폴더 안에 있어야 합니다.
+image.src = "assets/ditto.png"; 
 
 let isMouseDown = false;
 class Animation {
@@ -28,9 +30,6 @@ class Animation {
     if (this.timer > this.speed) {
       this.timer = 0;
       this.current = (this.current + 1) % this.frames.length;
-      if (isMouseDown && currentAnim === levelUpAnim) {
-        isFlipped = !isFlipped;
-      }
     }
   }
 
@@ -46,7 +45,7 @@ class Animation {
 
 let idleAnim, levelUpAnim, currentAnim;
 let lastTime = 0;
-const SCALE = 0.25; // 128x128 → 32x32 크기
+const SCALE = 0.25; 
 let isFlipped = false;
 
 image.onload = () => {
@@ -126,7 +125,6 @@ window.addEventListener('resize', () => {
   canvas.height = window.innerHeight;
 });
 
-// Handle visibility change to pause animation when the tab is not visible
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     currentAnim.reset();
@@ -135,98 +133,3 @@ document.addEventListener('visibilitychange', () => {
     requestAnimationFrame(loop);
   }
 });
-
-// --- Fractal 스타일 그라데이션 배경 (파스텔톤, 블러, 참고 사이트 느낌) ---
-(function(){
-  const bgCanvas = document.getElementById('bgFractal');
-  if (!bgCanvas) return;
-  const bgCtx = bgCanvas.getContext('2d');
-  let w = window.innerWidth, h = window.innerHeight;
-  function resizeBg() {
-    w = window.innerWidth;
-    h = window.innerHeight;
-    bgCanvas.width = w;
-    bgCanvas.height = h;
-  }
-  window.addEventListener('resize', resizeBg);
-  resizeBg();
-  const colors = [
-    [255, 220, 230], [210, 240, 255], [255, 255, 210],
-    [220, 255, 230], [255, 230, 210], [230, 220, 255]
-  ];
-  const blobs = Array.from({length: 7}).map((_,i)=>({
-    x: Math.random()*w, y: Math.random()*h,
-    r: 220+Math.random()*180,
-    dx: (Math.random()-0.5)*0.2, dy: (Math.random()-0.5)*0.2,
-    color: colors[i%colors.length],
-    alpha: 0.32 + Math.random()*0.18
-  }));
-  function drawFractalBg() {
-    bgCtx.clearRect(0,0,w,h);
-    blobs.forEach((b,i)=>{
-      b.x += b.dx; b.y += b.dy;
-      if(b.x<0||b.x>w) b.dx*=-1;
-      if(b.y<0||b.y>h) b.dy*=-1;
-      const grad = bgCtx.createRadialGradient(b.x, b.y, b.r*0.2, b.x, b.y, b.r);
-      grad.addColorStop(0, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha})`);
-      grad.addColorStop(1, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0)`);
-      bgCtx.beginPath();
-      bgCtx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-      bgCtx.fillStyle = grad;
-      bgCtx.filter = 'blur(32px)';
-      bgCtx.fill();
-      bgCtx.filter = 'none';
-    });
-    requestAnimationFrame(drawFractalBg);
-  }
-  requestAnimationFrame(drawFractalBg);
-})();
-
-// --- 사이드바 홈 옆 미니멀 시간 표시 ---
-(function(){
-  function updateSidebarTimeModern() {
-    const now = new Date();
-    let h = now.getHours();
-    const m = now.getMinutes();
-    const s = now.getSeconds();
-    const ampm = h < 12 ? 'AM' : 'PM';
-    let h12 = h % 12;
-    if (h12 === 0) h12 = 12;
-    const pad = n => n < 10 ? '0'+n : n;
-    const timeStr = `${ampm} ${h12}:${pad(m)}:${pad(s)}`;
-    const el = document.getElementById('sidebar-time-minimal') || document.getElementById('sidebar-time-modern');
-    if (el) el.textContent = timeStr;
-  }
-  setInterval(updateSidebarTimeModern, 1000);
-  updateSidebarTimeModern();
-})();
-
-(function(){
-  const section = document.getElementById('content-section');
-  if (!section) return;
-  const cards = section.querySelectorAll('.content-card');
-  let autoScroll = true;
-  let scrollSpeed = 0.5; // px/frame
-  function animateScroll() {
-    if (autoScroll) {
-      section.scrollLeft += scrollSpeed;
-      if (section.scrollLeft + section.offsetWidth >= section.scrollWidth - 2) {
-        section.scrollTo({left: 0, behavior: 'auto'});
-      }
-    }
-    requestAnimationFrame(animateScroll);
-  }
-  animateScroll();
-  section.addEventListener('mousedown', ()=>{autoScroll=false;});
-  section.addEventListener('touchstart', ()=>{autoScroll=false;});
-  section.addEventListener('mouseup', ()=>{autoScroll=true;});
-  section.addEventListener('mouseleave', ()=>{autoScroll=true;});
-  section.addEventListener('touchend', ()=>{autoScroll=true;});
-  cards.forEach((card, idx) => {
-    card.addEventListener('click', () => {
-      const nextIdx = (idx + 1) % cards.length;
-      const nextCard = cards[nextIdx];
-      nextCard.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
-    });
-  });
-})();
