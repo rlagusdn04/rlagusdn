@@ -172,7 +172,15 @@ spinRouletteBtn.addEventListener('click', () => {
   spinRouletteBtn.disabled = true;
   let spinCount = 0;
   const totalSpins = 30;
-  const baseDelay = 50;
+  const minDelay = 30; // 가장 빠를 때 딜레이(ms)
+  const maxDelay = 300; // 가장 느릴 때 딜레이(ms)
+
+  function easeInOut(t) {
+    // t: 0~1
+    return t < 0.5
+      ? 2 * t * t
+      : -1 + (4 - 2 * t) * t;
+  }
 
   function spinRoulette() {
     const randomIndex = Math.floor(Math.random() * menuItems.length);
@@ -186,7 +194,10 @@ spinRouletteBtn.addEventListener('click', () => {
     }
 
     if (spinCount < totalSpins) {
-      const delay = baseDelay * Math.pow(2, spinCount - 1); // 2배씩 느려짐
+      // 0~1로 정규화
+      const t = spinCount / totalSpins;
+      // 처음엔 느리게, 중간엔 빠르게, 마지막엔 다시 느리게
+      const delay = minDelay + (maxDelay - minDelay) * (1 - easeInOut(t));
       setTimeout(spinRoulette, delay);
     } else {
       spinRouletteBtn.disabled = false;
