@@ -15,6 +15,9 @@ body {
   flex-direction: column;
   align-items: center;
   cursor: none; /* 여기로 이동 */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 body.main-bg {
   background: #f5f6fa !important;
@@ -34,6 +37,9 @@ body.main-bg {
   margin-bottom: 8vh !important;
   z-index: 10;
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .container.result-mode {
@@ -585,9 +591,9 @@ canvas#mouseCanvas {
   display: flex;
   flex-wrap: nowrap;
   gap: 0;
-  justify-content: flex-start;
-  align-items: stretch;
-  min-height: 220px;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
   overflow-x: auto;
   overflow-y: visible;
   scroll-snap-type: x mandatory;
@@ -619,6 +625,12 @@ canvas#mouseCanvas {
   scroll-snap-align: center;
   opacity: 0.5;
   transform: scale(0.92);
+  min-height: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .content-card.active {
   opacity: 1;
@@ -637,4 +649,28 @@ canvas#mouseCanvas {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none !important;
+}
+
+.sidebar-home-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', 'Noto Sans KR', sans-serif !important;
+  font-size: 1.1rem;
+}
+
+.sidebar-time-minimal {
+  margin-left: 10px;
+  font-family: 'Montserrat', 'Noto Sans KR', sans-serif !important;
+  font-size: 1.08rem !important;
+  color: #222 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: none !important;
+  padding: 0 !important;
+  display: inline-block;
+  vertical-align: middle;
 }

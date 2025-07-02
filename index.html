@@ -40,6 +40,7 @@
   </style>
 </head>
 <body class="main-bg">
+  <canvas id="bgFractal" style="position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:-1;"></canvas>
   <div class="container" style="margin-bottom: 12vh !important;">
     <h1 class="main-title">Title</h1>
     <div class="options">
@@ -63,8 +64,11 @@
   <!-- 사이드바(탭) -->
   <nav id="sidebar" class="sidebar">
     <div class="sidebar-content" style="position:relative;">
-      <a href="index.html" class="sidebar-home-btn">홈으로</a>
-      <div id="sidebar-time" class="neon-time sidebar-time" style="position:absolute; left:60px; top:24px; font-size:1.1rem; min-width:60px;"></div>
+      <div style="display:flex; align-items:center;">
+        <a href="index.html" class="sidebar-home-btn">홈으로</a>
+        <span id="sidebar-time-minimal" class="sidebar-time-minimal"></span>
+      </div>
+      <div id="sidebar-time" class="neon-time sidebar-time" style="position:absolute; right:24px; top:24px; font-size:2.2rem; min-width:60px; z-index:4100;"></div>
       <div style="height: 60px;"></div>
       <div class="sidebar-music-card">
         <div class="sidebar-music-player">
@@ -84,6 +88,7 @@
   <!-- canvas 캐릭터 애니메이션 -->
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
   <script src="main.js"></script>
+  <script src="fractal-bg.js"></script>
   <script>
     // 메뉴 버튼/사이드바 동작
     const menuBtn = document.getElementById('menu-btn');

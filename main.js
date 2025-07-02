@@ -135,3 +135,60 @@ document.addEventListener('visibilitychange', () => {
     requestAnimationFrame(loop);
   }
 });
+
+// --- Fractal 스타일 그라데이션 배경 ---
+(function(){
+  const bgCanvas = document.getElementById('bgFractal');
+  if (!bgCanvas) return;
+  const bgCtx = bgCanvas.getContext('2d');
+  let w = window.innerWidth, h = window.innerHeight;
+  function resizeBg() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    bgCanvas.width = w;
+    bgCanvas.height = h;
+  }
+  window.addEventListener('resize', resizeBg);
+  resizeBg();
+  const colors = [
+    [255, 99, 132], [54, 162, 235], [255, 206, 86],
+    [75, 192, 192], [153, 102, 255], [255, 159, 64]
+  ];
+  const blobs = Array.from({length: 6}).map((_,i)=>({
+    x: Math.random()*w, y: Math.random()*h,
+    r: 320+Math.random()*120,
+    dx: (Math.random()-0.5)*0.3, dy: (Math.random()-0.5)*0.3,
+    color: colors[i]
+  }));
+  function drawFractalBg() {
+    bgCtx.clearRect(0,0,w,h);
+    blobs.forEach((b,i)=>{
+      b.x += b.dx; b.y += b.dy;
+      if(b.x<0||b.x>w) b.dx*=-1;
+      if(b.y<0||b.y>h) b.dy*=-1;
+      const grad = bgCtx.createRadialGradient(b.x, b.y, b.r*0.2, b.x, b.y, b.r);
+      grad.addColorStop(0, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0.45)`);
+      grad.addColorStop(1, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0)`);
+      bgCtx.beginPath();
+      bgCtx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      bgCtx.fillStyle = grad;
+      bgCtx.fill();
+    });
+    requestAnimationFrame(drawFractalBg);
+  }
+  requestAnimationFrame(drawFractalBg);
+})();
+// --- 사이드바 홈 옆 미니멀 시간 표시 ---
+(function(){
+  function updateSidebarTimeMinimal() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+    h = h < 10 ? '0'+h : h;
+    m = m < 10 ? '0'+m : m;
+    const el = document.getElementById('sidebar-time-minimal');
+    if (el) el.textContent = `${h}:${m}`;
+  }
+  setInterval(updateSidebarTimeMinimal, 1000);
+  updateSidebarTimeMinimal();
+})();
