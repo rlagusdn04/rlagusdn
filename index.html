@@ -64,11 +64,10 @@
   <!-- 사이드바(탭) -->
   <nav id="sidebar" class="sidebar">
     <div class="sidebar-content" style="position:relative;">
-      <div style="display:flex; align-items:center;">
+      <div style="display:flex; align-items:center; gap:18px; margin-bottom:18px;">
         <a href="index.html" class="sidebar-home-btn">홈으로</a>
         <span id="sidebar-time-minimal" class="sidebar-time-minimal"></span>
       </div>
-      <div id="sidebar-time" class="neon-time sidebar-time" style="position:absolute; right:24px; top:24px; font-size:2.2rem; min-width:60px; z-index:4100;"></div>
       <div style="height: 60px;"></div>
       <div class="sidebar-music-card">
         <div class="sidebar-music-player">
@@ -118,7 +117,6 @@
       m = m < 10 ? '0'+m : m;
       s = s < 10 ? '0'+s : s;
       document.getElementById('current-time').textContent = `${h}:${m}:${s}`;
-      document.getElementById('sidebar-time').textContent = `${h}:${m}:${s}`;
     }
     setInterval(updateTime, 1000);
     updateTime();
@@ -132,7 +130,6 @@
     function updateTimeFont() {
       const font = randomFont();
       document.getElementById('current-time').style.fontFamily = font;
-      document.getElementById('sidebar-time').style.fontFamily = font;
     }
     setInterval(updateTimeFont, 2000);
     updateTimeFont();

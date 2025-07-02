@@ -136,7 +136,7 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// --- Fractal 스타일 그라데이션 배경 ---
+// --- Fractal 스타일 그라데이션 배경 (파스텔톤, 블러, 참고 사이트 느낌) ---
 (function(){
   const bgCanvas = document.getElementById('bgFractal');
   if (!bgCanvas) return;
@@ -151,14 +151,15 @@ document.addEventListener('visibilitychange', () => {
   window.addEventListener('resize', resizeBg);
   resizeBg();
   const colors = [
-    [255, 99, 132], [54, 162, 235], [255, 206, 86],
-    [75, 192, 192], [153, 102, 255], [255, 159, 64]
+    [255, 220, 230], [210, 240, 255], [255, 255, 210],
+    [220, 255, 230], [255, 230, 210], [230, 220, 255]
   ];
-  const blobs = Array.from({length: 6}).map((_,i)=>({
+  const blobs = Array.from({length: 7}).map((_,i)=>({
     x: Math.random()*w, y: Math.random()*h,
-    r: 320+Math.random()*120,
-    dx: (Math.random()-0.5)*0.3, dy: (Math.random()-0.5)*0.3,
-    color: colors[i]
+    r: 220+Math.random()*180,
+    dx: (Math.random()-0.5)*0.2, dy: (Math.random()-0.5)*0.2,
+    color: colors[i%colors.length],
+    alpha: 0.32 + Math.random()*0.18
   }));
   function drawFractalBg() {
     bgCtx.clearRect(0,0,w,h);
@@ -167,17 +168,20 @@ document.addEventListener('visibilitychange', () => {
       if(b.x<0||b.x>w) b.dx*=-1;
       if(b.y<0||b.y>h) b.dy*=-1;
       const grad = bgCtx.createRadialGradient(b.x, b.y, b.r*0.2, b.x, b.y, b.r);
-      grad.addColorStop(0, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0.45)`);
+      grad.addColorStop(0, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha})`);
       grad.addColorStop(1, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},0)`);
       bgCtx.beginPath();
       bgCtx.arc(b.x, b.y, b.r, 0, Math.PI*2);
       bgCtx.fillStyle = grad;
+      bgCtx.filter = 'blur(32px)';
       bgCtx.fill();
+      bgCtx.filter = 'none';
     });
     requestAnimationFrame(drawFractalBg);
   }
   requestAnimationFrame(drawFractalBg);
 })();
+
 // --- 사이드바 홈 옆 미니멀 시간 표시 ---
 (function(){
   function updateSidebarTimeMinimal() {
@@ -191,4 +195,34 @@ document.addEventListener('visibilitychange', () => {
   }
   setInterval(updateSidebarTimeMinimal, 1000);
   updateSidebarTimeMinimal();
+})();
+
+(function(){
+  const section = document.getElementById('content-section');
+  if (!section) return;
+  const cards = section.querySelectorAll('.content-card');
+  let autoScroll = true;
+  let scrollSpeed = 0.5; // px/frame
+  function animateScroll() {
+    if (autoScroll) {
+      section.scrollLeft += scrollSpeed;
+      if (section.scrollLeft + section.offsetWidth >= section.scrollWidth - 2) {
+        section.scrollTo({left: 0, behavior: 'auto'});
+      }
+    }
+    requestAnimationFrame(animateScroll);
+  }
+  animateScroll();
+  section.addEventListener('mousedown', ()=>{autoScroll=false;});
+  section.addEventListener('touchstart', ()=>{autoScroll=false;});
+  section.addEventListener('mouseup', ()=>{autoScroll=true;});
+  section.addEventListener('mouseleave', ()=>{autoScroll=true;});
+  section.addEventListener('touchend', ()=>{autoScroll=true;});
+  cards.forEach((card, idx) => {
+    card.addEventListener('click', () => {
+      const nextIdx = (idx + 1) % cards.length;
+      const nextCard = cards[nextIdx];
+      nextCard.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
+    });
+  });
 })();
