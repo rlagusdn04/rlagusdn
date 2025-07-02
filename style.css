@@ -6,6 +6,14 @@
     --border-color: #e0e0e0;
 }
 
+@keyframes color-roulette {
+    0% { color: #ff8a80; }
+    25% { color: #80d8ff; }
+    50% { color: #ffff8d; }
+    75% { color: #ccff90; }
+    100% { color: var(--highlight-color); }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -19,6 +27,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    cursor: none;
 }
 
 header {
@@ -78,11 +87,15 @@ h1 {
     display: inline-block;
 }
 
+#name-highlight.animating {
+    animation: color-roulette 1.5s linear infinite;
+}
+
 #name-highlight.mosaic {
     filter: blur(10px);
     transition: filter 0.5s ease-out;
+    animation: none;
 }
-
 
 h2 {
     font-size: 2.5rem;
@@ -155,13 +168,14 @@ h2 {
     text-decoration: none;
     border-radius: 4px;
     font-weight: 600;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     border: 1px solid #222;
 }
 
 .contact-btn:hover {
     background-color: #fff;
     color: #222;
+    border-color: #222;
 }
 
 footer {
@@ -173,7 +187,7 @@ footer {
 /* Sidebar and Menu Button */
 .menu-btn {
   position: fixed;
-  top: 20px;
+  top: 15px; /* Adjusted position */
   left: 28px;
   z-index: 2000;
   background: #fff;
@@ -182,7 +196,7 @@ footer {
   border-radius: 12px;
   font-size: 2.1rem;
   padding: 8px 18px 8px 16px;
-  box-shadow: 0 2px 16px #eee, 0 0 8px #eee;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 8px rgba(0,0,0,0.05);
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
 }
@@ -190,7 +204,7 @@ footer {
 .menu-btn:hover {
   background: #f5f5f5;
   color: #111;
-  box-shadow: 0 4px 32px #ddd, 0 0 16px #eee;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.1), 0 0 16px rgba(0,0,0,0.05);
 }
 
 .sidebar {
@@ -200,7 +214,7 @@ footer {
   width: 320px;
   height: 100vh;
   background: #fff;
-  box-shadow: 4px 0 32px #eee;
+  box-shadow: 4px 0 32px rgba(0,0,0,0.1);
   transform: translateX(-100%);
   transition: transform 0.35s cubic-bezier(.77,0,.18,1);
   z-index: 3000;
@@ -283,5 +297,9 @@ footer {
 }
 
 canvas#mouseCanvas {
-    display: none; /* Remove the old canvas mouse follower */
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
 }

@@ -3,12 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Name Animation
     const nameHighlight = document.getElementById('name-highlight');
     const originalName = '김현우';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = '가나다라마바사아자차카타파하';
     let intervalId = null;
 
     function runRouletteAnimation() {
         let iteration = 0;
         clearInterval(intervalId);
+        nameHighlight.classList.add('animating');
 
         intervalId = setInterval(() => {
             nameHighlight.innerText = originalName.split('')
@@ -22,13 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if(iteration >= originalName.length){
                 clearInterval(intervalId);
+                nameHighlight.classList.remove('animating');
+                nameHighlight.innerText = originalName; // Ensure final name is correct
                 setTimeout(() => {
                     nameHighlight.classList.add('mosaic');
-                }, 500); // 모자이크 효과 전에 잠시 대기
+                }, 500);
             }
             
-            iteration += 1 / 10; // Slow down the animation
-        }, 75); // Slow down the animation
+            iteration += 1 / 10;
+        }, 100);
     }
 
     runRouletteAnimation();
@@ -50,12 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Music Player
     const musicList = [
-        {title: 'ame', src: 'Music/ame.mp3'},
-        {title: 'Heart', src: 'Music/Heart.mp3'},
-        {title: 'La nuit', src: 'Music/La nuit.mp3'},
-        {title: 'Time to Start Another Day', src: 'Music/Time to Start Another Day.mp3'},
-        {title: 'Triste', src: 'Music/Triste.mp3'},
-        {title: 'watercity', src: 'Music/watercity.mp3'}
+        {title: 'ame', src: '../Music/ame.mp3'},
+        {title: 'Heart', src: '../Music/Heart.mp3'},
+        {title: 'La nuit', src: '../Music/La nuit.mp3'},
+        {title: 'Time to Start Another Day', src: '../Music/Time to Start Another Day.mp3'},
+        {title: 'Triste', src: '../Music/Triste.mp3'},
+        {title: 'watercity', src: '../Music/watercity.mp3'}
     ];
 
     let currentMusicIdx = 3; 
@@ -88,8 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
     musicTitle.addEventListener('click', () => {
         currentMusicIdx = (currentMusicIdx + 1) % musicList.length;
         updateMusicInfo();
-        audioPlayer.play();
-        toggleBtn.textContent = '❚❚';
+        if (toggleBtn.textContent === '❚❚') {
+            audioPlayer.play();
+        }
     });
 
     toggleBtn.addEventListener('click', togglePlay);
@@ -104,8 +108,52 @@ document.addEventListener('DOMContentLoaded', () => {
         updateVolumeDisplay();
     });
 
-    // Initial setup
     updateMusicInfo();
     updateVolumeDisplay();
     audioPlayer.volume = 0.5;
+
+    // Mouse Icon Animation
+    const canvas = document.getElementById('mouseCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let mouseX = canvas.width / 2;
+    let mouseY = canvas.height / 2;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    const image = new Image();
+    image.src = "../assets/ditto.png"; 
+
+    let lastTime = 0;
+    const SCALE = 0.25; 
+
+    image.onload = () => {
+      requestAnimationFrame(loop);
+    };
+
+    function loop(timestamp) {
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const w = 128 * SCALE;
+      const h = 128 * SCALE;
+      let x = mouseX - w / 2;
+      let y = mouseY - h / 2;
+
+      ctx.drawImage(image, x, y, w, h);
+
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
 });
