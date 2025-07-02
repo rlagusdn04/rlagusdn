@@ -114,7 +114,7 @@ function showQuestion() {
   q.options.forEach(option => {
     const btn = document.createElement("button");
     btn.textContent = option;
-    btn.className = "option-btn";
+    btn.className = "utest-btn";
 
     btn.onclick = () => {
       if (Array.isArray(q.answer) && q.answer.includes(option)) {

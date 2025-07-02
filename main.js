@@ -81,6 +81,25 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
+// Language Toggle Logic
+const langToggleButton = document.getElementById('lang-toggle-btn');
+const aboutContentEn = document.getElementById('about-content-en');
+const aboutContentKo = document.getElementById('about-content-ko');
+
+langToggleButton.addEventListener('click', () => {
+  if (aboutContentEn.classList.contains('hidden')) {
+    // Currently showing Korean, switch to English
+    aboutContentEn.classList.remove('hidden');
+    aboutContentKo.classList.add('hidden');
+    langToggleButton.textContent = '한/영';
+  } else {
+    // Currently showing English, switch to Korean
+    aboutContentEn.classList.add('hidden');
+    aboutContentKo.classList.remove('hidden');
+    langToggleButton.textContent = 'Eng/Kor';
+  }
+});
+
 // Mosaic Animation Logic
 function startMosaicAnimation() {
   const heroTitle = document.querySelector('.hero-title');

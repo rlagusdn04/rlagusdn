@@ -5,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>유사도 테스트</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="utest-background-overlay"></div>
   <div class="container" id="main-container">
-    <h1>:)</h1>
-    <div id="progress" style="margin-bottom:12px; font-weight:bold; color:#4fc3f7;"></div>
+    <h1 class="utest-title">유사도 테스트</h1>
     <div id="question-box">
       <p id="question-text">질문을 불러오는 중...</p>
-      <div class="options" id="options-container"></div>
+      <div class="options-grid" id="options-container"></div>
       <div id="progress"></div>
     </div>
     <div id="result-box" style="display:none;">
       <div class="result-card">
         <h2 id="result-title">결과</h2>
         <p id="result-score"></p>
-        <div class="options">
-          <button id="retry-btn" class="option-btn">다시하기</button>
-          <button id="go-title-btn" class="option-btn">홈으로</button>
+        <div class="result-actions">
+          <button id="retry-btn" class="utest-btn">다시하기</button>
+          <button id="go-title-btn" class="utest-btn">홈으로</button>
         </div>
       </div>
     </div>

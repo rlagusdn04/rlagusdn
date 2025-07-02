@@ -228,6 +228,15 @@ body.dark-theme {
 }
 
 /* About Section */
+.about-section {
+  position: relative;
+}
+
+.lang-toggle-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 .about-content {
   display: flex;
   flex-direction: column;
@@ -235,6 +244,9 @@ body.dark-theme {
   gap: 40px;
 }
 
+.lang-content.hidden {
+  display: none;
+}
 
 .profile-image-container {
   width: 200px;
@@ -336,6 +348,215 @@ body.dark-theme {
   font-size: 1.2rem;
   color: #c0c0c0;
 }
+
+/* Utest.html specific styles */
+body.utest-page {
+  background-color: #0a0a1a; /* Darker, more mysterious background */
+  font-family: 'Noto Sans KR', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.utest-background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(10, 10, 30, 0.8), rgba(30, 0, 50, 0.8), rgba(10, 10, 30, 0.8));
+  animation: gradientAnimation 15s ease infinite;
+  background-size: 200% 200%;
+  z-index: -1;
+  opacity: 0.7;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#main-container {
+  background-color: rgba(20, 20, 40, 0.9); /* Semi-transparent dark card */
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 0 50px rgba(100, 0, 200, 0.5), 0 0 20px rgba(0, 200, 255, 0.3); /* Mystical glow */
+  max-width: 700px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(150, 50, 250, 0.5);
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.utest-title {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 3.5rem;
+  color: #e0b0ff; /* Lighter purple */
+  margin-bottom: 40px;
+  text-shadow: 0 0 15px rgba(224, 176, 255, 0.7);
+}
+
+#question-text {
+  font-size: 1.8rem;
+  color: #f0f0f0;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+#progress {
+  font-size: 1.2rem;
+  color: #a0a0a0;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.utest-btn {
+  background-color: #6a0dad; /* Deep purple */
+  color: #ffffff;
+  border: none;
+  padding: 18px 25px;
+  border-radius: 10px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
+  width: 100%;
+  text-align: center;
+}
+
+.utest-btn:hover {
+  background-color: #8a2be2; /* Lighter purple on hover */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+}
+
+.result-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.result-card {
+  background-color: rgba(30, 30, 60, 0.95);
+  border-radius: 20px;
+  padding: 50px;
+  box-shadow: 0 0 60px rgba(150, 0, 250, 0.6), 0 0 30px rgba(0, 255, 255, 0.4);
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid rgba(180, 80, 255, 0.6);
+  animation: fadeIn 1s ease-out;
+}
+
+.result-card h2 {
+  font-size: 3rem;
+  color: #e0b0ff;
+  margin-bottom: 25px;
+  text-shadow: 0 0 15px rgba(224, 176, 255, 0.7);
+}
+
+#result-score {
+  font-size: 2.5rem;
+  color: #98fb98; /* Light green for score */
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-shadow: 0 0 10px rgba(152, 251, 152, 0.7);
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Media Queries for Utest.html */
+@media (max-width: 768px) {
+  #main-container {
+    padding: 30px;
+  }
+
+  .utest-title {
+    font-size: 2.8rem;
+  }
+
+  #question-text {
+    font-size: 1.5rem;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .utest-btn {
+    font-size: 1.1rem;
+    padding: 15px 20px;
+  }
+
+  .result-card {
+    padding: 40px;
+  }
+
+  .result-card h2 {
+    font-size: 2.5rem;
+  }
+
+  #result-score {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #main-container {
+    padding: 20px;
+  }
+
+  .utest-title {
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+  }
+
+  #question-text {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  .utest-btn {
+    font-size: 1rem;
+    padding: 12px 15px;
+  }
+
+  .result-card {
+    padding: 30px;
+  }
+
+  .result-card h2 {
+    font-size: 2rem;
+  }
+
+  #result-score {
+    font-size: 1.8rem;
+  }
+}
+
 
 /* Daily Menu Roulette Section */
 .daily-menu-roulette-section {
