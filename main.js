@@ -179,6 +179,13 @@ spinRouletteBtn.addEventListener('click', () => {
     rouletteDisplay.textContent = menuItems[randomIndex];
     spinCount++;
 
+    // 스핀 인터벌이 점점 느려지도록
+    if (spinCount > totalSpins / 2) {
+      rouletteDisplay.style.transition = 'all 0.5s ease-out';
+    } else {
+      rouletteDisplay.style.transition = 'none';
+    }
+    
     if (spinCount >= totalSpins) {
       clearInterval(intervalId);
       spinRouletteBtn.disabled = false;
