@@ -173,7 +173,6 @@ spinRouletteBtn.addEventListener('click', () => {
   let spinCount = 0;
   const totalSpins = 30;
   const baseDelay = 50;
-  const delayIncrement = 18; // 회전이 느려지는 정도
 
   function spinRoulette() {
     const randomIndex = Math.floor(Math.random() * menuItems.length);
@@ -187,7 +186,7 @@ spinRouletteBtn.addEventListener('click', () => {
     }
 
     if (spinCount < totalSpins) {
-      const delay = baseDelay + spinCount * delayIncrement;
+      const delay = baseDelay * Math.pow(2, spinCount - 1); // 2배씩 느려짐
       setTimeout(spinRoulette, delay);
     } else {
       spinRouletteBtn.disabled = false;
