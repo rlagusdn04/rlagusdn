@@ -92,40 +92,54 @@ function startMosaicAnimation() {
   function applyMosaic(element, originalText) {
     let currentText = originalText.split('');
     let maskedIndices = new Set();
+    let isMasked = false;
 
     function updateText() {
-      const numToMask = Math.floor(Math.random() * 5) + 1; // 1 to 5 characters
-      let availableIndices = [];
-      for (let i = 0; i < originalText.length; i++) {
-        if (!maskedIndices.has(i)) {
-          availableIndices.push(i);
-        }
-      }
-
-      if (availableIndices.length === 0) {
-        // All characters are masked, reset
+      if (isMasked) {
+        // Revert to original
         currentText = originalText.split('');
         maskedIndices.clear();
-        element.innerHTML = currentText.join('');
-        return;
-      }
+        isMasked = false;
+      } else {
+        // Apply mosaic
+        const numToMask = Math.floor(Math.random() * 4) + 1; // 1 to 4 characters
+        let availableIndices = [];
+        for (let i = 0; i < originalText.length; i++) {
+          if (originalText[i] !== ' ' && !maskedIndices.has(i)) { // Don't mask spaces
+            availableIndices.push(i);
+          }
+        }
 
-      for (let i = 0; i < numToMask; i++) {
-        if (availableIndices.length === 0) break;
-        const randomIndex = Math.floor(Math.random() * availableIndices.length);
-        const charIndex = availableIndices.splice(randomIndex, 1)[0];
-        currentText[charIndex] = '█'; // Mosaic character
-        maskedIndices.add(charIndex);
+        if (availableIndices.length === 0) {
+          // All characters are masked or no non-space characters, reset
+          currentText = originalText.split('');
+          maskedIndices.clear();
+          element.innerHTML = currentText.join('');
+          isMasked = false;
+          return;
+        }
+
+        for (let i = 0; i < numToMask; i++) {
+          if (availableIndices.length === 0) break;
+          const randomIndex = Math.floor(Math.random() * availableIndices.length);
+          const charIndex = availableIndices.splice(randomIndex, 1)[0];
+          currentText[charIndex] = '█'; // Mosaic character
+          maskedIndices.add(charIndex);
+        }
+        isMasked = true;
       }
       element.innerHTML = currentText.join('');
     }
 
-    setInterval(updateText, 500); // Update every 0.5 seconds
+    setInterval(updateText, 300); // Update every 0.3 seconds
   }
 
   applyMosaic(heroTitle, originalTitle);
   applyMosaic(heroSubtitle, originalSubtitle);
 }
+
+// Call the animation function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', startMosaicAnimation);
 
 // Book List Logic
 const toggleBookListBtn = document.getElementById('toggle-book-list');
@@ -142,7 +156,7 @@ toggleBookListBtn.addEventListener('click', () => {
 
 // Daily Menu Roulette Logic
 const menuItems = [
-  '초밥', '피자', '김치찌개', '비빔밥', '떡볶이', '라면과 김밥', '치킨', '햄버거', '파스타', '리조또', '족발', '돈까스', '갈비', '라멘', '아구찜', '칼국수'
+  '삼겹살', '치킨', '라면', '초밥', '김치찌개', '떡볶이', '족발', '라멘', '리조또', '제육볶음', '감자탕', '갈비탕', '갈비', '돈까스', '냉면', '햄버거', '피자', '파스타', '우동', '생선구이', '게장', '백반'
 ];
 const rouletteDisplay = document.getElementById('roulette-display');
 const spinRouletteBtn = document.getElementById('spin-roulette');
