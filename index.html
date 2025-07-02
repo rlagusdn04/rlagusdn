@@ -1,14 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>John Doe - Developer</title>
+    <title>김현우 - Developer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="mouseCanvas"></canvas>
+
+    <!-- Menu Button -->
+    <button id="menu-btn" class="menu-btn">☰</button>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-music-card">
+                <div class="sidebar-music-player">
+                    <h3 class="sidebar-music-title">Music Player</h3>
+                    <span class="sidebar-music-info" id="sidebar-music-title" style="cursor:pointer;">Track Title</span>
+                    <div class="sidebar-music-controls">
+                        <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지">▶</button>
+                        <button class="sidebar-vol-btn" id="sidebar-vol-down">-</button>
+                        <span id="sidebar-vol-value">50%</span>
+                        <button class="sidebar-vol-btn" id="sidebar-vol-up">+</button>
+                    </div>
+                    <audio class="sidebar-audio-player" id="sidebar-audio-player" src="../Music/Time to Start Another Day.mp3"></audio>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <header>
         <nav>
@@ -21,13 +42,13 @@
 
     <main>
         <section id="hero">
-            <h1>안녕하세요, <span class="highlight">김현우</span>입니다.</h1>
-            <p>문제를 해결하는 것을 즐기는 개발자입니다.</p>
+            <h1>안녕하세요, <span class="highlight" id="name-highlight">김현우</span>입니다.</h1>
+            <p>###</p>
         </section>
 
         <section id="about">
             <h2>About Me</h2>
-            <p>저는 사용자에게 최고의 경험을 제공하는 것에 열정을 가진 웹 개발자입니다. 기술을 통해 아이디어를 현실로 만드는 과정을 사랑하며, 항상 새로운 기술을 배우고 성장하기 위해 노력합니다.</p>
+            <p>2004.12.28 안녕하세요, 김현우입니다.</p>
         </section>
 
         <section id="projects">
@@ -65,38 +86,34 @@
             <div class="skill-category">
                 <h3>Languages</h3>
                 <ul>
-                    <li>JavaScript (ES6+)</li>
-                    <li>HTML5</li>
-                    <li>CSS3</li>
-                </ul>
-            </div>
-            <div class="skill-category">
-                <h3>Frameworks & Libraries</h3>
-                <ul>
-                    <li>React</li>
-                    <li>Node.js</li>
-                    <li>Express</li>
+                    <li>Python</li>
+                    <li>Java</li>
+                    <li>Solidity</li>
+                    <li>C++</li>
+                    <li>R</li>
                 </ul>
             </div>
             <div class="skill-category">
                 <h3>Tools</h3>
                 <ul>
-                    <li>Git & GitHub</li>
-                    <li>Webpack</li>
+                    <li>Git</li>
+                    <li>VS Code</li>
                     <li>Figma</li>
+                    <li>Firebase</li>
                 </ul>
             </div>
         </section>
 
         <section id="contact">
             <h2>Contact</h2>
-            <p>언제든 편하게 연락주세요.</p>
-            <a href="mailto:rlagusdn04@korea.ac.kr" class="contact-btn">rlagusdn04@korea.ac.kr</a>
+            <p>Email: rlagusdn04@korea.ac.kr</p>
+            <p>Phone: 010-6756-2344</p>
+            <a href="https://github.com/rlagusdn04" target="_blank" class="contact-btn">GitHub</a>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 John Doe. All Rights Reserved.</p>
+        <p>&copy; 2024 김현우. All Rights Reserved.</p>
     </footer>
 
     <script src="main.js"></script>

@@ -1,135 +1,111 @@
+document.addEventListener('DOMContentLoaded', () => {
 
-const canvas = document.getElementById('mouseCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    // Name Animation
+    const nameHighlight = document.getElementById('name-highlight');
+    const originalName = '김현우';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let intervalId = null;
 
-let mouseX = canvas.width / 2;
-let mouseY = canvas.height / 2;
+    function runRouletteAnimation() {
+        let iteration = 0;
+        clearInterval(intervalId);
 
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
-
-const image = new Image();
-// 중요: ditto.png 파일이 mydev/assets 폴더 안에 있어야 합니다.
-image.src = "assets/ditto.png"; 
-
-let isMouseDown = false;
-class Animation {
-  constructor(frames, speed) {
-    this.frames = frames;
-    this.speed = speed;
-    this.current = 0;
-    this.timer = 0;
-  }
-
-  update(dt) {
-    this.timer += dt;
-    if (this.timer > this.speed) {
-      this.timer = 0;
-      this.current = (this.current + 1) % this.frames.length;
+        intervalId = setInterval(() => {
+            nameHighlight.innerText = originalName.split('')
+                .map((letter, index) => {
+                    if(index < iteration) {
+                        return originalName[index];
+                    }
+                    return chars[Math.floor(Math.random() * chars.length)]
+                })
+                .join('');
+            
+            if(iteration >= originalName.length){
+                clearInterval(intervalId);
+                setTimeout(() => {
+                    nameHighlight.classList.add('mosaic');
+                }, 500); // 모자이크 효과 전에 잠시 대기
+            }
+            
+            iteration += 1 / 3;
+        }, 40);
     }
-  }
 
-  getFrame() {
-    return this.frames[this.current];
-  }
+    runRouletteAnimation();
 
-  reset() {
-    this.current = 0;
-    this.timer = 0;
-  }
-}
+    // Sidebar
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
 
-let idleAnim, levelUpAnim, currentAnim;
-let lastTime = 0;
-const SCALE = 0.25; 
-let isFlipped = false;
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('open');
+    });
 
-image.onload = () => {
-  const idleFrames = [
-    { sx: 0, sy: 0, sw: 128, sh: 128 },
-    { sx: 128, sy: 0, sw: 128, sh: 128 },
-    { sx: 256, sy: 0, sw: 128, sh: 128 }
-  ];
+    document.addEventListener('click', (e) => {
+        if (!sidebar.contains(e.target) && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+        }
+    });
 
-  const levelUpFrames = [
-    { sx: 0, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 128, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 256, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 128*3, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 128*4, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 128*5, sy: 128*8, sw: 128, sh: 128 },
-    { sx: 128*6, sy: 128*8, sw: 128, sh: 128 }
-  ];
+    // Music Player
+    const musicList = [
+        {title: 'ame', src: '../Music/ame.mp3'},
+        {title: 'Heart', src: '../Music/Heart.mp3'},
+        {title: 'La nuit', src: '../Music/La nuit.mp3'},
+        {title: 'Time to Start Another Day', src: '../Music/Time to Start Another Day.mp3'},
+        {title: 'Triste', src: '../Music/Triste.mp3'},
+        {title: 'watercity', src: '../Music/watercity.mp3'}
+    ];
 
-  idleAnim = new Animation(idleFrames, 200);
-  levelUpAnim = new Animation(levelUpFrames, 100);
-  currentAnim = idleAnim;
+    let currentMusicIdx = 3; 
+    const audioPlayer = document.getElementById('sidebar-audio-player');
+    const musicTitle = document.getElementById('sidebar-music-title');
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const volDownBtn = document.getElementById('sidebar-vol-down');
+    const volUpBtn = document.getElementById('sidebar-vol-up');
+    const volValue = document.getElementById('sidebar-vol-value');
 
-  requestAnimationFrame(loop);
-};
+    function updateMusicInfo() {
+        musicTitle.textContent = musicList[currentMusicIdx].title;
+        audioPlayer.src = musicList[currentMusicIdx].src;
+    }
 
-document.addEventListener('mousedown', () => {
-  levelUpAnim.reset();
-  currentAnim = levelUpAnim;
-  isMouseDown = true;
-  isFlipped = !isFlipped;
-});
+    function togglePlay() {
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+            toggleBtn.textContent = '❚❚';
+        } else {
+            audioPlayer.pause();
+            toggleBtn.textContent = '▶';
+        }
+    }
 
-document.addEventListener('mouseup', () => {
-  idleAnim.reset();
-  currentAnim = idleAnim;
-  isMouseDown = false;
-});
+    function updateVolumeDisplay() {
+        volValue.textContent = `${Math.round(audioPlayer.volume * 100)}%`;
+    }
 
-function loop(timestamp) {
-  const dt = timestamp - lastTime;
-  lastTime = timestamp;
+    musicTitle.addEventListener('click', () => {
+        currentMusicIdx = (currentMusicIdx + 1) % musicList.length;
+        updateMusicInfo();
+        audioPlayer.play();
+        toggleBtn.textContent = '❚❚';
+    });
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    toggleBtn.addEventListener('click', togglePlay);
 
-  currentAnim.update(dt);
-  const frame = currentAnim.getFrame();
+    volDownBtn.addEventListener('click', () => {
+        audioPlayer.volume = Math.max(0, audioPlayer.volume - 0.1);
+        updateVolumeDisplay();
+    });
 
-  const w = frame.sw * SCALE;
-  const h = frame.sh * SCALE;
-  let x = mouseX - w / 2;
-  let y = mouseY - h / 2;
+    volUpBtn.addEventListener('click', () => {
+        audioPlayer.volume = Math.min(1, audioPlayer.volume + 0.1);
+        updateVolumeDisplay();
+    });
 
-  ctx.save();
-  if (isFlipped) {
-    ctx.translate(mouseX, mouseY);
-    ctx.scale(-1, 1);
-    ctx.drawImage(
-      image,
-      frame.sx, frame.sy, frame.sw, frame.sh,
-      -w / 2, -h / 2, w, h
-    );
-  } else {
-    ctx.drawImage(
-      image,
-      frame.sx, frame.sy, frame.sw, frame.sh,
-      x, y, w, h
-    );
-  }
-  ctx.restore();
-
-  requestAnimationFrame(loop);
-}
-
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    currentAnim.reset();
-  } else {
-    lastTime = performance.now();
-    requestAnimationFrame(loop);
-  }
+    // Initial setup
+    updateMusicInfo();
+    updateVolumeDisplay();
+    audioPlayer.volume = 0.5;
 });

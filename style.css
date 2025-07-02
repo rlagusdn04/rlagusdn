@@ -1,4 +1,3 @@
-
 :root {
     --bg-color: #ffffff;
     --text-color: #1a1a1a;
@@ -18,17 +17,8 @@ body {
     color: var(--text-color);
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
     line-height: 1.6;
-    cursor: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-canvas#mouseCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
 }
 
 header {
@@ -84,7 +74,15 @@ h1 {
 
 .highlight {
     color: var(--highlight-color);
+    position: relative;
+    display: inline-block;
 }
+
+#name-highlight.mosaic {
+    filter: blur(10px);
+    transition: filter 0.5s ease-out;
+}
+
 
 h2 {
     font-size: 2.5rem;
@@ -144,8 +142,13 @@ h2 {
     border: 1px solid var(--border-color);
 }
 
+#contact p {
+    margin-bottom: 0.5rem;
+}
+
 .contact-btn {
     display: inline-block;
+    margin-top: 1rem;
     padding: 1rem 2rem;
     background-color: var(--highlight-color);
     color: white;
@@ -163,4 +166,120 @@ footer {
     text-align: center;
     padding: 2rem;
     border-top: 1px solid var(--border-color);
+}
+
+/* Sidebar and Menu Button */
+.menu-btn {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  z-index: 2000;
+  background: #fff;
+  color: #222;
+  border: none;
+  border-radius: 12px;
+  font-size: 2.1rem;
+  padding: 8px 18px 8px 16px;
+  box-shadow: 0 2px 16px #eee, 0 0 8px #eee;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.menu-btn:hover {
+  background: #f5f5f5;
+  color: #111;
+  box-shadow: 0 4px 32px #ddd, 0 0 16px #eee;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: 4px 0 32px #eee;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-content {
+  padding: 38px 28px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+}
+
+.sidebar-music-card {
+  background: #f9f9f9;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px #eee;
+  padding: 28px 20px 20px 20px;
+  margin-bottom: 24px;
+  text-align: left;
+  border: 1.5px solid #eee;
+  width: 100%;
+}
+
+.sidebar-music-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 16px;
+}
+
+.sidebar-music-info {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.sidebar-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  justify-content: flex-start;
+}
+
+.sidebar-music-controls button {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-music-controls button:hover {
+  background-color: var(--highlight-color);
+  color: #fff;
+}
+
+#sidebar-vol-value {
+    min-width: 35px;
+    text-align: center;
+    font-weight: 600;
+}
+
+canvas#mouseCanvas {
+    display: none; /* Remove the old canvas mouse follower */
 }
