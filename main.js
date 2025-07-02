@@ -100,6 +100,14 @@ langToggleButton.addEventListener('click', () => {
   }
 });
 
+// Initial language setup on page load
+document.addEventListener('DOMContentLoaded', () => {
+  // Ensure English content is visible and Korean is hidden by default
+  aboutContentEn.classList.remove('hidden');
+  aboutContentKo.classList.add('hidden');
+  langToggleButton.textContent = '한/영'; // Set initial button text
+});
+
 // Mosaic Animation Logic
 function startMosaicAnimation() {
   const heroTitle = document.querySelector('.hero-title');
