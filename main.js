@@ -45,13 +45,9 @@ updateVolume();
 
 // Auto-play on user interaction (if allowed by browser)
 document.addEventListener('DOMContentLoaded', () => {
-  // Attempt to play after a short delay to allow user interaction
-  setTimeout(() => {
-    audioPlayer.play().catch(error => {
-      console.log('Autoplay prevented:', error);
-      // Optionally, show a play button to the user if autoplay fails
-    });
-  }, 500);
+  audioPlayer.play().catch(error => {
+    console.log('Autoplay prevented:', error);
+  });
 });
 
 // Shuffle music on title click
