@@ -864,3 +864,14 @@ body.utest-page {
     font-size: 1.1rem;
   }
 }
+
+.award-list {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.award-item {
+  margin-bottom: 10px;
+  font-size: 1.08em;
+  letter-spacing: 0.5px;
+  padding-left: 2px;
+}
