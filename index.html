@@ -3,42 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Dev Page</title>
+  <title>Title</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* 사이드바 홈 버튼 작고 심플하게 */
+    .sidebar-home-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+      height: 38px;
+      font-size: 1.1rem;
+      background: #a9d6c8;
+      color: #222;
+      border: none;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px #b2ebf2;
+      margin-bottom: 18px;
+      margin-top: 10px;
+      margin-left: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: background 0.18s, box-shadow 0.18s;
+      padding: 0 18px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 4000;
+    }
+    .sidebar-home-btn:hover {
+      background: #89c9b8;
+      color: #111;
+      box-shadow: 0 4px 16px #a9d6c8;
+    }
+  </style>
 </head>
-<body>
-  <canvas id="bgFractal"></canvas>
+<body class="main-bg">
+  <canvas id="bgFractal" style="position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:-1;"></canvas>
+  <div class="container" style="margin-bottom: 12vh !important;">
+    <h1 class="main-title">Title</h1>
+    <div class="options">
+      <a href="https://github.com/rlagusdn04" class="option-btn" target="_blank">🔗 GitHub 이동</a>
+      <a href="#" class="option-btn">🎵 음원 추출하기 (준비중)</a>
+      <a href="#" class="option-btn">🗂️ 파일 변환 (준비중)</a>
+      <a href="game.html" class="option-btn"> 유사도</a>
+      <a href="#" class="option-btn"> bot 실행 (준비중)</a>
+    </div>
+  </div>
+
+  <!-- 메인 카드와 about me 사이에 자료 섹션 -->
+  <section id="content-section" class="no-scrollbar">
+    <div class="content-card">여기에 자료가 들어갑니다 1</div>
+    <div class="content-card">여기에 자료가 들어갑니다 2</div>
+    <div class="content-card">여기에 자료가 들어갑니다 3</div>
+  </section>
 
   <!-- 왼쪽 상단 메뉴 버튼 -->
   <button id="menu-btn" class="menu-btn">☰</button>
   <!-- 사이드바(탭) -->
   <nav id="sidebar" class="sidebar">
-    <div class="sidebar-content">
-      <div class="sidebar-header">
+    <div class="sidebar-content" style="position:relative;">
+      <div style="display:flex; align-items:center; gap:32px; margin-bottom:18px;">
         <a href="index.html" class="sidebar-home-btn">홈으로</a>
-        <span id="sidebar-time-modern" class="sidebar-time-modern"></span>
+        <span id="sidebar-time-minimal" class="sidebar-time-modern"></span>
       </div>
-      <div class="sidebar-spacer"></div>
+      <div style="height: 60px;"></div>
       <div class="sidebar-music-card">
         <div class="sidebar-music-player">
           <span class="sidebar-music-info" id="sidebar-music-title" style="cursor:pointer;">Unwaved Heart</span>
           <div class="sidebar-music-controls">
-            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지"></button>
-            <button class="sidebar-vol-btn" id="sidebar-vol-down">-</button>
-            <span id="sidebar-vol-value">50%</span>
-            <button class="sidebar-vol-btn" id="sidebar-vol-up">+</button>
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="재생/정지" style="background:#111; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:none;"></button>
+            <button class="sidebar-vol-btn" id="sidebar-vol-down" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:10px;">-</button>
+            <span id="sidebar-vol-value" style="margin:0 6px; font-size:1.05rem; color:#222; min-width:32px; display:inline-block; text-align:center;">50%</span>
+            <button class="sidebar-vol-btn" id="sidebar-vol-up" style="background:#fff; color:#111; border-radius:50%; width:32px; height:32px; font-size:1.1rem; border:1px solid #ddd; margin-left:4px;">+</button>
           </div>
-          <audio class="sidebar-audio-player" id="sidebar-audio-player" src="../Music/Time to Start Another Day.mp3"></audio>
+          <audio class="sidebar-audio-player" id="sidebar-audio-player" src="Music/Time to Start Another Day.mp3"></audio>
         </div>
       </div>
     </div>
   </nav>
-  <div id="current-time" class="neon-time"></div>
-
+  <div id="current-time" class="neon-time" style="left:30px; top:30px; right:auto; position:fixed;"></div>
   <!-- canvas 캐릭터 애니메이션 -->
   <canvas id="mouseCanvas" width="600" height="600"></canvas>
-
   <script src="main.js"></script>
+  <script src="fractal-bg.js"></script>
   <script>
     // 메뉴 버튼/사이드바 동작
     const menuBtn = document.getElementById('menu-btn');
@@ -58,7 +107,6 @@
     sidebar.addEventListener('click', (e) => {
       e.stopPropagation();
     });
-
     // 시계: 시/분/초까지 표시, 사이드바와 화면에 각각 표시
     function updateTime() {
       const now = new Date();
@@ -69,11 +117,9 @@
       m = m < 10 ? '0'+m : m;
       s = s < 10 ? '0'+s : s;
       document.getElementById('current-time').textContent = `${h}:${m}:${s}`;
-      document.getElementById('sidebar-time-modern').textContent = `${h}:${m}:${s}`;
     }
     setInterval(updateTime, 1000);
     updateTime();
-
     // 시간 폰트 랜덤 변경
     const timeFonts = [
       'Segoe UI', 'Noto Sans KR', 'Montserrat', 'Nanum Gothic', 'Orbitron', 'Do Hyeon', 'Jua', 'Black Han Sans', 'Gugi', 'Sunflower', 'Poor Story', 'East Sea Dokdo', 'Diphylleia', 'Gamja Flower', 'Indie Flower', 'cursive'
@@ -87,15 +133,14 @@
     }
     setInterval(updateTimeFont, 2000);
     updateTimeFont();
-
     // 음악 리스트 및 셔플/제목 표시 기능 추가
     const musicList = [
-      {title: 'Heart', src: '../Music/Heart.mp3'},
-      {title: 'ame', src: '../Music/ame.mp3'},
-      {title: 'La nuit', src: '../Music/La nuit.mp3'},
-      {title: 'Time to Start Another Day', src: '../Music/Time to Start Another Day.mp3'},
-      {title: 'Triste', src: '../Music/Triste.mp3'},
-      {title: 'watercity', src: '../Music/watercity.mp3'}
+      {title: 'Heart', src: 'Music/Heart.mp3'},
+      {title: 'ame', src: 'Music/ame.mp3'},
+      {title: 'La nuit', src: 'Music/La nuit.mp3'},
+      {title: 'Time to Start Another Day', src: 'Music/Time to Start Another Day.mp3'},
+      {title: 'Triste', src: 'Music/Triste.mp3'},
+      {title: 'watercity', src: 'Music/watercity.mp3'}
     ];
     let currentMusicIdx = 3; // Time to Start Another Day
     const sidebarAudio = document.getElementById('sidebar-audio-player');
@@ -114,7 +159,6 @@
       sidebarAudio.play();
     });
     updateMusicInfo();
-
     // 음악 컨트롤 기능 (사이드바, 토글/볼륨)
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     const sidebarVolDown = document.getElementById('sidebar-vol-down');
@@ -124,7 +168,8 @@
     sidebarAudio.volume = 0.5;
     let isPlaying = false;
     function updateToggleBtn() {
-      sidebarToggleBtn.textContent = isPlaying ? '❚❚' : '▶';
+      sidebarToggleBtn.textContent = '';
+      sidebarToggleBtn.style.background = isPlaying ? '#222' : '#bbb';
     }
     function updateVolValue() {
       sidebarVolValue.textContent = Math.round(sidebarAudio.volume * 100) + '%';
@@ -154,11 +199,103 @@
     });
     updateToggleBtn();
     updateVolValue();
-
+    // 자료 카드 스크롤 시 active 애니메이션 적용
+    function updateActiveCard() {
+      const section = document.getElementById('content-section');
+      const cards = section.querySelectorAll('.content-card');
+      const sectionRect = section.getBoundingClientRect();
+      let minDiff = Infinity, activeIdx = 0;
+      cards.forEach((card, idx) => {
+        const rect = card.getBoundingClientRect();
+        const diff = Math.abs((rect.left + rect.right) / 2 - (sectionRect.left + sectionRect.right) / 2);
+        if (diff < minDiff) {
+          minDiff = diff;
+          activeIdx = idx;
+        }
+      });
+      cards.forEach((card, idx) => {
+        if (idx === activeIdx) card.classList.add('active');
+        else card.classList.remove('active');
+      });
+    }
+    const contentSection = document.getElementById('content-section');
+    contentSection.addEventListener('scroll', () => {
+      window.requestAnimationFrame(updateActiveCard);
+    });
+    window.addEventListener('resize', updateActiveCard);
+    window.addEventListener('DOMContentLoaded', updateActiveCard);
+    // 마우스 드래그/터치로 좌우 스크롤
+    let isDown = false;
+    let startX, scrollLeft;
+    contentSection.addEventListener('mousedown', (e) => {
+      isDown = true;
+      contentSection.classList.add('dragging');
+      startX = e.pageX - contentSection.offsetLeft;
+      scrollLeft = contentSection.scrollLeft;
+    });
+    contentSection.addEventListener('mouseleave', () => {
+      isDown = false;
+      contentSection.classList.remove('dragging');
+    });
+    contentSection.addEventListener('mouseup', () => {
+      isDown = false;
+      contentSection.classList.remove('dragging');
+    });
+    contentSection.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - contentSection.offsetLeft;
+      const walk = (x - startX) * 1.2; // 스크롤 속도 조절
+      contentSection.scrollLeft = scrollLeft - walk;
+    });
+    // 터치 지원
+    let touchStartX = 0, touchScrollLeft = 0;
+    contentSection.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].pageX;
+      touchScrollLeft = contentSection.scrollLeft;
+    });
+    contentSection.addEventListener('touchmove', (e) => {
+      const x = e.touches[0].pageX;
+      const walk = (x - touchStartX) * 1.2;
+      contentSection.scrollLeft = touchScrollLeft - walk;
+    });
     // 자동재생 시도
     setTimeout(() => {
       sidebarAudio.play().catch(()=>{});
     }, 300);
+    // 자료 카드 클릭 시 옆 카드로 부드럽게 이동
+    const cards = contentSection.querySelectorAll('.content-card');
+    cards.forEach((card, idx) => {
+      card.addEventListener('click', () => {
+        const nextIdx = idx + 1 < cards.length ? idx + 1 : 0;
+        const nextCard = cards[nextIdx];
+        nextCard.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
+      });
+    });
   </script>
+
+  <!-- ABOUT ME는 Classic만 남김 -->
+  <section id="about-section">
+    <div class="about-card concept1">
+      <div class="profile-img">
+        <img src="assets/profile.jpg" alt="프로필 이미지">
+      </div>
+      <div class="profile-info">
+        <h2>ABOUT ME - Classic</h2>
+        <ul>
+          <li><strong>이름:</strong> 김현우</li>
+          <li><strong>생년월일:</strong> 2004.12.28</li>
+          <li><strong>연락처:</strong> 010-6756-2344</li>
+          <li><strong>이메일:</strong> rlagusdn04@korea.ac.kr</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <div class="section-fade"></div>
+  <section id="content-section" class="no-scrollbar">
+  </section>
+  <div class="section-fade-up"></div>
+  <section id="about-section" style="margin-top: 160px !important;">
+  </section>
 </body>
 </html>
