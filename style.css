@@ -30,6 +30,15 @@ body {
     cursor: none;
 }
 
+#background-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
 header {
     position: fixed;
     width: 100%;
@@ -61,6 +70,8 @@ main {
     padding: 8rem 2rem 2rem;
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 section {
