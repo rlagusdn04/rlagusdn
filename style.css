@@ -1,7 +1,7 @@
 :root {
     --bg-color: #ffffff;
     --text-color: #1a1a1a;
-    --highlight-color: #007BFF; 
+    --highlight-color: #a9d6c8; 
     --card-bg-color: #f5f5f5;
     --border-color: #e0e0e0;
 }
@@ -150,16 +150,18 @@ h2 {
     display: inline-block;
     margin-top: 1rem;
     padding: 1rem 2rem;
-    background-color: var(--highlight-color);
+    background-color: #222;
     color: white;
     text-decoration: none;
     border-radius: 4px;
     font-weight: 600;
     transition: background-color 0.3s;
+    border: 1px solid #222;
 }
 
 .contact-btn:hover {
-    background-color: #0056b3;
+    background-color: #fff;
+    color: #222;
 }
 
 footer {
@@ -171,7 +173,7 @@ footer {
 /* Sidebar and Menu Button */
 .menu-btn {
   position: fixed;
-  top: 28px;
+  top: 20px;
   left: 28px;
   z-index: 2000;
   background: #fff;

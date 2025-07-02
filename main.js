@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 500); // 모자이크 효과 전에 잠시 대기
             }
             
-            iteration += 1 / 3;
-        }, 40);
+            iteration += 1 / 10; // Slow down the animation
+        }, 75); // Slow down the animation
     }
 
     runRouletteAnimation();
@@ -50,12 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Music Player
     const musicList = [
-        {title: 'ame', src: '../Music/ame.mp3'},
-        {title: 'Heart', src: '../Music/Heart.mp3'},
-        {title: 'La nuit', src: '../Music/La nuit.mp3'},
-        {title: 'Time to Start Another Day', src: '../Music/Time to Start Another Day.mp3'},
-        {title: 'Triste', src: '../Music/Triste.mp3'},
-        {title: 'watercity', src: '../Music/watercity.mp3'}
+        {title: 'ame', src: 'Music/ame.mp3'},
+        {title: 'Heart', src: 'Music/Heart.mp3'},
+        {title: 'La nuit', src: 'Music/La nuit.mp3'},
+        {title: 'Time to Start Another Day', src: 'Music/Time to Start Another Day.mp3'},
+        {title: 'Triste', src: 'Music/Triste.mp3'},
+        {title: 'watercity', src: 'Music/watercity.mp3'}
     ];
 
     let currentMusicIdx = 3; 
