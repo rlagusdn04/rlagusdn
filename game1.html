@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>유사도 테스트</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container" id="main-container">
+    <h1>유사도 테스트</h1>
+    <div id="progress" style="margin-bottom:12px; font-weight:bold; color:#4fc3f7;"></div>
+    <div id="question-box">
+      <p id="question-text">질문을 불러오는 중...</p>
+      <div class="options" id="options-container"></div>
+      <div id="progress"></div>
+    </div>
+    <div id="result-box" style="display:none;">
+      <div class="result-card">
+        <h2 id="result-title">결과</h2>
+        <p id="result-score"></p>
+        <div class="options">
+          <button id="retry-btn" class="option-btn">다시하기</button>
+          <button id="go-title-btn" class="option-btn">홈으로</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const quiz = [
+      {
+        question: "추억을 떠올리는 감각은?",
+        options: ["냄새", "소리", "촉각(온도, 질감)", "미각"],
+        answer: ["촉각", "소리"]
+      },
+      {
+        question: "가장 그리운 시절은?",
+        options: ["걱정 없던 어린 시절", "자각 없이 지나간 어느 때", "후회가 많던 순간들", "지금 이 무렵"],
+        answer: ["자각 없이 지나간 어느 때", "지금 이 무렵"]
+      },
+      {
+        question: "좋아하는 날씨는?",
+        options: ["맑음", "비", "눈", "흐림"],
+        answer: ["맑음"]
+      },
+      {
+        question: "선호하는 시간의 체감은?",
+        options: ["여유로움", "뿌듯함", "자유로움", "일상적임"],
+        answer: ["여유로움", "자유로움"]
+      },
+      {
+        question: "편한 대화 상대는?",
+        options: [
+          "서로의 침묵도 편안한 사람",
+          "활기차고 즐거운 분위기의 사람",
+          "무슨 생각인지 알기 어려운 사람",
+          "익숙하고 반복되는 이야기의 사람",
+        ],
+        answer: ["서로의 침묵도 편안한 사람", "무슨 생각인지 알기 어려운 사람"]
+      },
+      {
+        question: "당신이 가장 좋아하는 빛은?",
+        options: ["햇빛", "달빛", "형광등 불빛", "촛불, 모닥불"],
+        answer: ["햇빛", "달빛"]
+      },
+      {
+        question: "지쳤을 때 찾는 것은?",
+        options: ["위로해줄 누군가", "치유받는 장소", "즐거움, 쾌락", "혼자만의 시간"],
+        answer: ["혼자만의 시간", "치유받는 장소"]
+      },
+      {
+        question: "지금 가장 필요한 감정은?",
+        options: ["위로", "자극", "안정", "몰입"],
+        answer: ["안정", "몰입"]
+      },
+      {
+        question: "기억을 선명하게 만드는 것은?",
+        options: ["날씨", "사진", "익숙한 장소", "꿈"],
+        answer: ["꿈", "날씨"]
+      },
+      {
+        question: "가장 좋아하는 계절은?",
+        options: ["봄", "여름", "가을", "겨울"],
+        answer: ["가을", "봄"]
+      },
+      {
+        question: "당신의 이상적인 휴식은?",
+        options: ["자연 속에서의 시간", "도시의 소음 속에서의 시간", "조용한 방 안에서의 시간", "사람들과의 소통"],
+        answer: ["자연 속에서의 시간", "조용한 방 안에서의 시간"]
+      },
+      {
+        question: "당신이 자주 가는 장소는?",
+        options: ["노래방", "카페", "운동 시설", "도서관"],
+        answer: ""
+      },
+      {
+        question: "글을 쓴다면",
+        options: ["일기", "시", "소설", "편지"],
+        answer: ["일기", "편지"]
+      }
+   
+
+    ];
+
+    // Fisher-Yates shuffle 함수 추가
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    let current = 0;
+    let score = 0;
+    let quizShuffled = [];
+
+    function startQuiz() {
+      quizShuffled = shuffle([...quiz]).slice(0, 10);
+      current = 0;
+      score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (current >= quizShuffled.length) {
+        document.getElementById("main-container").classList.add("result-mode");
+        document.getElementById("result-box").style.display = "flex";
+        document.getElementById("question-box").style.display = "none";
+        const percent = Math.round((score / quizShuffled.length) * 100);
+        document.getElementById("result-score").textContent = `유사도: ${percent}%`;
+        return;
+      }
+      document.getElementById("question-box").style.display = "block";
+      document.getElementById("progress").textContent = `${current+1} / ${quizShuffled.length}`;
+
+      const q = quizShuffled[current];
+      document.getElementById("question-text").textContent = q.question;
+
+      const container = document.getElementById("options-container");
+      container.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.className = "option-btn";
+
+        btn.onclick = () => {
+          if (Array.isArray(q.answer) && q.answer.includes(option)) {
+            score++;
+          }
+          current++;
+          showQuestion();
+        };
+
+        container.appendChild(btn);
+      });
+    }
+
+    document.getElementById("retry-btn").onclick = function() {
+      document.getElementById("result-box").style.display = "none";
+      document.getElementById("main-container").classList.remove("result-mode");
+      document.getElementById("question-box").style.display = "block";
+      startQuiz();
+    };
+    document.getElementById("go-title-btn").onclick = function() {
+      window.location.href = "index.html";
+    };
+
+    startQuiz();
+  </script>
+</body>
+</html>

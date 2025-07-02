@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const image = new Image();
-    image.src = "/assets/ditto.png";
+    image.src = "../assets/ditto.png"; // Corrected relative path
 
     let isMouseDown = false;
     class Animation {
@@ -204,57 +204,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      currentAnim.update(dt);
-      const frame = currentAnim.getFrame();
+      if (currentAnim) {
+          currentAnim.update(dt);
+          const frame = currentAnim.getFrame();
 
-      const w = frame.sw * SCALE;
-      const h = frame.sh * SCALE;
-      let x = mouseX - w / 2;
-      let y = mouseY - h / 2;
+          const w = frame.sw * SCALE;
+          const h = frame.sh * SCALE;
+          let x = mouseX - w / 2;
+          let y = mouseY - h / 2;
 
-      ctx.save();
-      if (isFlipped) {
-        ctx.translate(mouseX, mouseY);
-        ctx.scale(-1, 1);
-        ctx.drawImage(
-          image,
-          frame.sx, frame.sy, frame.sw, frame.sh,
-          -w / 2, -h / 2, w, h
-        );
-      } else {
-        ctx.drawImage(
-          image,
-          frame.sx, frame.sy, frame.sw, frame.sh,
-          x, y, w, h
-        );
+          ctx.save();
+          if (isFlipped) {
+            ctx.translate(mouseX, mouseY);
+            ctx.scale(-1, 1);
+            ctx.drawImage(
+              image,
+              frame.sx, frame.sy, frame.sw, frame.sh,
+              -w / 2, -h / 2, w, h
+            );
+          } else {
+            ctx.drawImage(
+              image,
+              frame.sx, frame.sy, frame.sw, frame.sh,
+              x, y, w, h
+            );
+          }
+          ctx.restore();
       }
-      ctx.restore();
 
       requestAnimationFrame(loop);
     }
 
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-
     // Fractal Background Animation
     const bgCanvas = document.getElementById('background-canvas');
     const bgCtx = bgCanvas.getContext('2d');
-    let width, height, hue;
+    let width, height;
 
     function setup() {
         width = bgCanvas.width = window.innerWidth;
         height = bgCanvas.height = window.innerHeight;
-        hue = 0;
         bgCtx.clearRect(0, 0, width, height);
+        drawFractal(); // Initial draw
     }
 
-    function drawBranch(x, y, len, angle, branchWidth, color1, color2) {
+    function drawBranch(x, y, len, angle, branchWidth, scrollY) {
         bgCtx.beginPath();
         bgCtx.save();
-        bgCtx.strokeStyle = color1;
-        bgCtx.fillStyle = color2;
+        
+        const hue = 180 + (scrollY / 10);
+        const gradient = bgCtx.createLinearGradient(0, 0, 0, -len);
+        gradient.addColorStop(0, `hsl(${hue}, 100%, 50%)`);
+        gradient.addColorStop(1, `hsl(${hue + 40}, 100%, 70%)`);
+
+        bgCtx.strokeStyle = gradient;
         bgCtx.lineWidth = branchWidth;
         bgCtx.translate(x, y);
         bgCtx.rotate(angle * Math.PI / 180);
@@ -262,40 +264,37 @@ document.addEventListener('DOMContentLoaded', () => {
         bgCtx.lineTo(0, -len);
         bgCtx.stroke();
 
-        if (len < 15) {
+        if (len < 8) {
             bgCtx.restore();
             return;
         }
 
-        // Add wave effect
-        const wave = Math.sin(hue * 0.05) * 0.5 - 0.25;
+        const wave = Math.sin(scrollY * 0.005) * (len * 0.1);
 
-        drawBranch(0, -len, len * 0.8, angle + 5 + wave, branchWidth * 0.8, color1, color2);
-        drawBranch(0, -len, len * 0.8, angle - 5 + wave, branchWidth * 0.8, color1, color2);
+        drawBranch(0, -len, len * 0.85, angle + wave, branchWidth * 0.8, scrollY);
+        drawBranch(0, -len, len * 0.85, angle - wave, branchWidth * 0.8, scrollY);
 
         bgCtx.restore();
     }
 
-    function animate() {
-        hue += 0.5;
+    function drawFractal() {
+        const scrollY = window.scrollY;
         bgCtx.clearRect(0, 0, width, height);
         
-        const color1 = `hsl(${hue}, 100%, 50%)`;
-        const color2 = `hsl(${hue + 180}, 100%, 50%)`;
-
-        bgCtx.save();
-        bgCtx.translate(width / 2, height);
-        drawBranch(0, 0, height / 4, 0, 10, color1, color2);
-        bgCtx.restore();
-
-        requestAnimationFrame(animate);
+        // Draw multiple branches from the bottom to make it wider
+        const initialLength = height / 6; // Shorter branches
+        const branches = 5;
+        for (let i = 0; i < branches; i++) {
+            const startX = (width / (branches + 1)) * (i + 1);
+            drawBranch(startX, height, initialLength, -90, 8, scrollY);
+        }
     }
 
-    window.addEventListener('resize', () => {
-        setup();
-        animate();
+    window.addEventListener('scroll', () => {
+        requestAnimationFrame(drawFractal);
     });
 
+    window.addEventListener('resize', setup);
+
     setup();
-    animate();
 });

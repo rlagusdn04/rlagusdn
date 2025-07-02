@@ -198,7 +198,7 @@ footer {
 /* Sidebar and Menu Button */
 .menu-btn {
   position: fixed;
-  top: 15px; /* Adjusted position */
+  top: 10px; /* Adjusted position */
   left: 28px;
   z-index: 2000;
   background: #fff;
