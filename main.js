@@ -84,10 +84,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Mosaic Animation Logic
 function startMosaicAnimation() {
   const heroTitle = document.querySelector('.hero-title');
-  const heroSubtitle = document.querySelector('.hero-subtitle');
 
   const originalTitle = heroTitle.dataset.originalText;
-  const originalSubtitle = heroSubtitle.dataset.originalText;
 
   function applyMosaic(element, originalText) {
     let currentText = originalText.split('');
@@ -102,7 +100,7 @@ function startMosaicAnimation() {
         isMasked = false;
       } else {
         // Apply mosaic
-        const numToMask = Math.floor(Math.random() * 4) + 1; // 1 to 4 characters
+        const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
         let availableIndices = [];
         for (let i = 0; i < originalText.length; i++) {
           if (originalText[i] !== ' ' && !maskedIndices.has(i)) { // Don't mask spaces
@@ -131,28 +129,16 @@ function startMosaicAnimation() {
       element.innerHTML = currentText.join('');
     }
 
-    setInterval(updateText, 300); // Update every 0.3 seconds
+    setInterval(updateText, 600); // Update every 0.6 seconds
   }
 
   applyMosaic(heroTitle, originalTitle);
-  applyMosaic(heroSubtitle, originalSubtitle);
 }
 
 // Call the animation function when the DOM is loaded
 document.addEventListener('DOMContentLoaded', startMosaicAnimation);
 
-// Book List Logic
-const toggleBookListBtn = document.getElementById('toggle-book-list');
-const bookList = document.getElementById('book-list');
 
-toggleBookListBtn.addEventListener('click', () => {
-  bookList.classList.toggle('hidden');
-  if (bookList.classList.contains('hidden')) {
-    toggleBookListBtn.textContent = '도서 리스트 보기';
-  } else {
-    toggleBookListBtn.textContent = '도서 리스트 숨기기';
-  }
-});
 
 // Daily Menu Roulette Logic
 const menuItems = [
