@@ -1,239 +1,117 @@
-:root {
-    --bg-color: #ffffff;
-    --text-color: #1a1a1a;
-    --highlight-color: #a9d6c8; 
-    --card-bg-color: #f5f5f5;
-    --border-color: #e0e0e0;
-}
-
-@keyframes color-roulette {
-    0% { color: #ff8a80; }
-    25% { color: #80d8ff; }
-    50% { color: #ffff8d; }
-    75% { color: #ccff90; }
-    100% { color: var(--highlight-color); }
-}
-
+/* 기본 설정 */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-color: #a9d6c8;
+  --secondary-color: #89c9b8;
+  --text-color: #222;
+  --light-text-color: #fff;
+  --bg-color: #f5f6fa;
+  --sidebar-bg: #fff;
+  --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-medium: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-strong: 0 8px 32px rgba(0,0,0,0.18);
+  --border-color: #eee;
+  --neon-blue-light: #b3e5fc;
+  --neon-blue-medium: #81d4fa;
+  --neon-blue-strong: #4fc3f7;
+  --neon-blue-dark: #29b6f6;
+  --sidebar-time-gradient-start: #a1c4fd;
+  --sidebar-time-gradient-end: #c2e9fb;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    cursor: none;
+  background: var(--bg-color);
+  font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+  color: var(--text-color);
+  height: 100vh;
+  overflow: hidden; /* 스크롤바 제거 */
+  cursor: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
-#background-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+/* 네온사인 시간 표시 */
+.neon-time {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--neon-blue-light);
+  text-shadow:
+    0 0 8px var(--neon-blue-light),
+    0 0 16px var(--neon-blue-medium),
+    0 0 32px var(--neon-blue-strong),
+    0 0 48px var(--neon-blue-dark);
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px 32px;
+  z-index: 101;
+  font-family: 'Segoe UI', 'Noto Sans KR', 'Montserrat', 'Nanum Gothic', 'Orbitron', 'Do Hyeon', 'Jua', 'Black Han Sans', 'Gugi', 'Sunflower', 'Poor Story', 'East Sea Dokdo', 'Diphylleia', 'Gamja Flower', 'Indie Flower', 'cursive', sans-serif;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  border: 2px solid rgba(var(--neon-blue-light), 0.2);
+  box-shadow: 0 0 24px rgba(var(--neon-blue-light), 0.4);
+}
+.neon-time:hover {
+  box-shadow: 0 0 48px var(--neon-blue-strong), 0 0 8px var(--neon-blue-light);
 }
 
-header {
-    position: fixed;
-    width: 100%;
-    padding: 1.5rem 2rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-    border-bottom: 1px solid var(--border-color);
+/* canvas 위치 고정 */
+canvas#mouseCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
 }
 
-nav {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
+/* 배경 프랙탈 캔버스 */
+canvas#bgFractal {
+  position:fixed; 
+  left:0; 
+  top:0; 
+  width:100vw; 
+  height:100vh; 
+  z-index:-1;
 }
 
-nav a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s;
-}
-
-nav a:hover {
-    color: var(--highlight-color);
-}
-
-main {
-    padding: 8rem 2rem 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-}
-
-section {
-    margin-bottom: 6rem;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-section.fade-in {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-#hero {
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.highlight {
-    color: var(--highlight-color);
-    position: relative;
-    display: inline-block;
-}
-
-#name-highlight.animating {
-    animation: color-roulette 1.5s linear infinite;
-}
-
-#name-highlight.mosaic {
-    filter: blur(10px);
-    transition: filter 0.5s ease-out;
-    animation: none;
-}
-
-h2 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.project-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.project-card {
-    background-color: var(--card-bg-color);
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    text-align: left;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-}
-
-.project-links a {
-    margin-right: 1rem;
-    color: var(--highlight-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.skill-category {
-    margin-bottom: 2rem;
-}
-
-.skill-category h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.skill-category ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.skill-category li {
-    background-color: var(--card-bg-color);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-}
-
-#contact p {
-    margin-bottom: 0.5rem;
-}
-
-.contact-btn {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 1rem 2rem;
-    background-color: #222;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 600;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    border: 1px solid #222;
-}
-
-.contact-btn:hover {
-    background-color: #fff;
-    color: #222;
-    border-color: #222;
-}
-
-footer {
-    text-align: center;
-    padding: 2rem;
-    border-top: 1px solid var(--border-color);
-}
-
-/* Sidebar and Menu Button */
 .menu-btn {
   position: fixed;
-  top: 5px; /* Adjusted position */
+  top: 28px;
   left: 28px;
   z-index: 2000;
-  background: none; /* Removed background */
-  color: #222;
-  border: none; /* Removed border */
-  border-radius: 0; /* Removed border-radius */
+  background: var(--sidebar-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 12px;
   font-size: 2.1rem;
   padding: 8px 18px 8px 16px;
-  box-shadow: none; /* Removed box-shadow */
+  box-shadow: var(--shadow-medium);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  text-shadow: none;
 }
-
 .menu-btn:hover {
-  background: none;
-  color: var(--highlight-color);
-  box-shadow: none;
+  background: #f5f5f5;
+  color: #111;
+  box-shadow: var(--shadow-strong);
 }
-
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
   width: 320px;
   height: 100vh;
-  background: #fff;
-  box-shadow: 4px 0 32px rgba(0,0,0,0.1);
+  background: var(--sidebar-bg);
+  box-shadow: 4px 0 32px var(--border-color);
   transform: translateX(-100%);
   transition: transform 0.35s cubic-bezier(.77,0,.18,1);
   z-index: 3000;
@@ -241,54 +119,114 @@ footer {
   flex-direction: column;
   align-items: flex-start;
 }
-
 .sidebar.open {
   transform: translateX(0);
 }
-
 .sidebar-content {
   padding: 38px 28px 28px 28px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   height: 100%;
-  width: 100%;
 }
 
-.sidebar-time-display {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-    align-self: center;
+.sidebar-header {
+  display:flex;
+  align-items:center;
+  gap:32px;
+  margin-bottom:18px;
+  position:relative; /* sidebar-home-btn의 absolute 위치 기준 */
+  width: 100%; /* 자식 요소가 absolute일 때 부모의 너비 확보 */
+}
+
+.sidebar-spacer {
+  height: 60px;
+}
+
+.sidebar-home-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 38px;
+  font-size: 1.1rem;
+  background: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 18px;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 18px;
+  margin-top: 10px;
+  margin-left: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: background 0.18s, box-shadow 0.18s;
+  padding: 0 18px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4000;
+}
+.sidebar-home-btn:hover {
+  background: var(--secondary-color);
+  color: #111;
+  box-shadow: var(--shadow-medium);
+}
+
+.sidebar-time-modern {
+  font-family: 'Orbitron', 'Montserrat', 'Noto Sans KR', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--light-text-color);
+  background: linear-gradient(90deg, var(--sidebar-time-gradient-start) 0%, var(--sidebar-time-gradient-end) 100%);
+  border-radius: 18px;
+  padding: 8px 24px;
+  box-shadow: 0 2px 16px rgba(var(--sidebar-time-gradient-start), 0.3), 0 0 8px rgba(var(--sidebar-time-gradient-end), 0.5);
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 8px rgba(127, 170, 255, 0.5), 0 0 2px var(--light-text-color);
+  display: inline-block;
+  min-width: 120px;
+  margin-left: 0;
+  margin-right: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+  position: absolute; /* sidebar-home-btn과 겹치지 않도록 */
+  right: 0; /* 오른쪽 정렬 */
+  top: 10px; /* sidebar-home-btn과 동일한 높이 */
+}
+.sidebar-time-modern:hover {
+  background: linear-gradient(90deg, var(--sidebar-time-gradient-end) 0%, var(--sidebar-time-gradient-start) 100%);
+  box-shadow: 0 4px 24px rgba(var(--sidebar-time-gradient-end), 0.6), 0 0 16px rgba(var(--sidebar-time-gradient-start), 0.8);
 }
 
 .sidebar-music-card {
-  background: #f9f9f9;
+  background: none;
   border-radius: 20px;
-  box-shadow: 0 4px 16px #eee;
+  box-shadow: var(--shadow-medium);
   padding: 28px 20px 20px 20px;
   margin-bottom: 24px;
   text-align: left;
-  border: 1.5px solid #eee;
+  border: 1.5px solid var(--border-color);
+  animation: fadeIn 0.7s;
   width: 100%;
+  min-width: 220px;
 }
-
 .sidebar-music-title {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #222;
+  color: var(--text-color);
+  text-shadow: none;
   margin-bottom: 16px;
+  letter-spacing: 1px;
 }
-
 .sidebar-music-info {
   display: block;
   margin-bottom: 16px;
   font-size: 1.05rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
+  text-shadow: none;
 }
-
 .sidebar-music-controls {
   display: flex;
   align-items: center;
@@ -296,37 +234,40 @@ footer {
   background: #f5f5f5;
   border-radius: 10px;
   padding: 8px 12px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-light);
   justify-content: flex-start;
 }
-
 .sidebar-music-controls button {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: color 0.2s;
   border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar-music-controls button:hover {
+  color: #111;
+}
+.sidebar-music-controls #sidebar-vol-down,
+.sidebar-music-controls #sidebar-vol-up {
+  background: var(--sidebar-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   width: 32px;
   height: 32px;
   font-size: 1.1rem;
-  cursor: pointer;
-  color: #333;
-  transition: background-color 0.2s, color 0.2s;
 }
-
-.sidebar-music-controls button:hover {
-  background-color: var(--highlight-color);
-  color: #fff;
-}
-
-#sidebar-vol-value {
-    min-width: 35px;
-    text-align: center;
-    font-weight: 600;
-}
-
-canvas#mouseCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
+.sidebar-music-controls #sidebar-vol-value {
+  margin: 0 6px;
+  font-size: 1.05rem;
+  color: var(--text-color);
+  min-width: 32px;
+  display: inline-block;
+  text-align: center;
 }
