@@ -171,27 +171,30 @@ const spinRouletteBtn = document.getElementById('spin-roulette');
 spinRouletteBtn.addEventListener('click', () => {
   spinRouletteBtn.disabled = true;
   let spinCount = 0;
-  const totalSpins = 30; // Number of times to change the display
-  const spinInterval = 50; // Milliseconds between changes
+  const totalSpins = 30;
+  const baseDelay = 50;
+  const delayIncrement = 18; // 회전이 느려지는 정도
 
-  const intervalId = setInterval(() => {
+  function spinRoulette() {
     const randomIndex = Math.floor(Math.random() * menuItems.length);
     rouletteDisplay.textContent = menuItems[randomIndex];
     spinCount++;
 
-    // 스핀 인터벌이 점점 느려지도록
     if (spinCount > totalSpins / 2) {
-      rouletteDisplay.style.transition = 'all 0.5s ease-out';
+      rouletteDisplay.style.transition = 'all 0.5s cubic-bezier(.4,0,.2,1)';
     } else {
       rouletteDisplay.style.transition = 'none';
     }
-    
-    if (spinCount >= totalSpins) {
-      clearInterval(intervalId);
+
+    if (spinCount < totalSpins) {
+      const delay = baseDelay + spinCount * delayIncrement;
+      setTimeout(spinRoulette, delay);
+    } else {
       spinRouletteBtn.disabled = false;
-      // Final selection (optional, can just be the last random one)
       const finalIndex = Math.floor(Math.random() * menuItems.length);
       rouletteDisplay.textContent = menuItems[finalIndex];
     }
-  }, spinInterval);
+  }
+
+  spinRoulette();
 });
