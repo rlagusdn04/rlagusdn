@@ -88,6 +88,14 @@ body.dark-theme {
   color: #fff;
 }
 
+.hero-title span {
+  transition: background-color 0.3s ease;
+}
+
+.hero-title span.mosaic {
+  background-color: rgba(255, 255, 255, 0.3); /* 불투명한 흰색 */
+}
+
 .hero-title .highlight {
   color: #ffffff;
   text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
@@ -274,8 +282,59 @@ body.dark-theme {
   margin-right: 10px;
 }
 
+/* Book List Section */
+.book-list-section {
+  text-align: center;
+}
+
+#book-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#book-list li {
+  background-color: #222222;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 #book-list.hidden {
   display: none;
+}
+
+/* Similarity Test Section */
+.similarity-test-section {
+  text-align: center;
+}
+
+.similarity-test-container {
+  background-color: #222222;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.similarity-test-description {
+  font-size: 1.2rem;
+  color: #c0c0c0;
 }
 
 /* Daily Menu Roulette Section */

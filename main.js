@@ -85,60 +85,54 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 function startMosaicAnimation() {
   const heroTitle = document.querySelector('.hero-title');
 
-  const originalTitle = heroTitle.dataset.originalText;
+  const originalText = heroTitle.dataset.originalText;
+  heroTitle.innerHTML = originalText.split('').map(char => `<span>${char}</span>`).join('');
+  const spans = heroTitle.querySelectorAll('span');
 
-  function applyMosaic(element, originalText) {
-    let currentText = originalText.split('');
-    let maskedIndices = new Set();
-    let isMasked = false;
+  let intervalId;
 
-    function updateText() {
-      if (isMasked) {
-        // Revert to original
-        currentText = originalText.split('');
-        maskedIndices.clear();
-        isMasked = false;
-      } else {
-        // Apply mosaic
-        const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
-        let availableIndices = [];
-        for (let i = 0; i < originalText.length; i++) {
-          if (originalText[i] !== ' ' && !maskedIndices.has(i)) { // Don't mask spaces
-            availableIndices.push(i);
-          }
-        }
+  function applyMosaic() {
+    const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
+    const indicesToMask = new Set();
 
-        if (availableIndices.length === 0) {
-          // All characters are masked or no non-space characters, reset
-          currentText = originalText.split('');
-          maskedIndices.clear();
-          element.innerHTML = currentText.join('');
-          isMasked = false;
-          return;
-        }
-
-        for (let i = 0; i < numToMask; i++) {
-          if (availableIndices.length === 0) break;
-          const randomIndex = Math.floor(Math.random() * availableIndices.length);
-          const charIndex = availableIndices.splice(randomIndex, 1)[0];
-          currentText[charIndex] = '█'; // Mosaic character
-          maskedIndices.add(charIndex);
-        }
-        isMasked = true;
+    while (indicesToMask.size < numToMask) {
+      const randomIndex = Math.floor(Math.random() * originalText.length);
+      if (originalText[randomIndex] !== ' ') { // Don't mask spaces
+        indicesToMask.add(randomIndex);
       }
-      element.innerHTML = currentText.join('');
     }
 
-    setInterval(updateText, 600); // Update every 0.6 seconds
+    spans.forEach((span, index) => {
+      if (indicesToMask.has(index)) {
+        span.classList.add('mosaic');
+      } else {
+        span.classList.remove('mosaic');
+      }
+    });
+
+    setTimeout(() => {
+      spans.forEach(span => span.classList.remove('mosaic'));
+    }, 1500); // 1.5초 후 원래대로 돌아옴
   }
 
-  applyMosaic(heroTitle, originalTitle);
+  intervalId = setInterval(applyMosaic, 3000); // 3초마다 애니메이션 실행
 }
 
 // Call the animation function when the DOM is loaded
 document.addEventListener('DOMContentLoaded', startMosaicAnimation);
 
+// Book List Logic
+const toggleBookListBtn = document.getElementById('toggle-book-list');
+const bookList = document.getElementById('book-list');
 
+toggleBookListBtn.addEventListener('click', () => {
+  bookList.classList.toggle('hidden');
+  if (bookList.classList.contains('hidden')) {
+    toggleBookListBtn.textContent = '도서 리스트 보기';
+  } else {
+    toggleBookListBtn.textContent = '도서 리스트 숨기기';
+  }
+});
 
 // Daily Menu Roulette Logic
 const menuItems = [
