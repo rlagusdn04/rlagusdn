@@ -80,3 +80,90 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
   });
 });
+
+// Mosaic Animation Logic
+function startMosaicAnimation() {
+  const heroTitle = document.querySelector('.hero-title');
+  const heroSubtitle = document.querySelector('.hero-subtitle');
+
+  const originalTitle = heroTitle.dataset.originalText;
+  const originalSubtitle = heroSubtitle.dataset.originalText;
+
+  function applyMosaic(element, originalText) {
+    let currentText = originalText.split('');
+    let maskedIndices = new Set();
+
+    function updateText() {
+      const numToMask = Math.floor(Math.random() * 5) + 1; // 1 to 5 characters
+      let availableIndices = [];
+      for (let i = 0; i < originalText.length; i++) {
+        if (!maskedIndices.has(i)) {
+          availableIndices.push(i);
+        }
+      }
+
+      if (availableIndices.length === 0) {
+        // All characters are masked, reset
+        currentText = originalText.split('');
+        maskedIndices.clear();
+        element.innerHTML = currentText.join('');
+        return;
+      }
+
+      for (let i = 0; i < numToMask; i++) {
+        if (availableIndices.length === 0) break;
+        const randomIndex = Math.floor(Math.random() * availableIndices.length);
+        const charIndex = availableIndices.splice(randomIndex, 1)[0];
+        currentText[charIndex] = '█'; // Mosaic character
+        maskedIndices.add(charIndex);
+      }
+      element.innerHTML = currentText.join('');
+    }
+
+    setInterval(updateText, 500); // Update every 0.5 seconds
+  }
+
+  applyMosaic(heroTitle, originalTitle);
+  applyMosaic(heroSubtitle, originalSubtitle);
+}
+
+// Book List Logic
+const toggleBookListBtn = document.getElementById('toggle-book-list');
+const bookList = document.getElementById('book-list');
+
+toggleBookListBtn.addEventListener('click', () => {
+  bookList.classList.toggle('hidden');
+  if (bookList.classList.contains('hidden')) {
+    toggleBookListBtn.textContent = '도서 리스트 보기';
+  } else {
+    toggleBookListBtn.textContent = '도서 리스트 숨기기';
+  }
+});
+
+// Daily Menu Roulette Logic
+const menuItems = [
+  '초밥', '피자', '김치찌개', '비빔밥', '떡볶이', '라면과 김밥', '치킨', '햄버거', '파스타', '리조또', '족발', '돈까스', '갈비', '라멘', '아구찜', '칼국수'
+];
+const rouletteDisplay = document.getElementById('roulette-display');
+const spinRouletteBtn = document.getElementById('spin-roulette');
+
+spinRouletteBtn.addEventListener('click', () => {
+  spinRouletteBtn.disabled = true;
+  let spinCount = 0;
+  const totalSpins = 30; // Number of times to change the display
+  const spinInterval = 50; // Milliseconds between changes
+
+  const intervalId = setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * menuItems.length);
+    rouletteDisplay.textContent = menuItems[randomIndex];
+    spinCount++;
+
+    if (spinCount >= totalSpins) {
+      clearInterval(intervalId);
+      spinRouletteBtn.disabled = false;
+      // Final selection (optional, can just be the last random one)
+      const finalIndex = Math.floor(Math.random() * menuItems.length);
+      rouletteDisplay.textContent = menuItems[finalIndex];
+    }
+  }, spinInterval);
+});
