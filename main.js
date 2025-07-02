@@ -202,26 +202,26 @@ spinRouletteBtn.addEventListener('click', () => {
 // 프로필 이미지 1분마다 교체
 const profileImage = document.querySelector('.profile-image');
 const profileImages = [
-  'assets/profiles/1485231819659_Original.jpg',
-  'assets/profiles/20181219_133911-1_Original.jpg',
-  'assets/profiles/20181219_091256_Original.jpg',
-  'assets/profiles/20181218_142101_Original.jpg',
-  'assets/profiles/20181218_100858_Original.jpg',
-  'assets/profiles/IMG_5885.jpg',
-  'assets/profiles/IMG_5884.jpg',
-  'assets/profiles/IMG_5703.jpg',
-  'assets/profiles/IMG_3365.jpg',
-  'assets/profiles/IMG_5978.PNG',
-  'assets/profiles/IMG_5990.PNG',
-  'assets/profiles/IMG_5989.PNG',
-  'assets/profiles/IMG_5988.PNG',
-  'assets/profiles/IMG_5987.PNG',
-  'assets/profiles/IMG_5986.PNG',
-  'assets/profiles/IMG_5984.PNG',
-  'assets/profiles/IMG_5983.PNG',
-  'assets/profiles/IMG_5982.PNG',
-  'assets/profiles/IMG_5981.PNG',
-  'assets/profiles/IMG_5980.PNG'
+  'assets/profiles/1.jpg',
+  'assets/profiles/2.jpg',
+  'assets/profiles/3.jpg',
+  'assets/profiles/4.jpg',
+  'assets/profiles/5.jpg',
+  'assets/profiles/6.jpg',
+  'assets/profiles/7.jpg',
+  'assets/profiles/8.jpg',
+  'assets/profiles/9.PNG',
+  'assets/profiles/10.PNG',
+  'assets/profiles/11.jpg',
+  'assets/profiles/12.PNG',
+  'assets/profiles/13.PNG',
+  'assets/profiles/14.PNG',
+  'assets/profiles/15.PNG',
+  'assets/profiles/16.PNG',
+  'assets/profiles/17.PNG',
+  'assets/profiles/18.PNG',
+  'assets/profiles/19.PNG',
+  'assets/profiles/20.PNG'
 ];
 let currentProfileIdx = 0;
 
