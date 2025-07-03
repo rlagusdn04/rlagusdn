@@ -218,6 +218,44 @@ spinRouletteBtn.addEventListener('click', () => {
   spinRoulette();
 });
 
+// Project Navigation Logic
+const projectGrid = document.querySelector('.project-grid');
+const prevBtn = document.getElementById('prev-project');
+const nextBtn = document.getElementById('next-project');
+
+function updateNavButtons() {
+  if (projectGrid.scrollLeft <= 0) {
+    prevBtn.disabled = true;
+  } else {
+    prevBtn.disabled = false;
+  }
+  
+  if (projectGrid.scrollLeft >= projectGrid.scrollWidth - projectGrid.clientWidth) {
+    nextBtn.disabled = true;
+  } else {
+    nextBtn.disabled = false;
+  }
+}
+
+prevBtn.addEventListener('click', () => {
+  projectGrid.scrollBy({
+    left: -400,
+    behavior: 'smooth'
+  });
+});
+
+nextBtn.addEventListener('click', () => {
+  projectGrid.scrollBy({
+    left: 400,
+    behavior: 'smooth'
+  });
+});
+
+projectGrid.addEventListener('scroll', updateNavButtons);
+
+// Initial button state
+document.addEventListener('DOMContentLoaded', updateNavButtons);
+
 // 프로필 이미지 1분마다 교체
 const profileImage = document.querySelector('.profile-image');
 const profileImages = [
