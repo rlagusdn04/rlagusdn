@@ -238,7 +238,7 @@ function updateNavButtons() {
 }
 
 prevBtn.addEventListener('click', () => {
-  const cardWidth = 350; // 프로젝트 카드의 min-width
+  const cardWidth = 400; // 프로젝트 카드의 실제 너비 (더 크게)
   const gap = 32; // gap: 2rem = 32px
   const scrollDistance = cardWidth + gap;
   projectGrid.scrollBy({
@@ -248,7 +248,7 @@ prevBtn.addEventListener('click', () => {
 });
 
 nextBtn.addEventListener('click', () => {
-  const cardWidth = 350; // 프로젝트 카드의 min-width
+  const cardWidth = 400; // 프로젝트 카드의 실제 너비 (더 크게)
   const gap = 32; // gap: 2rem = 32px
   const scrollDistance = cardWidth + gap;
   projectGrid.scrollBy({
