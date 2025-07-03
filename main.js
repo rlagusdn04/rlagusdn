@@ -273,7 +273,7 @@ const profileImages = [
   'assets/profiles/6.jpg',
   'assets/profiles/7.jpg',
   'assets/profiles/8.jpg',
-  'assets/profiles/9.PNG',
+  'assets/profiles/9.jpg',
   'assets/profiles/10.PNG',
   'assets/profiles/11.jpg',
   'assets/profiles/12.PNG',
@@ -282,8 +282,7 @@ const profileImages = [
   'assets/profiles/15.PNG',
   'assets/profiles/16.PNG',
   'assets/profiles/17.PNG',
-  'assets/profiles/18.PNG',
-  'assets/profiles/19.PNG',
+  'assets/profiles/18.jpg',
   'assets/profiles/20.PNG',
   'assets/profiles/21.jpg'
 ];
