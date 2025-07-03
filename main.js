@@ -238,15 +238,21 @@ function updateNavButtons() {
 }
 
 prevBtn.addEventListener('click', () => {
+  const cardWidth = 350; // 프로젝트 카드의 min-width
+  const gap = 32; // gap: 2rem = 32px
+  const scrollDistance = cardWidth + gap;
   projectGrid.scrollBy({
-    left: -400,
+    left: -scrollDistance,
     behavior: 'smooth'
   });
 });
 
 nextBtn.addEventListener('click', () => {
+  const cardWidth = 350; // 프로젝트 카드의 min-width
+  const gap = 32; // gap: 2rem = 32px
+  const scrollDistance = cardWidth + gap;
   projectGrid.scrollBy({
-    left: 400,
+    left: scrollDistance,
     behavior: 'smooth'
   });
 });
