@@ -654,9 +654,16 @@ body.utest-page {
 .music-player-controls {
   display: flex;
   align-items: center;
-  gap: 20px;
-  width: 100%;
-  justify-content: center;
+  gap: 12px;
+}
+
+.daily-music-btn {
+  margin-left: 16px;
+  white-space: nowrap;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
 }
 
 .music-btn {
