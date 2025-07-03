@@ -301,3 +301,25 @@ setInterval(showNextProfileImage, 60000);
 
 // 클릭 시 수동 변경
 profileImage.addEventListener('click', showNextProfileImage);
+
+// Q&A 슬라이더 기능
+const qaSlides = document.querySelectorAll('.qa-slide');
+const qaPrevBtn = document.getElementById('qa-prev');
+const qaNextBtn = document.getElementById('qa-next');
+let qaCurrent = 0;
+
+function showQaSlide(idx) {
+  qaSlides.forEach((slide, i) => {
+    slide.classList.toggle('active', i === idx);
+  });
+}
+if (qaPrevBtn && qaNextBtn && qaSlides.length > 0) {
+  qaPrevBtn.addEventListener('click', () => {
+    qaCurrent = (qaCurrent - 1 + qaSlides.length) % qaSlides.length;
+    showQaSlide(qaCurrent);
+  });
+  qaNextBtn.addEventListener('click', () => {
+    qaCurrent = (qaCurrent + 1) % qaSlides.length;
+    showQaSlide(qaCurrent);
+  });
+}
