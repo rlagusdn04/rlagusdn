@@ -262,7 +262,7 @@ projectGrid.addEventListener('scroll', updateNavButtons);
 // Initial button state
 document.addEventListener('DOMContentLoaded', updateNavButtons);
 
-// 프로필 이미지 1분마다 교체
+// 프로필 이미지 1분마다 교체 + 클릭 시 수동 변경
 const profileImage = document.querySelector('.profile-image');
 const profileImages = [
   'assets/profiles/1.jpg',
@@ -284,7 +284,8 @@ const profileImages = [
   'assets/profiles/17.PNG',
   'assets/profiles/18.PNG',
   'assets/profiles/19.PNG',
-  'assets/profiles/20.PNG'
+  'assets/profiles/20.PNG',
+  'assets/profiles/21.jpg'
 ];
 let currentProfileIdx = 0;
 
@@ -294,4 +295,8 @@ function showNextProfileImage() {
   profileImage.src = profileImages[currentProfileIdx];
 }
 
-setInterval(showNextProfileImage, 60000); // 1분마다 변경
+// 자동 변경 (1분마다)
+setInterval(showNextProfileImage, 60000);
+
+// 클릭 시 수동 변경
+profileImage.addEventListener('click', showNextProfileImage);
