@@ -238,7 +238,8 @@ function updateNavButtons() {
 }
 
 prevBtn.addEventListener('click', () => {
-  const cardWidth = 480; // 프로젝트 카드의 실제 너비 (더 크게)
+  const card = projectGrid.querySelector('.project-card');
+  const cardWidth = card ? card.offsetWidth : 450;
   const gap = 32; // gap: 2rem = 32px
   const scrollDistance = cardWidth + gap;
   projectGrid.scrollBy({
@@ -248,7 +249,8 @@ prevBtn.addEventListener('click', () => {
 });
 
 nextBtn.addEventListener('click', () => {
-  const cardWidth = 450; // 프로젝트 카드의 실제 너비 (더 크게)
+  const card = projectGrid.querySelector('.project-card');
+  const cardWidth = card ? card.offsetWidth : 450;
   const gap = 32; // gap: 2rem = 32px
   const scrollDistance = cardWidth + gap;
   projectGrid.scrollBy({
