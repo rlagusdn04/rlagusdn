@@ -253,6 +253,46 @@ const quiz = [
     question: "당신을 가장 잘 설명하는 풍경은?",
     options: ["비 그친 뒤의 거리", "책상 위의 먼지", "햇살 들이치는 창가", "늦은 밤 전등 불빛"],
     answer: ["책상 위의 먼지", "늦은 밤 전등 불빛"]
+  },
+  {
+    question: "좋아하는 자연환경은?",
+    options: ["호수", "초원", "바다", "산"],
+    answer: ["호수", "초원"]
+  },
+  {
+    question: "어디서 살고 싶나요?",
+    options: ["빌딩 가득한 도시", "한가한 시골", "바닷가 마을", "숲속 오두막"],
+    answer: ["한가한 시골", "바닷가 마을"]
+  },
+  {
+    question: "좋아하는 컨텐츠는?",
+    options: ["책", "영화", "드라마", "숏폼"],
+    answer: ["책"]
+  },
+  {
+    question: "어떤 장르가 끌리나요?",
+    options: ["로맨스", "판타지", "스릴러", "다큐"],
+    answer: ["판타지"]
+  },
+  {
+    question: "당신의 책상은 어떤 모습인가요?",
+    options: ["책, 노트, 포스트잇에 빼곡한 글자들", "화장품, 거울 등 자신을 꾸밀 물건들", "간식거리와 음료들로 가득", "이것저것 쌓인 여타 잡동사니"],
+    answer: ["책, 노트, 포스트잇에 빼곡한 글자들"]
+  },
+  {
+    question: "답: 쌓여있는 책들",
+    options: ["쌓여있는 책들", "정돈된 책상", "장식품이 많은 책상", "비어있는 책상"],
+    answer: ["쌓여있는 책들"]
+  },
+  {
+    question: "이 중 선호하는 것은?",
+    options: ["커피", "주류", "음료", "물"],
+    answer: ["커피", "음료", "물"]
+  },
+  {
+    question: "무언가 집중해야하는 새벽 시간 하나를 챙긴다면?",
+    options: ["함께할 사람", "카페인", "알코올", "음악"],
+    answer: ["카페인", "음악"]
   }
 ];
 
@@ -283,6 +323,14 @@ function showQuestion() {
     document.getElementById("question-box").style.display = "none";
     const percent = Math.round((score / quizShuffled.length) * 100);
     document.getElementById("result-score").textContent = `유사도: ${percent}%`;
+    let resultMsg = "으으음 ...";
+    if (percent <= 20) resultMsg = "저희 서로 배울 점이 있겠네요.";
+    else if (percent <= 40) resultMsg = "딱 평균이네요!";
+    else if (percent <= 60) resultMsg = "으으음 ...";
+    else if (percent <= 80) resultMsg = "오 ..?";
+    else if (percent <= 90) resultMsg = "어라 ?";
+    else if (percent <= 100) resultMsg = "이럴 순 없는거야.";
+    document.getElementById("result-title").textContent = resultMsg;
     return;
   }
   document.getElementById("question-box").style.display = "block";
