@@ -296,6 +296,7 @@ const profileImages = [
   'assets/profiles/16.PNG',
   'assets/profiles/17.PNG',
   'assets/profiles/18.jpg',
+  'assets/profiles/19.jpg',
   'assets/profiles/20.PNG',
   'assets/profiles/21.jpg',
   'assets/profiles/22.jpg'
