@@ -15,6 +15,7 @@
       <nav class="main-nav">
         <a href="#projects" class="nav-link">Projects</a>
         <a href="#about" class="nav-link">About Me</a>
+        <a href="#chat-section" class="nav-link">Chat</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
     </header>
@@ -263,6 +264,28 @@
       </div>
     </section>
 
+    <section id="chat-section" class="section chat-section">
+      <h2 class="section-title">실시간 채팅</h2>
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="user-info">
+            <span id="user-status">로그인이 필요합니다</span>
+            <button id="login-btn" class="btn secondary-btn">로그인</button>
+            <button id="logout-btn" class="btn secondary-btn hidden">로그아웃</button>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div class="welcome-message">
+            <p>안녕하세요! 실시간 채팅에 참여하려면 로그인해주세요.</p>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." disabled>
+          <button id="send-btn" class="btn primary-btn" disabled>전송</button>
+        </div>
+      </div>
+    </section>
+
     <section id="contact" class="section contact-section">
       <h2 class="section-title">Get in Touch</h2>
       <p class="contact-description">Feel free to reach out if you have any questions or just want to connect!</p>
@@ -278,7 +301,37 @@
     </footer>
   </div>
 
+  <!-- 로그인/회원가입 모달 -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-modal">&times;</span>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">로그인</button>
+        <button class="auth-tab" data-tab="signup">회원가입</button>
+      </div>
+      
+      <div id="login-form" class="auth-form">
+        <h3>로그인</h3>
+        <input type="email" id="login-email" placeholder="이메일" required>
+        <input type="password" id="login-password" placeholder="비밀번호" required>
+        <button id="login-submit" class="btn primary-btn">로그인</button>
+        <p id="login-error" class="error-message hidden"></p>
+      </div>
+      
+      <div id="signup-form" class="auth-form hidden">
+        <h3>회원가입</h3>
+        <input type="email" id="signup-email" placeholder="이메일" required>
+        <input type="password" id="signup-password" placeholder="비밀번호 (6자 이상)" required>
+        <input type="text" id="signup-username" placeholder="사용자명" required>
+        <button id="signup-submit" class="btn primary-btn">회원가입</button>
+        <p id="signup-error" class="error-message hidden"></p>
+      </div>
+    </div>
+  </div>
+
   <canvas id="mouseCanvas" class="mouse-canvas"></canvas>
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="chat-auth.js"></script>
   <script src="fractal-bg.js"></script>
   <script src="mouse-animation.js"></script>
   <script src="main.js"></script>
