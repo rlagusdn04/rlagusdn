@@ -245,38 +245,24 @@
       </div>
     </section>
 
-    <section id="qa-slider-section" class="section qa-slider-section">
-      <h2 class="section-title">Q&A 익명 답변 모음</h2>
-      <div class="qa-slider-container">
-        <button class="qa-slider-btn" id="qa-prev">&#60;</button>
-        <div class="qa-slider">
-          <div class="qa-slide active">
-            <div class="qa-question"><strong>Q.</strong> test me?</div>
-            <div class="qa-answer"><strong>A.</strong> nice Q.</div>
-          </div>
-          <div class="qa-slide">
-            <div class="qa-question"><strong>Q.</strong> hello world</div>
-            <div class="qa-answer"><strong>A.</strong> hi</div>
-          </div>
-          <!-- 추가 Q&A는 여기에 .qa-slide 형태로 삽입 -->
-        </div>
-        <button class="qa-slider-btn" id="qa-next">&#62;</button>
-      </div>
-    </section>
+
 
     <section id="chat-section" class="section chat-section">
-      <h2 class="section-title">실시간 채팅</h2>
+      <h2 class="section-title">익명 실시간 채팅</h2>
       <div class="chat-container">
         <div class="chat-header">
           <div class="user-info">
-            <span id="user-status">로그인이 필요합니다</span>
+            <span id="user-status">익명으로 채팅하기</span>
+            <button id="anonymous-btn" class="btn secondary-btn">익명 참여</button>
             <button id="login-btn" class="btn secondary-btn">로그인</button>
             <button id="logout-btn" class="btn secondary-btn hidden">로그아웃</button>
+            <button id="change-name-btn" class="btn secondary-btn hidden">이름 변경</button>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages">
           <div class="welcome-message">
-            <p>안녕하세요! 실시간 채팅에 참여하려면 로그인해주세요.</p>
+            <p>안녕하세요! 익명으로 실시간 채팅에 참여해보세요.</p>
+            <p>로그인하거나 익명으로 참여할 수 있습니다.</p>
           </div>
         </div>
         <div class="chat-input-container">
@@ -326,6 +312,20 @@
         <button id="signup-submit" class="btn primary-btn">회원가입</button>
         <p id="signup-error" class="error-message hidden"></p>
       </div>
+    </div>
+  </div>
+
+  <!-- 익명 사용자 이름 설정 모달 -->
+  <div id="anonymous-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-anonymous-modal">&times;</span>
+      <h3>익명 사용자 이름 설정</h3>
+      <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center;">
+        채팅에서 사용할 이름을 입력해주세요.
+      </p>
+      <input type="text" id="anonymous-name" placeholder="사용자명 (예: 익명123)" maxlength="20" required>
+      <button id="anonymous-submit" class="btn primary-btn">채팅 참여</button>
+      <p id="anonymous-error" class="error-message hidden"></p>
     </div>
   </div>
 

@@ -302,45 +302,4 @@ setInterval(showNextProfileImage, 60000);
 // 클릭 시 수동 변경
 profileImage.addEventListener('click', showNextProfileImage);
 
-// Q&A 슬라이더 기능 (텍스트 슬라이드 애니메이션)
-const qaSlides = document.querySelectorAll('.qa-slide');
-const qaPrevBtn = document.getElementById('qa-prev');
-const qaNextBtn = document.getElementById('qa-next');
-let qaCurrent = 0;
-let qaAnimating = false;
 
-function showQaSlide(idx, direction = 0) {
-  if (qaAnimating || idx === qaCurrent) return;
-  qaAnimating = true;
-  const prev = qaCurrent;
-  qaSlides[prev].classList.remove('active');
-  qaSlides[prev].classList.remove('exit-left', 'exit-right');
-  if (direction < 0) {
-    qaSlides[prev].classList.add('exit-right');
-  } else if (direction > 0) {
-    qaSlides[prev].classList.add('exit-left');
-  }
-  qaSlides[idx].classList.remove('exit-left', 'exit-right');
-  setTimeout(() => {
-    qaSlides[prev].classList.remove('exit-left', 'exit-right');
-    qaSlides[idx].classList.add('active');
-    qaCurrent = idx;
-    qaAnimating = false;
-  }, 400);
-}
-if (qaPrevBtn && qaNextBtn && qaSlides.length > 0) {
-  qaPrevBtn.addEventListener('click', () => {
-    if (qaAnimating) return;
-    const nextIdx = (qaCurrent - 1 + qaSlides.length) % qaSlides.length;
-    showQaSlide(nextIdx, -1);
-  });
-  qaNextBtn.addEventListener('click', () => {
-    if (qaAnimating) return;
-    const nextIdx = (qaCurrent + 1) % qaSlides.length;
-    showQaSlide(nextIdx, 1);
-  });
-}
-// 최초 1개만 보이게
-qaSlides.forEach((slide, i) => {
-  slide.classList.toggle('active', i === qaCurrent);
-});
