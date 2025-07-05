@@ -13,7 +13,10 @@ import {
   orderBy, 
   limit, 
   serverTimestamp,
-  getDocs
+  getDocs,
+  setDoc,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // DOM 요소들
@@ -51,6 +54,14 @@ const signupError = document.getElementById('signup-error');
 const anonymousName = document.getElementById('anonymous-name');
 const anonymousSubmit = document.getElementById('anonymous-submit');
 const anonymousError = document.getElementById('anonymous-error');
+
+// 프로필 설정 관련 요소들
+const profileBtn = document.getElementById('profile-btn');
+const profileModal = document.getElementById('profile-modal');
+const closeProfileModalBtn = document.getElementById('close-profile-modal');
+const profileUsername = document.getElementById('profile-username');
+const profileSubmit = document.getElementById('profile-submit');
+const profileError = document.getElementById('profile-error');
 
 let currentUser = null;
 let anonymousUser = null;
@@ -96,20 +107,20 @@ function initializeAuthStateListener() {
         console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
       }
       
-      updateUI();
-      
-      if (user || anonymousUser) {
-        // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
-        console.log('채팅 메시지 구독 시작');
-        subscribeToMessages();
-      } else {
-        // 둘 다 아닌 경우 구독 해제
-        console.log('채팅 메시지 구독 해제');
-        if (unsubscribeMessages) {
-          unsubscribeMessages();
-          unsubscribeMessages = null;
+      updateUI().then(() => {
+        if (user || anonymousUser) {
+          // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
+          console.log('채팅 메시지 구독 시작');
+          subscribeToMessages();
+        } else {
+          // 둘 다 아닌 경우 구독 해제
+          console.log('채팅 메시지 구독 해제');
+          if (unsubscribeMessages) {
+            unsubscribeMessages();
+            unsubscribeMessages = null;
+          }
         }
-      }
+      });
     });
   } else {
     console.error('Firebase Auth가 초기화되지 않았습니다.');
@@ -126,14 +137,27 @@ if (document.readyState === 'loading') {
 }
 
 // UI 업데이트
-function updateUI() {
+async function updateUI() {
   if (currentUser) {
     // 로그인된 사용자
-    userStatus.textContent = `${currentUser.email}님 환영합니다!`;
+    try {
+      const userDoc = await getDoc(doc(window.firebaseDB, 'users', currentUser.uid));
+      if (userDoc.exists()) {
+        const userName = userDoc.data().userName;
+        userStatus.textContent = `${userName}님 환영합니다!`;
+      } else {
+        userStatus.textContent = `${currentUser.email}님 환영합니다!`;
+      }
+    } catch (error) {
+      console.error('사용자 정보 가져오기 오류:', error);
+      userStatus.textContent = `${currentUser.email}님 환영합니다!`;
+    }
+    
     loginBtn.classList.add('hidden');
     logoutBtn.classList.remove('hidden');
     anonymousBtn.classList.add('hidden');
     changeNameBtn.classList.add('hidden');
+    profileBtn.classList.remove('hidden');
     chatInput.disabled = false;
     sendBtn.disabled = false;
   } else if (anonymousUser) {
@@ -143,6 +167,7 @@ function updateUI() {
     logoutBtn.classList.add('hidden');
     anonymousBtn.classList.add('hidden');
     changeNameBtn.classList.remove('hidden');
+    profileBtn.classList.add('hidden');
     chatInput.disabled = false;
     sendBtn.disabled = false;
   } else {
@@ -152,6 +177,7 @@ function updateUI() {
     logoutBtn.classList.add('hidden');
     anonymousBtn.classList.remove('hidden');
     changeNameBtn.classList.add('hidden');
+    profileBtn.classList.add('hidden');
     chatInput.disabled = true;
     sendBtn.disabled = true;
     
@@ -191,10 +217,47 @@ closeAnonymousModalBtn.addEventListener('click', () => {
   clearErrors();
 });
 
+// 프로필 설정 관련 이벤트
+profileBtn.addEventListener('click', async () => {
+  if (currentUser) {
+    try {
+      const userDoc = await getDoc(doc(window.firebaseDB, 'users', currentUser.uid));
+      if (userDoc.exists()) {
+        profileUsername.value = userDoc.data().userName || '';
+      } else {
+        profileUsername.value = '';
+      }
+    } catch (error) {
+      console.error('사용자 정보 가져오기 오류:', error);
+      profileUsername.value = '';
+    }
+  }
+  profileModal.classList.remove('hidden');
+});
+
+closeProfileModalBtn.addEventListener('click', () => {
+  profileModal.classList.add('hidden');
+  clearErrors();
+});
+
 // 모달 외부 클릭 시 닫기
 authModal.addEventListener('click', (e) => {
   if (e.target === authModal) {
     authModal.classList.add('hidden');
+    clearErrors();
+  }
+});
+
+anonymousModal.addEventListener('click', (e) => {
+  if (e.target === anonymousModal) {
+    anonymousModal.classList.add('hidden');
+    clearErrors();
+  }
+});
+
+profileModal.addEventListener('click', (e) => {
+  if (e.target === profileModal) {
+    profileModal.classList.add('hidden');
     clearErrors();
   }
 });
@@ -231,6 +294,49 @@ anonymousSubmit.addEventListener('click', () => {
   anonymousModal.classList.add('hidden');
   clearForm(anonymousName);
   updateUI();
+});
+
+// 프로필 설정 저장
+profileSubmit.addEventListener('click', async () => {
+  const username = profileUsername.value.trim();
+  
+  if (!username) {
+    showError(profileError, '사용자명을 입력해주세요.');
+    return;
+  }
+  
+  if (username.length > 20) {
+    showError(profileError, '사용자명은 20자 이하여야 합니다.');
+    return;
+  }
+  
+  if (!currentUser) {
+    showError(profileError, '로그인이 필요합니다.');
+    return;
+  }
+  
+  try {
+    profileSubmit.disabled = true;
+    profileSubmit.textContent = '저장 중...';
+    
+    // 사용자 정보 업데이트
+    await setDoc(doc(window.firebaseDB, 'users', currentUser.uid), {
+      userName: username,
+      email: currentUser.email,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    
+    profileModal.classList.add('hidden');
+    clearForm(profileUsername);
+    updateUI();
+    
+  } catch (error) {
+    console.error('프로필 업데이트 오류:', error);
+    showError(profileError, '프로필 업데이트에 실패했습니다: ' + error.message);
+  } finally {
+    profileSubmit.disabled = false;
+    profileSubmit.textContent = '저장';
+  }
 });
 
 // 탭 전환
@@ -303,6 +409,13 @@ signupSubmit.addEventListener('click', async () => {
     signupSubmit.textContent = '회원가입 중...';
     
     const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+    
+    // 사용자 이름을 Firestore에 저장
+    await setDoc(doc(window.firebaseDB, 'users', userCredential.user.uid), {
+      userName: username,
+      email: email,
+      createdAt: serverTimestamp()
+    });
     
     authModal.classList.add('hidden');
     clearForm(signupEmail, signupPassword, signupUsername);
@@ -417,7 +530,20 @@ async function sendMessage() {
       // 로그인된 사용자
       messageData.userId = currentUser.uid;
       messageData.userEmail = currentUser.email;
-      messageData.userName = currentUser.email;
+      
+      // 저장된 사용자 이름 가져오기
+      try {
+        const userDoc = await getDoc(doc(window.firebaseDB, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          messageData.userName = userDoc.data().userName;
+        } else {
+          messageData.userName = currentUser.email; // 폴백
+        }
+      } catch (error) {
+        console.error('사용자 이름 가져오기 오류:', error);
+        messageData.userName = currentUser.email; // 폴백
+      }
+      
       messageData.isAnonymous = false;
     } else {
       // 익명 사용자
@@ -582,6 +708,7 @@ function clearErrors() {
   loginError.classList.add('hidden');
   signupError.classList.add('hidden');
   anonymousError.classList.add('hidden');
+  profileError.classList.add('hidden');
 }
 
 function clearForm(...inputs) {
