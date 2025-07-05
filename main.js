@@ -163,7 +163,7 @@ toggleBookListBtn.addEventListener('click', () => {
 
 // Daily Menu Roulette Logic
 const menuItems = [
-  '삼겹살', '치킨', '라면', '초밥', '김치찌개', '떡볶이', '족발', '라멘', '리조또', '제육볶음', '감자탕', '갈비탕', '갈비', '돈까스', '냉면', '햄버거', '피자', '파스타', '우동', '생선구이', '게장', '백반'
+  '삼겹살', '치킨', '라면', '초밥', '김치찌개', '떡볶이', '족발', '라멘', '리조또', '제육볶음', '감자탕', '갈비탕', '갈비', '돈까스', '냉면', '햄버거', '피자', '파스타', '우동', '생선구이', '게장', '백반', '국밥', '칼국수', '편의점', '카레', '덮밥', '알밥', '치마덮', '샐러드', '포케'
 ];
 const rouletteDisplay = document.getElementById('roulette-display');
 const spinRouletteBtn = document.getElementById('spin-roulette');
