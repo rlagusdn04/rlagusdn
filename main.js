@@ -45,9 +45,19 @@ updateVolume();
 
 // Auto-play on user interaction (if allowed by browser)
 document.addEventListener('DOMContentLoaded', () => {
-  audioPlayer.play().catch(error => {
-    console.log('Autoplay prevented:', error);
-  });
+  // 사용자 상호작용 후 자동 재생 시도
+  const tryAutoplay = () => {
+    audioPlayer.play().catch(error => {
+      console.log('Autoplay prevented:', error);
+    });
+  };
+  
+  // 페이지 로드 시 한 번 시도
+  tryAutoplay();
+  
+  // 사용자 상호작용 시 재생 시도
+  document.addEventListener('click', tryAutoplay, { once: true });
+  document.addEventListener('keydown', tryAutoplay, { once: true });
 });
 
 // Shuffle music on title click

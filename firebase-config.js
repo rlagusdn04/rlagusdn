@@ -1,7 +1,7 @@
 // Firebase 설정 및 초기화
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, initializeFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
 // Firebase 설정
@@ -18,17 +18,13 @@ const firebaseConfig = {
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-// Firestore 설정 (성능 최적화)
-const firestoreSettings = {
+// Firestore 초기화 (설정 포함)
+const db = initializeFirestore(app, {
   cacheSizeBytes: 50 * 1024 * 1024, // 50MB 캐시
   experimentalForceLongPolling: true, // 긴 폴링 사용
   useFetchStreams: false // fetch streams 비활성화
-};
-
-// Firestore 설정 적용
-db.settings(firestoreSettings);
+});
 
 const analytics = getAnalytics(app);
 

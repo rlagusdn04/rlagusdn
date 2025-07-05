@@ -75,16 +75,20 @@ image.onload = () => {
 };
 
 document.addEventListener('mousedown', () => {
-  levelUpAnim.reset();
-  currentAnim = levelUpAnim;
-  isMouseDown = true;
-  isFlipped = !isFlipped;
+  if (levelUpAnim && currentAnim) {
+    levelUpAnim.reset();
+    currentAnim = levelUpAnim;
+    isMouseDown = true;
+    isFlipped = !isFlipped;
+  }
 });
 
 document.addEventListener('mouseup', () => {
-  idleAnim.reset();
-  currentAnim = idleAnim;
-  isMouseDown = false;
+  if (idleAnim && currentAnim) {
+    idleAnim.reset();
+    currentAnim = idleAnim;
+    isMouseDown = false;
+  }
 });
 
 function loop(timestamp) {
@@ -130,7 +134,9 @@ window.addEventListener('resize', () => {
 // Handle visibility change to pause animation when the tab is not visible
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    currentAnim.reset();
+    if (currentAnim) {
+      currentAnim.reset();
+    }
   } else {
     lastTime = performance.now();
     requestAnimationFrame(loop);

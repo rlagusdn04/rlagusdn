@@ -79,36 +79,51 @@ function generateRandomUID() {
 }
 
 // 인증 상태 모니터링
-onAuthStateChanged(window.firebaseAuth, (user) => {
-  console.log('인증 상태 변경:', user ? '로그인됨' : '로그아웃됨');
-  currentUser = user;
-  
-  if (user) {
-    // 로그인된 경우 익명 사용자 정보 초기화
-    console.log('로그인 사용자:', user.email);
-    anonymousUser = null;
-    localStorage.removeItem('anonymousUser');
+function initializeAuthStateListener() {
+  if (window.firebaseAuth) {
+    onAuthStateChanged(window.firebaseAuth, (user) => {
+      console.log('인증 상태 변경:', user ? '로그인됨' : '로그아웃됨');
+      currentUser = user;
+      
+      if (user) {
+        // 로그인된 경우 익명 사용자 정보 초기화
+        console.log('로그인 사용자:', user.email);
+        anonymousUser = null;
+        localStorage.removeItem('anonymousUser');
+      } else {
+        // 로그아웃된 경우 익명 사용자 정보 복원
+        const hasAnonymousUser = loadAnonymousUser();
+        console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
+      }
+      
+      updateUI();
+      
+      if (user || anonymousUser) {
+        // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
+        console.log('채팅 메시지 구독 시작');
+        subscribeToMessages();
+      } else {
+        // 둘 다 아닌 경우 구독 해제
+        console.log('채팅 메시지 구독 해제');
+        if (unsubscribeMessages) {
+          unsubscribeMessages();
+          unsubscribeMessages = null;
+        }
+      }
+    });
   } else {
-    // 로그아웃된 경우 익명 사용자 정보 복원
-    const hasAnonymousUser = loadAnonymousUser();
-    console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
+    console.error('Firebase Auth가 초기화되지 않았습니다.');
+    // 1초 후 다시 시도
+    setTimeout(initializeAuthStateListener, 1000);
   }
-  
-  updateUI();
-  
-  if (user || anonymousUser) {
-    // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
-    console.log('채팅 메시지 구독 시작');
-    subscribeToMessages();
-  } else {
-    // 둘 다 아닌 경우 구독 해제
-    console.log('채팅 메시지 구독 해제');
-    if (unsubscribeMessages) {
-      unsubscribeMessages();
-      unsubscribeMessages = null;
-    }
-  }
-});
+}
+
+// Firebase 로드 완료 후 인증 상태 리스너 초기화
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeAuthStateListener);
+} else {
+  initializeAuthStateListener();
+}
 
 // UI 업데이트
 function updateUI() {
