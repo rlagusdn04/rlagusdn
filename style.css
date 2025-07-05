@@ -342,60 +342,9 @@ body.dark-theme {
   margin-right: 10px;
 }
 
-/* Book List Section */
-.book-list-section {
-  text-align: center;
-}
 
-#book-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
-#book-list li {
-  background-color: #222222;
-  padding: 8px 15px;
-  border-radius: 5px;
-  font-size: 1rem;
-  color: #e0e0e0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
 
-#book-list.hidden {
-  display: none;
-}
-
-/* Similarity Test Section */
-.similarity-test-section {
-  text-align: center;
-}
-
-.similarity-test-container {
-  background-color: #222222;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  max-width: 400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.similarity-test-description {
-  font-size: 1.2rem;
-  color: #c0c0c0;
-}
 
 /* Utest.html specific styles */
 body.utest-page {
@@ -595,40 +544,7 @@ body.utest-page {
 }
 
 
-/* Daily Menu Roulette Section */
-.daily-menu-roulette-section {
-  text-align: center;
-}
 
-.roulette-container {
-  background-color: #222222;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  max-width: 400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.roulette-display {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #ffffff;
-  min-height: 1.2em; /* Ensure consistent height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.roulette-flash {
-  color: #ffffff;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.6), 0 0 24px rgba(255, 255, 255, 0.4);
-  transition: color 0.2s, text-shadow 0.2s;
-}
 
 /* Music Section */
 .music-controls-container {
@@ -1237,6 +1153,145 @@ body.utest-page {
 
 .error-message.hidden {
   display: none;
+}
+
+/* Contents 섹션 스타일 */
+.contents-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 30px;
+  margin: 40px 0;
+}
+
+.contents-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.content-card h3 {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.content-card p {
+  color: #b0b0b0;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.content-card .btn {
+  margin: 0 auto;
+}
+
+.content-card .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 도서 리스트 스타일 */
+#book-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0 0;
+  text-align: left;
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#book-list li {
+  color: #e0e0e0;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+#book-list li:last-child {
+  border-bottom: none;
+}
+
+#book-list li:hover {
+  color: #ffffff;
+}
+
+#book-list.hidden {
+  display: none;
+}
+
+/* 룰렛 컨테이너 스타일 */
+.roulette-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.roulette-display {
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-weight: 600;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.roulette-flash {
+  animation: flash 0.4s ease-in-out;
+}
+
+@keyframes flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(255, 255, 255, 0.2); }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .contents-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .content-card {
+    padding: 20px;
+  }
+  
+  .content-card h3 {
+    font-size: 1.3rem;
+  }
+  
+  #book-list {
+    max-height: 250px;
+  }
 }
 
 /* 유틸리티 클래스 */

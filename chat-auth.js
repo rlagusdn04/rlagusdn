@@ -12,7 +12,8 @@ import {
   query, 
   orderBy, 
   limit, 
-  serverTimestamp 
+  serverTimestamp,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // DOM 요소들
@@ -317,10 +318,76 @@ chatInput.addEventListener('keypress', (e) => {
   }
 });
 
+// 테스트 메시지 전송 (디버깅용)
+window.sendTestMessage = async () => {
+  console.log('테스트 메시지 전송 시작');
+  
+  if (!window.firebaseDB) {
+    console.error('Firebase DB가 없습니다!');
+    return;
+  }
+  
+  try {
+    const testMessage = {
+      text: '테스트 메시지 - ' + new Date().toLocaleTimeString(),
+      userId: 'test_user',
+      userName: '테스트 사용자',
+      isAnonymous: true,
+      timestamp: serverTimestamp()
+    };
+    
+    const docRef = await addDoc(collection(window.firebaseDB, 'messages'), testMessage);
+    console.log('테스트 메시지 전송 완료:', docRef.id);
+  } catch (error) {
+    console.error('테스트 메시지 전송 실패:', error);
+    console.error('에러 코드:', error.code);
+    console.error('에러 메시지:', error.message);
+  }
+};
+
+// Firebase 연결 테스트 (디버깅용)
+window.testFirebaseConnection = async () => {
+  console.log('Firebase 연결 테스트 시작');
+  
+  if (!window.firebaseDB) {
+    console.error('Firebase DB가 없습니다!');
+    return false;
+  }
+  
+  try {
+    // 간단한 읽기 테스트
+    const testQuery = query(collection(window.firebaseDB, 'messages'), limit(1));
+    const snapshot = await getDocs(testQuery);
+    console.log('Firebase 읽기 테스트 성공:', snapshot.docs.length, '개 문서');
+    return true;
+  } catch (error) {
+    console.error('Firebase 연결 테스트 실패:', error);
+    console.error('에러 코드:', error.code);
+    console.error('에러 메시지:', error.message);
+    return false;
+  }
+};
+
 async function sendMessage() {
   const message = chatInput.value.trim();
   
-  if (!message || (!currentUser && !anonymousUser)) return;
+  if (!message || (!currentUser && !anonymousUser)) {
+    console.log('메시지 전송 조건 불충족:', { message, currentUser: !!currentUser, anonymousUser: !!anonymousUser });
+    return;
+  }
+  
+  // Firebase 연결 확인
+  if (!window.firebaseDB) {
+    console.error('Firebase DB가 초기화되지 않았습니다!');
+    alert('Firebase 연결에 문제가 있습니다. 페이지를 새로고침해주세요.');
+    return;
+  }
+  
+  // 중복 전송 방지
+  if (sendBtn.disabled) {
+    console.log('이미 전송 중입니다.');
+    return;
+  }
   
   try {
     sendBtn.disabled = true;
@@ -344,16 +411,19 @@ async function sendMessage() {
       messageData.isAnonymous = true;
     }
     
+    console.log('메시지 전송 시작:', messageData);
+    
     // 메시지 전송
-    await addDoc(collection(window.firebaseDB, 'messages'), messageData);
+    const docRef = await addDoc(collection(window.firebaseDB, 'messages'), messageData);
+    
+    console.log('메시지 전송 완료, 문서 ID:', docRef.id);
     
     // 입력창 비우기
     chatInput.value = '';
     
-    console.log('메시지 전송 완료:', messageData);
   } catch (error) {
     console.error('메시지 전송 오류:', error);
-    alert('메시지 전송에 실패했습니다.');
+    alert('메시지 전송에 실패했습니다: ' + error.message);
   } finally {
     sendBtn.disabled = false;
     chatInput.disabled = false;
@@ -365,32 +435,72 @@ async function sendMessage() {
 function subscribeToMessages() {
   console.log('메시지 구독 시작...');
   
-  const messagesQuery = query(
-    collection(window.firebaseDB, 'messages'),
-    orderBy('timestamp', 'desc'),
-    limit(50)
-  );
+  // Firebase 연결 확인
+  if (!window.firebaseDB) {
+    console.error('Firebase DB가 초기화되지 않았습니다!');
+    alert('Firebase 연결에 문제가 있습니다. 페이지를 새로고침해주세요.');
+    return;
+  }
   
-  unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-    console.log('새 메시지 수신:', snapshot.docs.length, '개');
+  // 기존 구독이 있다면 해제
+  if (unsubscribeMessages) {
+    console.log('기존 구독 해제');
+    unsubscribeMessages();
+    unsubscribeMessages = null;
+  }
+  
+  try {
+    // 간단한 쿼리로 시작 (정렬 없이)
+    const messagesQuery = query(
+      collection(window.firebaseDB, 'messages'),
+      limit(50)
+    );
     
-    const messages = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      messages.push({ 
-        id: doc.id, 
-        ...data,
-        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+    console.log('Firestore 쿼리 생성 완료');
+    
+    unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+      console.log('새 메시지 수신:', snapshot.docs.length, '개');
+      
+      const messages = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        messages.push({ 
+          id: doc.id, 
+          ...data,
+          timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+        });
       });
+      
+      // 클라이언트에서 시간순 정렬
+      messages.sort((a, b) => a.timestamp - b.timestamp);
+      displayMessages(messages);
+    }, (error) => {
+      console.error('메시지 구독 오류:', error);
+      console.error('에러 코드:', error.code);
+      console.error('에러 메시지:', error.message);
+      
+      // 에러 발생 시 구독 해제
+      if (unsubscribeMessages) {
+        unsubscribeMessages();
+        unsubscribeMessages = null;
+      }
+      
+      // 구체적인 에러 메시지 표시
+      let errorMessage = '채팅 연결에 문제가 발생했습니다.';
+      if (error.code === 'permission-denied') {
+        errorMessage = 'Firestore 보안 규칙에 문제가 있습니다. 관리자에게 문의하세요.';
+      } else if (error.code === 'unavailable') {
+        errorMessage = 'Firebase 서비스에 연결할 수 없습니다. 네트워크를 확인해주세요.';
+      }
+      
+      alert(errorMessage + '\n페이지를 새로고침해주세요.');
     });
     
-    // 시간순으로 정렬 (최신 메시지가 아래에)
-    messages.reverse();
-    displayMessages(messages);
-  }, (error) => {
-    console.error('메시지 구독 오류:', error);
-    alert('채팅 연결에 문제가 발생했습니다. 페이지를 새로고침해주세요.');
-  });
+    console.log('메시지 구독 설정 완료');
+  } catch (error) {
+    console.error('메시지 구독 설정 오류:', error);
+    alert('채팅 연결 설정에 실패했습니다: ' + error.message);
+  }
 }
 
 // 메시지 표시
