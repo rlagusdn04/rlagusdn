@@ -277,6 +277,7 @@ document.addEventListener('DOMContentLoaded', updateNavButtons);
 // 프로필 이미지 1분마다 교체 + 클릭 시 수동 변경
 const profileImage = document.querySelector('.profile-image');
 const profileImages = [
+  'assets/profiles/0.jpg',
   'assets/profiles/1.jpg',
   'assets/profiles/2.jpg',
   'assets/profiles/3.jpg',
@@ -296,7 +297,8 @@ const profileImages = [
   'assets/profiles/17.PNG',
   'assets/profiles/18.jpg',
   'assets/profiles/20.PNG',
-  'assets/profiles/21.jpg'
+  'assets/profiles/21.jpg',
+  'assets/profiles/22.jpg'
 ];
 let currentProfileIdx = 0;
 
