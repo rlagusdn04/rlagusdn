@@ -79,24 +79,29 @@ function generateRandomUID() {
 
 // 인증 상태 모니터링
 onAuthStateChanged(window.firebaseAuth, (user) => {
+  console.log('인증 상태 변경:', user ? '로그인됨' : '로그아웃됨');
   currentUser = user;
   
   if (user) {
     // 로그인된 경우 익명 사용자 정보 초기화
+    console.log('로그인 사용자:', user.email);
     anonymousUser = null;
     localStorage.removeItem('anonymousUser');
   } else {
     // 로그아웃된 경우 익명 사용자 정보 복원
-    loadAnonymousUser();
+    const hasAnonymousUser = loadAnonymousUser();
+    console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
   }
   
   updateUI();
   
   if (user || anonymousUser) {
     // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
+    console.log('채팅 메시지 구독 시작');
     subscribeToMessages();
   } else {
     // 둘 다 아닌 경우 구독 해제
+    console.log('채팅 메시지 구독 해제');
     if (unsubscribeMessages) {
       unsubscribeMessages();
       unsubscribeMessages = null;
@@ -319,6 +324,7 @@ async function sendMessage() {
   
   try {
     sendBtn.disabled = true;
+    chatInput.disabled = true;
     
     const messageData = {
       text: message,
@@ -338,19 +344,27 @@ async function sendMessage() {
       messageData.isAnonymous = true;
     }
     
+    // 메시지 전송
     await addDoc(collection(window.firebaseDB, 'messages'), messageData);
     
+    // 입력창 비우기
     chatInput.value = '';
+    
+    console.log('메시지 전송 완료:', messageData);
   } catch (error) {
     console.error('메시지 전송 오류:', error);
     alert('메시지 전송에 실패했습니다.');
   } finally {
     sendBtn.disabled = false;
+    chatInput.disabled = false;
+    chatInput.focus(); // 포커스 복원
   }
 }
 
 // 실시간 메시지 구독
 function subscribeToMessages() {
+  console.log('메시지 구독 시작...');
+  
   const messagesQuery = query(
     collection(window.firebaseDB, 'messages'),
     orderBy('timestamp', 'desc'),
@@ -358,9 +372,16 @@ function subscribeToMessages() {
   );
   
   unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+    console.log('새 메시지 수신:', snapshot.docs.length, '개');
+    
     const messages = [];
     snapshot.forEach((doc) => {
-      messages.push({ id: doc.id, ...doc.data() });
+      const data = doc.data();
+      messages.push({ 
+        id: doc.id, 
+        ...data,
+        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+      });
     });
     
     // 시간순으로 정렬 (최신 메시지가 아래에)
@@ -368,27 +389,48 @@ function subscribeToMessages() {
     displayMessages(messages);
   }, (error) => {
     console.error('메시지 구독 오류:', error);
+    alert('채팅 연결에 문제가 발생했습니다. 페이지를 새로고침해주세요.');
   });
 }
 
 // 메시지 표시
 function displayMessages(messages) {
+  console.log('메시지 표시:', messages.length, '개');
+  
   chatMessages.innerHTML = '';
+  
+  if (messages.length === 0) {
+    chatMessages.innerHTML = `
+      <div class="welcome-message">
+        <p>아직 메시지가 없습니다. 첫 번째 메시지를 보내보세요!</p>
+      </div>
+    `;
+    return;
+  }
   
   messages.forEach(message => {
     const messageElement = document.createElement('div');
     const currentUserId = currentUser?.uid || anonymousUser?.uid;
     messageElement.className = `message ${message.userId === currentUserId ? 'own' : 'other'}`;
     
-    const timestamp = message.timestamp ? 
-      new Date(message.timestamp.toDate()).toLocaleTimeString('ko-KR', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }) : '';
+    // 타임스탬프 처리 개선
+    let timestamp = '';
+    if (message.timestamp) {
+      try {
+        const date = message.timestamp instanceof Date ? message.timestamp : message.timestamp.toDate();
+        timestamp = date.toLocaleTimeString('ko-KR', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      } catch (error) {
+        console.error('타임스탬프 변환 오류:', error);
+        timestamp = '방금 전';
+      }
+    }
     
     const displayName = message.isAnonymous ? 
-      `${message.userName} (익명)` : 
-      message.userName;
+      `${escapeHtml(message.userName)} (익명)` : 
+      escapeHtml(message.userName);
     
     messageElement.innerHTML = `
       <div class="message-header">${displayName}</div>
@@ -400,7 +442,9 @@ function displayMessages(messages) {
   });
   
   // 스크롤을 맨 아래로
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  setTimeout(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 100);
 }
 
 // 유틸리티 함수들

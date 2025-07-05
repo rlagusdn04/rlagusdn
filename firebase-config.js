@@ -24,4 +24,10 @@ const analytics = getAnalytics(app);
 // 전역으로 내보내기
 window.firebaseAuth = auth;
 window.firebaseDB = db;
-window.firebaseAnalytics = analytics; 
+window.firebaseAnalytics = analytics;
+
+// Firebase 초기화 확인
+console.log('Firebase 초기화 완료:');
+console.log('- Auth:', !!auth);
+console.log('- Firestore:', !!db);
+console.log('- Analytics:', !!analytics); 
