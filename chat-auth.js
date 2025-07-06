@@ -67,6 +67,10 @@ let currentUser = null;
 let anonymousUser = null;
 let unsubscribeMessages = null;
 
+// 전역 변수로 설정 (Contact 채팅에서 접근 가능하도록)
+window.currentUser = currentUser;
+window.anonymousUser = anonymousUser;
+
 // 익명 사용자 정보를 로컬 스토리지에서 불러오기
 function loadAnonymousUser() {
   const saved = localStorage.getItem('anonymousUser');
@@ -95,15 +99,18 @@ function initializeAuthStateListener() {
     onAuthStateChanged(window.firebaseAuth, (user) => {
       console.log('인증 상태 변경:', user ? '로그인됨' : '로그아웃됨');
       currentUser = user;
+      window.currentUser = currentUser; // 전역 변수 업데이트
       
       if (user) {
         // 로그인된 경우 익명 사용자 정보 초기화
         console.log('로그인 사용자:', user.email);
         anonymousUser = null;
+        window.anonymousUser = anonymousUser; // 전역 변수 업데이트
         localStorage.removeItem('anonymousUser');
       } else {
         // 로그아웃된 경우 익명 사용자 정보 복원
         const hasAnonymousUser = loadAnonymousUser();
+        window.anonymousUser = anonymousUser; // 전역 변수 업데이트
         console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
       }
       
@@ -188,6 +195,11 @@ async function updateUI() {
         <p>로그인하거나 익명으로 참여할 수 있습니다.</p>
       </div>
     `;
+  }
+  
+  // Contact 채팅 UI 업데이트
+  if (window.updateContactChatUI) {
+    window.updateContactChatUI();
   }
 }
 
@@ -290,6 +302,7 @@ anonymousSubmit.addEventListener('click', () => {
     isAnonymous: true
   };
   
+  window.anonymousUser = anonymousUser; // 전역 변수 업데이트
   saveAnonymousUser();
   anonymousModal.classList.add('hidden');
   clearForm(anonymousName);

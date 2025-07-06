@@ -20,6 +20,13 @@
         <a href="#chat-section" class="nav-link">Chat</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
+      <div class="user-auth-bar">
+        <button id="anonymous-btn" class="btn secondary-btn">익명 참여</button>
+        <button id="login-btn" class="btn secondary-btn">로그인</button>
+        <button id="logout-btn" class="btn secondary-btn hidden">로그아웃</button>
+        <button id="change-name-btn" class="btn secondary-btn hidden">이름 변경</button>
+        <button id="profile-btn" class="btn secondary-btn hidden">프로필 설정</button>
+      </div>
     </header>
 
     <section id="hero" class="hero-section">
@@ -200,25 +207,12 @@
       </div>
     </section>
 
-
-
-
-
-
-
-
-
     <section id="chat-section" class="section chat-section">
       <h2 class="section-title">익명 실시간 채팅</h2>
       <div class="chat-container">
         <div class="chat-header">
           <div class="user-info">
             <span id="user-status">익명으로 채팅하기</span>
-            <button id="anonymous-btn" class="btn secondary-btn">익명 참여</button>
-            <button id="login-btn" class="btn secondary-btn">로그인</button>
-            <button id="logout-btn" class="btn secondary-btn hidden">로그아웃</button>
-            <button id="change-name-btn" class="btn secondary-btn hidden">이름 변경</button>
-            <button id="profile-btn" class="btn secondary-btn hidden">프로필 설정</button>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages">
@@ -236,11 +230,23 @@
 
     <section id="contact" class="section contact-section">
       <h2 class="section-title">Get in Touch</h2>
-      <p class="contact-description">Feel free to reach out if you have any questions or just want to connect!</p>
-      <div class="contact-link-container" style="text-align: center;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfi7yeiuG8aclcmjbJfaC9IQCEMG7pgETjJegav4-szazgNuw/viewform?usp=header" class="btn primary-btn" target="_blank" style="display: inline-block; margin-top: 20px;">
-          Contact Me via Google Form &rarr;
-        </a>
+      <p class="contact-description">개발자와 1:1 실시간 채팅이 가능합니다. 궁금한 점이나 문의가 있다면 바로 메시지를 남겨보세요!</p>
+      <div class="contact-chat-container" style="max-width:420px; margin:0 auto; background:#23272f; border-radius:1.2em; box-shadow:0 2px 12px rgba(0,0,0,0.10); padding:1.5em 1em;">
+        <div class="contact-chat-header" style="display:flex; align-items:center; gap:0.7em; margin-bottom:0.7em;">
+          <img src="assets/profiles/0.jpg" alt="Dev Profile" style="width:38px; height:38px; border-radius:50%; border:1.5px solid #ffd700;">
+          <span style="font-weight:700; color:#ffd700;">개발자 (Hyunwoo Kim)</span>
+          <span id="dev-status" style="font-size:0.95em; color:#7fff7f; margin-left:auto;">온라인</span>
+        </div>
+        <div id="contact-chat-messages" style="height:180px; overflow-y:auto; background:#181a20; border-radius:0.7em; padding:0.7em; margin-bottom:0.8em; font-size:1.05em;">
+          <div class="welcome-message">
+            <p>안녕하세요! 개발자와 1:1 채팅을 시작해보세요.</p>
+            <p>로그인하거나 익명으로 참여할 수 있습니다.</p>
+          </div>
+        </div>
+        <div style="display:flex; gap:0.5em;">
+          <input type="text" id="contact-chat-input" placeholder="메시지를 입력하세요..." style="flex:1; padding:0.7em 1em; border-radius:1.2em; border:1.5px solid #ffd700; background:#181a20; color:#fff; font-size:1.05em;" disabled>
+          <button id="contact-chat-send" class="btn primary-btn" style="border-radius:1.2em; font-size:1.05em;" disabled>전송</button>
+        </div>
       </div>
     </section>
 
@@ -331,13 +337,16 @@
   <div id="anonymous-modal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn" id="close-anonymous-modal">&times;</span>
-      <h3>익명 사용자 이름 설정</h3>
-      <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center;">
-        채팅에서 사용할 이름을 입력해주세요.
+      <div class="anonymous-profile-preview" style="text-align:center; margin-bottom:10px;">
+        <img src="assets/profiles/0.jpg" alt="Profile Preview" id="anonymous-profile-img" style="width:60px; height:60px; border-radius:50%; border:2px solid #888; margin-bottom:8px;">
+      </div>
+      <h3 style="margin-bottom:8px;">익명 사용자 이름 설정</h3>
+      <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center; font-size:1.05em; font-weight:500;">
+        채팅에서 사용할 이름을 입력해주세요.<br>다른 서비스에서도 동일하게 사용됩니다.
       </p>
-      <input type="text" id="anonymous-name" placeholder="사용자명 (예: 익명123)" maxlength="20" required>
-      <button id="anonymous-submit" class="btn primary-btn">채팅 참여</button>
-      <p id="anonymous-error" class="error-message hidden"></p>
+      <input type="text" id="anonymous-name" placeholder="사용자명 (예: 익명123)" maxlength="20" required style="font-size:1.1em; padding:0.7em 1em; border-radius:1.2em; border:1.5px solid #aaa; margin-bottom:10px; width:90%; display:block; margin-left:auto; margin-right:auto;">
+      <button id="anonymous-submit" class="btn primary-btn" style="width:90%; font-size:1.1em; border-radius:1.2em;">채팅 참여</button>
+      <p id="anonymous-error" class="error-message hidden" style="margin-top:10px;"></p>
     </div>
   </div>
 
@@ -358,6 +367,7 @@
   <canvas id="mouseCanvas" class="mouse-canvas"></canvas>
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="chat-auth.js"></script>
+  <script type="module" src="contact-chat.js"></script>
   <script src="fractal-bg.js"></script>
   <script src="mouse-animation.js"></script>
   <script src="main.js"></script>
