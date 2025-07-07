@@ -44,46 +44,61 @@ async function sendContactMessage() {
   try {
     contactChatSend.disabled = true;
     contactChatInput.disabled = true;
-    
-    const messageData = {
-      text: message,
-      timestamp: serverTimestamp(),
-      type: 'contact' // Contact 채팅임을 표시
-    };
-    
+
+    // chatId 생성: 항상 [본인 UID, 'ANON_DEV'].sort().join('_')
+    let myUID, myName, isAnonymous, isDev;
     if (window.currentUser) {
-      // 로그인된 사용자
-      messageData.userId = window.currentUser.uid;
-      messageData.userEmail = window.currentUser.email;
-      
+      myUID = window.currentUser.uid;
+      isAnonymous = false;
+      isDev = false;
       // 저장된 사용자 이름 가져오기
       try {
         const userDoc = await getDoc(doc(window.firebaseDB, 'users', window.currentUser.uid));
         if (userDoc.exists()) {
-          messageData.userName = userDoc.data().userName;
+          myName = userDoc.data().userName;
         } else {
-          messageData.userName = window.currentUser.email; // 폴백
+          myName = window.currentUser.email; // 폴백
         }
       } catch (error) {
         console.error('사용자 이름 가져오기 오류:', error);
-        messageData.userName = window.currentUser.email; // 폴백
+        myName = window.currentUser.email; // 폴백
       }
-      
-      messageData.isAnonymous = false;
     } else {
-      // 익명 사용자
-      messageData.userId = window.anonymousUser.uid;
-      messageData.userName = window.anonymousUser.name;
-      messageData.isAnonymous = true;
+      myUID = window.anonymousUser.uid;
+      myName = window.anonymousUser.name;
+      isAnonymous = true;
+      isDev = window.anonymousUser.isDev;
     }
-    
-    console.log('Contact 메시지 전송 시작:', messageData);
-    
-    // Contact 메시지를 별도 컬렉션에 저장
-    const docRef = await addDoc(collection(window.firebaseDB, 'contact-messages'), messageData);
-    
+    const DEV_UID = 'ANON_DEV';
+    let chatId;
+    if (isDev) {
+      // DEV 모드에서는 상대방을 지정할 수 없으므로, 일반 유저가 접속한 경우만 처리
+      // (여기서는 DEV가 직접 메시지 전송은 막음, 필요시 UI에서 상대 UID를 선택하도록 확장)
+      alert('DEV 모드에서는 일반 유저가 먼저 메시지를 보내야 합니다.');
+      contactChatSend.disabled = false;
+      contactChatInput.disabled = false;
+      return;
+    } else {
+      chatId = [myUID, DEV_UID].sort().join('_');
+    }
+
+    const messageData = {
+      text: message,
+      timestamp: serverTimestamp(),
+      type: 'contact',
+      userId: myUID,
+      userName: myName,
+      isAnonymous: isAnonymous,
+      isDev: isDev || false
+    };
+
+    console.log('Contact 메시지 전송 시작:', messageData, 'chatId:', chatId);
+
+    // Contact 메시지를 chatId별 하위 컬렉션에 저장
+    const docRef = await addDoc(collection(window.firebaseDB, 'contact-messages', chatId, 'messages'), messageData);
+
     console.log('Contact 메시지 전송 완료, 문서 ID:', docRef.id);
-    
+
     // 입력창 비우기
     contactChatInput.value = '';
     
@@ -114,14 +129,36 @@ function subscribeToContactMessages() {
     contactUnsubscribeMessages = null;
   }
   
+  // chatId 생성: 항상 [본인 UID, 'ANON_DEV'].sort().join('_')
+  let myUID, isDev;
+  if (window.currentUser) {
+    myUID = window.currentUser.uid;
+    isDev = false;
+  } else if (window.anonymousUser) {
+    myUID = window.anonymousUser.uid;
+    isDev = window.anonymousUser.isDev;
+  } else {
+    return;
+  }
+  const DEV_UID = 'ANON_DEV';
+  let chatId;
+  if (isDev) {
+    // DEV 모드에서는 일반 유저가 먼저 메시지를 보내야 하므로 구독하지 않음
+    contactChatMessages.innerHTML = '<div class="welcome-message"><p>DEV 모드에서는 일반 유저가 먼저 메시지를 보내야 합니다.</p></div>';
+    return;
+  } else {
+    chatId = [myUID, DEV_UID].sort().join('_');
+  }
+
   try {
-    // Contact 메시지 쿼리
+    // Contact 메시지 쿼리 (chatId별 하위 컬렉션)
     const contactMessagesQuery = query(
-      collection(window.firebaseDB, 'contact-messages'),
+      collection(window.firebaseDB, 'contact-messages', chatId, 'messages'),
+      orderBy('timestamp', 'asc'),
       limit(50)
     );
     
-    console.log('Contact Firestore 쿼리 생성 완료');
+    console.log('Contact Firestore 쿼리 생성 완료', chatId);
     
     contactUnsubscribeMessages = onSnapshot(contactMessagesQuery, (snapshot) => {
       console.log('새 Contact 메시지 수신:', snapshot.docs.length, '개');

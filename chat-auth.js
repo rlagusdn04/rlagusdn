@@ -295,12 +295,23 @@ anonymousSubmit.addEventListener('click', () => {
     return;
   }
   
-  // 익명 사용자 정보 생성
-  anonymousUser = {
-    uid: generateRandomUID(),
-    name: name,
-    isAnonymous: true
-  };
+  // DEV 모드 분기
+  if (name === 'USER_13') {
+    anonymousUser = {
+      uid: 'ANON_DEV',
+      name: 'DEV',
+      isAnonymous: true,
+      isDev: true
+    };
+  } else {
+    // 익명 사용자 정보 생성
+    anonymousUser = {
+      uid: generateRandomUID(),
+      name: name,
+      isAnonymous: true,
+      isDev: false
+    };
+  }
   
   window.anonymousUser = anonymousUser; // 전역 변수 업데이트
   saveAnonymousUser();
