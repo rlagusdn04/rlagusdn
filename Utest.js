@@ -330,7 +330,7 @@ function showQuestion() {
     if(percent === 100) {
       let stars = parseInt(localStorage.getItem('star') || '0', 10);
       stars += 1000;
-      syncStars(stars); // Firestore+localStorage 동기화
+      updateUserStars(stars);
       alert('축하합니다! 유사도 100% 달성으로 별가루 1000개를 획득했습니다.');
     }
     return;

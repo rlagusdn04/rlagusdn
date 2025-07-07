@@ -132,7 +132,7 @@ function updateMyStars(stars) {
   document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
   saveFishingState();
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
-  if (typeof syncStars === 'function') syncStars(stars); // Firestore+localStorage 동기화
+  if (typeof updateUserStars === 'function') updateUserStars(stars);
 }
 window.updateMyStars = updateMyStars;
 // 별가루 변화 시마다 호출
@@ -232,9 +232,4 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFishingState();
   updateMyStars(window.fishingStars || 0);
   updateFishCounts();
-});
-
-// main.js의 syncStars 함수 사용 (없으면 경고)
-if (typeof syncStars !== 'function') {
-  window.syncStars = function(stars) { console.warn('syncStars 함수가 없습니다. main.js를 먼저 로드하세요.'); };
-} 
+}); 
