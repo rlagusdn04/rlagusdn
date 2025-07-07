@@ -14,6 +14,7 @@ body.starlight-bg.day {
 body.starlight-bg.night {
   background: linear-gradient(160deg, #23243a 0%, #181a20 100%);
   color: #eafbe7;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif';
   transition: background 0.7s cubic-bezier(.4,0,.2,1), color 0.7s;
 }
 .starlight-container {

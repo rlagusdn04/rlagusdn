@@ -17,14 +17,14 @@ const SEED_TYPES = [
   { name: '하늘꽃씨', class: 'seed-type4' }
 ];
 
-// 배경 빛(반딧불이/주황빛) 효과
+// 배경 빛(반딧불이) 효과 (항상 밤)
 const glowContainer = document.createElement('div');
 glowContainer.className = 'background-glows';
 document.body.appendChild(glowContainer);
 
 function randomBetween(a, b) { return Math.random() * (b - a) + a; }
 
-function spawnGlow(isNight) {
+function spawnGlow() {
   const dot = document.createElement('div');
   dot.className = 'glow-dot';
   const size = randomBetween(18, 38);
@@ -33,13 +33,8 @@ function spawnGlow(isNight) {
   dot.style.top = randomBetween(10, 80) + '%';
   dot.style.opacity = 0;
   dot.style.transform = 'scale(0.7)';
-  if (isNight) {
-    dot.style.background = 'rgba(255,255,255,0.85)';
-    dot.style.boxShadow = '0 0 16px 8px #fff8';
-  } else {
-    dot.style.background = 'rgba(255, 200, 80, 0.7)';
-    dot.style.boxShadow = '0 0 18px 8px #ffd58088';
-  }
+  dot.style.background = 'rgba(255,255,255,0.85)';
+  dot.style.boxShadow = '0 0 16px 8px #fff8';
   glowContainer.appendChild(dot);
   setTimeout(() => {
     dot.style.opacity = 1;
@@ -53,9 +48,8 @@ function spawnGlow(isNight) {
 }
 
 setInterval(() => {
-  const isNight = document.body.classList.contains('night');
-  if (glowContainer.childElementCount < (isNight ? 10 : 7)) {
-    spawnGlow(isNight);
+  if (glowContainer.childElementCount < 10) {
+    spawnGlow();
   }
 }, 600);
 
