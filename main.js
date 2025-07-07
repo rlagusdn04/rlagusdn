@@ -9,11 +9,40 @@ const musicList = [
 ];
 
 let currentMusicIdx = 3; // Default to 'Time to Start Another Day'
-const audioPlayer = document.getElementById('audio-player');
-const musicTitle = document.getElementById('music-title');
-const playPauseBtn = document.getElementById('play-pause-btn');
-const volumeSlider = document.getElementById('volume-slider');
-const volumeValue = document.getElementById('volume-value');
+
+// 전역 변수 선언
+let playPauseBtn, volumeSlider, musicTitle, audioPlayer, volumeValue;
+document.addEventListener('DOMContentLoaded', function() {
+  // 요소 할당
+  playPauseBtn = document.getElementById('play-pause-btn');
+  volumeSlider = document.getElementById('volume-slider');
+  musicTitle = document.getElementById('music-title');
+  audioPlayer = document.getElementById('audio-player');
+  volumeValue = document.getElementById('volume-value');
+
+  // 이벤트 바인딩
+  if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
+  if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
+  if (musicTitle) musicTitle.addEventListener('click', () => {
+    let nextIdx;
+    do {
+      nextIdx = Math.floor(Math.random() * musicList.length);
+    } while (nextIdx === currentMusicIdx && musicList.length > 1);
+    currentMusicIdx = nextIdx;
+    updateMusicInfo();
+    audioPlayer.play();
+  });
+  if (audioPlayer) {
+    audioPlayer.addEventListener('play', () => {
+      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    });
+    audioPlayer.addEventListener('pause', () => {
+      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>';
+    });
+  }
+  updateMusicInfo();
+  updateVolume();
+});
 
 function updateMusicInfo() {
   musicTitle.textContent = musicList[currentMusicIdx].title;
@@ -34,34 +63,6 @@ function updateVolume() {
   audioPlayer.volume = volumeSlider.value;
   volumeValue.textContent = Math.round(volumeSlider.value * 100) + '%';
 }
-
-// Event Listeners
-playPauseBtn.addEventListener('click', togglePlayPause);
-volumeSlider.addEventListener('input', updateVolume);
-
-// Initial setup
-updateMusicInfo();
-updateVolume();
-
-// Shuffle music on title click
-musicTitle.addEventListener('click', () => {
-  let nextIdx;
-  do {
-    nextIdx = Math.floor(Math.random() * musicList.length);
-  } while (nextIdx === currentMusicIdx && musicList.length > 1);
-  currentMusicIdx = nextIdx;
-  updateMusicInfo();
-  audioPlayer.play();
-});
-
-// Update play/pause button icon when audio state changes
-audioPlayer.addEventListener('play', () => {
-  playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause icon
-});
-
-audioPlayer.addEventListener('pause', () => {
-  playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>'; // Play icon
-});
 
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
