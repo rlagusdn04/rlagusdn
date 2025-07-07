@@ -119,7 +119,8 @@ document.getElementById('sell-fish').onclick = () => {
   window.fishingStars += stars;
   window.fishingAlbum = [];
   updateFishCounts();
-  if (window.updateMyStars) window.updateMyStars(window.fishingStars);
+  updateMyStars(window.fishingStars);
+  if (window.updateUnifiedRanking) window.updateUnifiedRanking();
   alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
 };
 document.getElementById('upgrade-rod').onclick = () => {
@@ -128,6 +129,7 @@ document.getElementById('upgrade-rod').onclick = () => {
 };
 function updateMyStars(stars) {
   document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
+  if (window.updateUnifiedRanking) window.updateUnifiedRanking();
 }
 window.updateMyStars = updateMyStars;
 // 별가루 변화 시마다 호출
@@ -151,6 +153,7 @@ function catchFish() {
   fishingReward.textContent = `보상: +${reward} 별가루`;
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
   updateFishCounts();
+  updateMyStars(window.fishingStars);
   setTimeout(resetUI, 2000);
 }
 
@@ -179,7 +182,6 @@ donateBtn.onclick = () => {
     window.fishingAlbum = [];
     updateFishCounts();
     updateMyStars(window.fishingStars);
-    // 랭킹 시스템 연동: window.updateUnifiedRanking() 등 호출
     if (window.updateUnifiedRanking) window.updateUnifiedRanking();
     alert(`모든 물고기를 기부해 ${donate} 별가루를 사회에 환원했습니다! (랭킹에 반영됨)`);
   } else {

@@ -22,6 +22,8 @@ function randomBetween(a, b) { return Math.random() * (b - a) + a; }
 function updateInventory() {
   document.getElementById('inventory-seeds').textContent = `씨앗: ${seeds}`;
   document.getElementById('inventory-stars').textContent = `별가루: ${stars}`;
+  if (window.updateMyStars) window.updateMyStars(stars);
+  if (window.updateUnifiedRanking) window.updateUnifiedRanking();
 }
 
 function getCurrentUserName() {
@@ -172,7 +174,6 @@ document.getElementById('buy-plot').onclick = () => {
 document.getElementById('donate-stars').onclick = () => {
   if (stars >= 10) {
     stars -= 10;
-    // 내 이름은 "You"로 가정
     let me = ranking.find(r => r.name === 'You');
     if (!me) {
       me = { name: 'You', amount: 0 };
