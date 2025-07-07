@@ -6,8 +6,9 @@ body.starlight-bg {
   margin: 0;
 }
 body.starlight-bg.day {
-  background: linear-gradient(160deg, #eafbe7 0%, #f4f4f4 100%);
+  background: linear-gradient(160deg, #ffe7b7 0%, #fff4e0 100%);
   color: #222;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif';
   transition: background 0.7s cubic-bezier(.4,0,.2,1), color 0.7s;
 }
 body.starlight-bg.night {
@@ -204,4 +205,23 @@ body.starlight-bg.night {
   .starlight-garden {
     min-height: 320px;
   }
+}
+.header-btns {
+  display: flex;
+  gap: 0.7em;
+  align-items: center;
+}
+.background-glows {
+  position: fixed;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-dot {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(6px);
+  transition: opacity 1.2s, transform 1.2s;
 } 

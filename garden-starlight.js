@@ -17,20 +17,52 @@ const SEED_TYPES = [
   { name: '하늘꽃씨', class: 'seed-type4' }
 ];
 
-// 낮/밤 테마 전환
-const themeToggle = document.getElementById('theme-toggle');
-themeToggle.addEventListener('click', () => {
-  const body = document.body;
-  if (body.classList.contains('day')) {
-    body.classList.remove('day');
-    body.classList.add('night');
-    themeToggle.textContent = '🌙';
+// 배경 빛(반딧불이/주황빛) 효과
+const glowContainer = document.createElement('div');
+glowContainer.className = 'background-glows';
+document.body.appendChild(glowContainer);
+
+function randomBetween(a, b) { return Math.random() * (b - a) + a; }
+
+function spawnGlow(isNight) {
+  const dot = document.createElement('div');
+  dot.className = 'glow-dot';
+  const size = randomBetween(18, 38);
+  dot.style.width = dot.style.height = size + 'px';
+  dot.style.left = randomBetween(5, 95) + '%';
+  dot.style.top = randomBetween(10, 80) + '%';
+  dot.style.opacity = 0;
+  dot.style.transform = 'scale(0.7)';
+  if (isNight) {
+    dot.style.background = 'rgba(255,255,255,0.85)';
+    dot.style.boxShadow = '0 0 16px 8px #fff8';
   } else {
-    body.classList.remove('night');
-    body.classList.add('day');
-    themeToggle.textContent = '🌞';
+    dot.style.background = 'rgba(255, 200, 80, 0.7)';
+    dot.style.boxShadow = '0 0 18px 8px #ffd58088';
   }
-});
+  glowContainer.appendChild(dot);
+  setTimeout(() => {
+    dot.style.opacity = 1;
+    dot.style.transform = 'scale(1.1)';
+  }, 30);
+  setTimeout(() => {
+    dot.style.opacity = 0;
+    dot.style.transform = 'scale(0.7)';
+    setTimeout(() => dot.remove(), 1200);
+  }, randomBetween(1800, 3500));
+}
+
+setInterval(() => {
+  const isNight = document.body.classList.contains('night');
+  if (glowContainer.childElementCount < (isNight ? 10 : 7)) {
+    spawnGlow(isNight);
+  }
+}, 600);
+
+function clearGlows() {
+  while (glowContainer.firstChild) glowContainer.removeChild(glowContainer.firstChild);
+}
+document.getElementById('theme-toggle').addEventListener('click', clearGlows);
 
 function updateInventory() {
   document.getElementById('inventory-seeds').textContent = `씨앗: ${seeds}`;

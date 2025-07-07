@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>조용한 호숫가 낚시</title>
+  <link rel="stylesheet" href="fishing.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+</head>
+<body class="fishing-bg day">
+  <div class="fishing-container">
+    <header class="fishing-header">
+      <h1>🎣 조용한 호숫가 낚시</h1>
+      <button class="btn" id="theme-toggle">🌞/🌙</button>
+      <button class="btn" onclick="window.location.href='index.html'">Contents로</button>
+    </header>
+    <main>
+      <div class="lake-area">
+        <div class="lake-bg"></div>
+        <div id="float" class="float"></div>
+        <div id="fish-anim" class="fish-anim"></div>
+      </div>
+      <div class="fishing-controls">
+        <button id="cast-btn" class="btn">찌 드리우기</button>
+        <button id="catch-btn" class="btn hidden">낚아채기</button>
+      </div>
+      <div class="fishing-info">
+        <div id="catch-result"></div>
+        <div id="fishing-reward"></div>
+      </div>
+    </main>
+    <aside>
+      <div class="fishing-album"></div>
+      <div class="fishing-ranking"></div>
+    </aside>
+  </div>
+  <script src="fishing.js"></script>
+</body>
+</html> 

@@ -298,4 +298,76 @@ setInterval(showNextProfileImage, 60000);
 // 클릭 시 수동 변경
 profileImage.addEventListener('click', showNextProfileImage);
 
+window.updateUnifiedRanking = function() {
+  // 합산 랭킹 영역이 있으면 갱신
+  const rankingBox = document.getElementById('unified-ranking-list');
+  if (!rankingBox) return;
+  // 정원/낚시 랭킹 데이터 합산
+  const gardenRanking = (window.ranking || []).map(r => ({
+    name: r.name,
+    stars: r.amount || 0,
+    fish: 0,
+    maxSize: 0
+  }));
+  const fishingRanking = (window.fishingRanking || []);
+  // 닉네임 기준 합산
+  const allNames = new Set([
+    ...gardenRanking.map(r => r.name),
+    ...fishingRanking.map(r => r.name)
+  ]);
+  const unified = Array.from(allNames).map(name => {
+    const g = gardenRanking.find(r => r.name === name) || { stars: 0 };
+    const f = fishingRanking.find(r => r.name === name) || { stars: 0, fish: 0, maxSize: 0 };
+    return {
+      name,
+      stars: (g.stars || 0) + (f.stars || 0),
+      fish: f.fish || 0,
+      maxSize: f.maxSize || 0
+    };
+  });
+  unified.sort((a, b) => b.stars - a.stars);
+  rankingBox.innerHTML = '';
+  unified.forEach(u => {
+    const li = document.createElement('li');
+    li.textContent = `${u.name} - 별가루: ${u.stars} / 물고기: ${u.fish} / 최대크기: ${u.maxSize}cm`;
+    rankingBox.appendChild(li);
+  });
+};
+
+import { collection, query, orderBy, onSnapshot, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+function getCurrentUserInfo() {
+  if (window.currentUser) {
+    return { uid: window.currentUser.uid, name: window.currentUser.displayName || window.currentUser.email.split('@')[0] };
+  } else if (window.anonymousUser) {
+    return { uid: window.anonymousUser.uid, name: window.anonymousUser.name };
+  }
+  return { uid: 'guest', name: 'Guest' };
+}
+
+// 별가루 획득/소비 시 Firestore에 업데이트
+window.updateMyStars = async function(newStars) {
+  const { uid, name } = getCurrentUserInfo();
+  await setDoc(doc(window.firebaseDB, 'unified-ranking', uid), { name, stars: newStars }, { merge: true });
+};
+
+// 실시간 별가루 랭킹 구독
+function subscribeUnifiedRanking() {
+  const q = query(collection(window.firebaseDB, 'unified-ranking'), orderBy('stars', 'desc'));
+  onSnapshot(q, (snapshot) => {
+    const ranking = [];
+    snapshot.forEach(doc => ranking.push(doc.data()));
+    const rankingBox = document.getElementById('unified-ranking-list');
+    if (!rankingBox) return;
+    rankingBox.innerHTML = '';
+    ranking.forEach(u => {
+      const li = document.createElement('li');
+      li.textContent = `${u.name} - 별가루: ${u.stars}`;
+      rankingBox.appendChild(li);
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', subscribeUnifiedRanking);
+
 
