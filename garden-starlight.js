@@ -1,7 +1,7 @@
 // 별빛 온실 게임 - 기본 인터랙션 (프론트엔드 더미)
 
-const NUM_INITIAL_PLOTS = 2;
-const MAX_PLOTS = 16;
+const NUM_INITIAL_PLOTS = 3;
+const MAX_PLOTS = 3;
 let plots = Array(NUM_INITIAL_PLOTS).fill('empty');
 let seeds = 3;
 let stars = 100;
@@ -20,6 +20,8 @@ const SEED_TYPES = [
 function randomBetween(a, b) { return Math.random() * (b - a) + a; }
 
 function saveGardenState() {
+  // 항상 3개로 고정
+  plots = Array(NUM_INITIAL_PLOTS).fill().map((_, i) => plots[i] || 'empty');
   localStorage.setItem('garden-plots', JSON.stringify(plots));
   localStorage.setItem('garden-seeds', seeds);
   localStorage.setItem('garden-stars', stars);
@@ -30,6 +32,8 @@ function loadGardenState() {
   const savedSeeds = localStorage.getItem('garden-seeds');
   const savedStars = localStorage.getItem('garden-stars');
   plots = savedPlots ? JSON.parse(savedPlots) : Array(NUM_INITIAL_PLOTS).fill('empty');
+  // 항상 3개로 고정
+  plots = Array(NUM_INITIAL_PLOTS).fill().map((_, i) => plots[i] || 'empty');
   seeds = savedSeeds ? parseInt(savedSeeds) : 3;
   stars = savedStars ? parseInt(savedStars) : 100;
 }

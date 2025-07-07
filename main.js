@@ -359,24 +359,37 @@ function getCurrentUserInfo() {
 // 별가루 획득/소비 시 Firestore에 업데이트
 window.updateMyStars = async function(newStars) {
   const { uid, name } = getCurrentUserInfo();
-  await setDoc(doc(window.firebaseDB, 'unified-ranking', uid), { name, stars: newStars }, { merge: true });
+  try {
+    await setDoc(doc(window.firebaseDB, 'unified-ranking', uid), { name, stars: newStars }, { merge: true });
+  } catch (err) {
+    console.error('Firestore setDoc error:', err);
+    alert('별가루 랭킹 저장 중 오류가 발생했습니다. 콘솔을 확인하세요.');
+  }
 };
 
 // 실시간 별가루 랭킹 구독
 function subscribeUnifiedRanking() {
   const q = query(collection(window.firebaseDB, 'unified-ranking'), orderBy('stars', 'desc'));
-  onSnapshot(q, (snapshot) => {
-    const ranking = [];
-    snapshot.forEach(doc => ranking.push(doc.data()));
-    const rankingBox = document.getElementById('unified-ranking-list');
-    if (!rankingBox) return;
-    rankingBox.innerHTML = '';
-    ranking.forEach(u => {
-      const li = document.createElement('li');
-      li.textContent = `${u.name} - 별가루: ${u.stars}`;
-      rankingBox.appendChild(li);
+  try {
+    onSnapshot(q, (snapshot) => {
+      const ranking = [];
+      snapshot.forEach(doc => ranking.push(doc.data()));
+      const rankingBox = document.getElementById('unified-ranking-list');
+      if (!rankingBox) return;
+      rankingBox.innerHTML = '';
+      ranking.forEach(u => {
+        const li = document.createElement('li');
+        li.textContent = `${u.name} - 별가루: ${u.stars}`;
+        rankingBox.appendChild(li);
+      });
+    }, (err) => {
+      console.error('Firestore onSnapshot error:', err);
+      alert('합산 랭킹 구독 중 오류가 발생했습니다. 콘솔을 확인하세요.');
     });
-  });
+  } catch (err) {
+    console.error('Firestore subscribeUnifiedRanking error:', err);
+    alert('합산 랭킹 구독 중 오류가 발생했습니다. 콘솔을 확인하세요.');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', subscribeUnifiedRanking);
