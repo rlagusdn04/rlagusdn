@@ -311,7 +311,7 @@ function displayContactMessages(messages) {
 }
 
 // Contact 채팅 UI 업데이트
-function updateContactChatUI() {
+async function updateContactChatUI() {
   if (window.currentUser && window.currentUser.uid === DEV_UID) {
     // Dev 계정: 최근 유저 목록 드롭다운 표시
     const userList = await fetchRecentUserUIDsForDev();
@@ -326,14 +326,12 @@ function updateContactChatUI() {
     // 로그인된 사용자 또는 익명 사용자
     contactChatInput.disabled = false;
     contactChatSend.disabled = false;
-    
     // Contact 메시지 구독 시작
     subscribeToContactMessages();
   } else {
     // 로그인하지 않은 사용자
     contactChatInput.disabled = true;
     contactChatSend.disabled = true;
-    
     // 환영 메시지 표시
     contactChatMessages.innerHTML = `
       <div class="welcome-message">
@@ -341,7 +339,6 @@ function updateContactChatUI() {
         <p>로그인하거나 익명으로 참여할 수 있습니다.</p>
       </div>
     `;
-    
     // 구독 해제
     if (contactUnsubscribeMessages) {
       contactUnsubscribeMessages();
