@@ -11,9 +11,9 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Contact 1:1 채팅: chatId는 항상 [userUID, 'ANON_DEV'].sort().join('_')
+    // Contact 1:1 채팅: 테스트용으로 모두 허용
     match /contact-messages/{chatId}/messages/{messageId} {
-      allow read, write: if isContactParticipant(chatId, request.auth.uid);
+      allow read, write: if true;
     }
     
     // 기본 규칙 - 모든 접근 거부

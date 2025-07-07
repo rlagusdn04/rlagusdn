@@ -10,6 +10,7 @@ import {
   getDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Contact 채팅 관련 DOM 요소들
 const contactChatMessages = document.getElementById('contact-chat-messages');
@@ -18,6 +19,18 @@ const contactChatSend = document.getElementById('contact-chat-send');
 const devStatus = document.getElementById('dev-status');
 
 let contactUnsubscribeMessages = null;
+
+// 페이지 로드 시 익명 인증 자동 실행
+const auth = getAuth();
+if (!auth.currentUser) {
+  signInAnonymously(auth)
+    .then(() => {
+      console.log("익명 인증 성공");
+    })
+    .catch((error) => {
+      console.error("익명 인증 실패:", error);
+    });
+}
 
 // Contact 채팅 메시지 전송
 async function sendContactMessage() {
