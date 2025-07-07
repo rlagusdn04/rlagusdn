@@ -2,7 +2,7 @@
 
 const NUM_INITIAL_PLOTS = 5;
 const MAX_PLOTS = 16;
-let plots = [];
+let plots = Array(NUM_INITIAL_PLOTS).fill('empty');
 let seeds = 3;
 let stars = 100;
 let ranking = [];
@@ -27,10 +27,26 @@ function randomBetween(a, b) { return Math.random() * (b - a) + a; }
 function spawnGlow() {
   const dot = document.createElement('div');
   dot.className = 'glow-dot';
-  const size = randomBetween(18, 38);
+  const size = randomBetween(14, 28);
   dot.style.width = dot.style.height = size + 'px';
-  dot.style.left = randomBetween(5, 95) + '%';
-  dot.style.top = randomBetween(10, 80) + '%';
+  // 땅(플롯) 영역 근처에서만 생성
+  const garden = document.getElementById('starlight-garden');
+  if (garden && garden.children.length > 0) {
+    // 랜덤 플롯 하나 기준으로 위치 선정
+    const plotsArr = Array.from(garden.children);
+    const basePlot = plotsArr[Math.floor(Math.random() * plotsArr.length)];
+    const rect = basePlot.getBoundingClientRect();
+    const parentRect = garden.getBoundingClientRect();
+    // 플롯 중심 근처에 랜덤 오프셋
+    const x = ((rect.left + rect.right) / 2 - parentRect.left) / parentRect.width * 100 + randomBetween(-8, 8);
+    const y = ((rect.top + rect.bottom) / 2 - parentRect.top) / parentRect.height * 100 + randomBetween(-12, 12);
+    dot.style.left = Math.max(0, Math.min(100, x)) + '%';
+    dot.style.top = Math.max(0, Math.min(100, y)) + '%';
+  } else {
+    // fallback: 전체 랜덤
+    dot.style.left = randomBetween(20, 80) + '%';
+    dot.style.top = randomBetween(30, 70) + '%';
+  }
   dot.style.opacity = 0;
   dot.style.transform = 'scale(0.7)';
   dot.style.background = 'rgba(255,255,255,0.85)';
@@ -48,10 +64,10 @@ function spawnGlow() {
 }
 
 setInterval(() => {
-  if (glowContainer.childElementCount < 10) {
-    spawnGlow();
+  if (glowContainer.childElementCount < 5) {
+    if (Math.random() < 0.5) spawnGlow();
   }
-}, 600);
+}, 1200);
 
 function clearGlows() {
   while (glowContainer.firstChild) glowContainer.removeChild(glowContainer.firstChild);

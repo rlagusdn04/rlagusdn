@@ -99,12 +99,42 @@ function showFish(waitSec) {
   catchResult.textContent = '물고기가 나타났어요! 낚아채기!';
 }
 
+// 물고기 등급별 수량 표시
+function updateFishCounts() {
+  const counts = { common: 0, rare: 0, legend: 0 };
+  (window.fishingAlbum || []).forEach(f => counts[f.rarity] = (counts[f.rarity] || 0) + 1);
+  document.getElementById('fish-counts').textContent = `일반: ${counts.common} / 희귀: ${counts.rare} / 전설: ${counts.legend}`;
+}
+
+// 판매/업그레이드/기부 버튼 기능(더미)
+let rodLevel = 1;
+document.getElementById('sell-fish').onclick = () => {
+  let album = window.fishingAlbum || [];
+  let stars = 0;
+  album.forEach(f => { stars += Math.round(f.size * f.multiplier); });
+  window.fishingStars += stars;
+  window.fishingAlbum = [];
+  updateFishCounts();
+  if (window.updateMyStars) window.updateMyStars(window.fishingStars);
+  alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
+};
+document.getElementById('upgrade-rod').onclick = () => {
+  rodLevel++;
+  alert(`낚싯대가 레벨 ${rodLevel}로 업그레이드 되었습니다! (더 큰 물고기 확률 증가)`);
+};
+document.getElementById('donate-fish').onclick = () => {
+  let album = window.fishingAlbum || [];
+  let donate = 0;
+  album.forEach(f => { donate += Math.round(f.size * f.multiplier * 0.5); });
+  window.fishingAlbum = [];
+  updateFishCounts();
+  alert(`모든 물고기를 기부해 ${donate} 별가루를 사회에 환원했습니다! (별가루는 증가하지 않음)`);
+};
+
 function catchFish() {
   if (!fishData) return;
-  // 보상 계산
   const reward = Math.round(fishData.size * fishData.multiplier);
   window.fishingStars += reward;
-  // 앨범/랭킹 갱신
   window.fishingAlbum.push(fishData);
   const userName = (window.currentUser && window.currentUser.displayName) || (window.currentUser && window.currentUser.email) || (window.anonymousUser && window.anonymousUser.name) || 'Guest';
   let userRank = window.fishingRanking.find(r => r.name === userName);
@@ -115,12 +145,10 @@ function catchFish() {
   userRank.stars += reward;
   userRank.fish += 1;
   if (fishData.size > userRank.maxSize) userRank.maxSize = fishData.size;
-  // UI 표시
   catchResult.innerHTML = `<span style="color:${fishData.color}; font-weight:600;">${fishData.name}</span> (${fishData.size}cm) 잡음!`;
   fishingReward.textContent = `보상: +${reward} 별가루`;
-  // 합산 랭킹 갱신 콜백
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
-  // 리셋
+  updateFishCounts();
   setTimeout(resetUI, 2000);
 }
 
@@ -135,4 +163,5 @@ catchBtn.addEventListener('click', () => {
   catchFish();
 });
 
-resetUI(); 
+resetUI();
+updateFishCounts(); 

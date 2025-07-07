@@ -7,15 +7,14 @@
   <link rel="stylesheet" href="fishing.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
-<body class="fishing-bg day">
+<body class="fishing-bg night">
   <div class="fishing-container">
     <header class="fishing-header">
       <h1>🎣 조용한 호숫가 낚시</h1>
-      <button class="btn" id="theme-toggle">🌞/🌙</button>
-      <button class="btn" onclick="window.location.href='index.html'">Contents로</button>
+      <button class="btn" onclick="window.location.href='index.html'">메인으로</button>
     </header>
     <main>
-      <div class="lake-area">
+      <div class="lake-area" style="height:340px;">
         <div class="lake-bg"></div>
         <div id="float" class="float"></div>
         <div id="fish-anim" class="fish-anim"></div>
@@ -27,6 +26,12 @@
       <div class="fishing-info">
         <div id="catch-result"></div>
         <div id="fishing-reward"></div>
+      </div>
+      <div class="fishing-bottom-panel">
+        <div id="fish-counts"></div>
+        <button class="btn" id="sell-fish">물고기 판매</button>
+        <button class="btn" id="upgrade-rod">낚싯대 업그레이드</button>
+        <button class="btn" id="donate-fish">기부</button>
       </div>
     </main>
     <aside>
