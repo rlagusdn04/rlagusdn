@@ -5,20 +5,40 @@ const MAX_PLOTS = 16;
 let plots = [];
 let seeds = 3;
 let stars = 100;
-let ranking = [
-  { name: 'Alice', amount: 5000 },
-  { name: 'Bob', amount: 3200 },
-  { name: 'Carol', amount: 2100 }
-];
+let ranking = [];
 
 function updateInventory() {
   document.getElementById('inventory-seeds').textContent = `씨앗: ${seeds}`;
   document.getElementById('inventory-stars').textContent = `별가루: ${stars}`;
 }
 
+function getCurrentUserName() {
+  // Firebase Auth 연동이 없으므로 window.currentUser/window.anonymousUser 활용
+  if (window.currentUser && window.currentUser.displayName) {
+    return window.currentUser.displayName;
+  } else if (window.currentUser && window.currentUser.email) {
+    return window.currentUser.email.split('@')[0];
+  } else if (window.anonymousUser && window.anonymousUser.name) {
+    return window.anonymousUser.name;
+  } else {
+    return 'Guest';
+  }
+}
+
+function ensureUserInRanking() {
+  const name = getCurrentUserName();
+  let me = ranking.find(r => r.name === name);
+  if (!me) {
+    me = { name, amount: 0 };
+    ranking.push(me);
+    updateRanking();
+  }
+}
+
 function updateRanking() {
   const list = document.getElementById('starlight-ranking-list');
   list.innerHTML = '';
+  ranking.sort((a, b) => b.amount - a.amount);
   ranking.slice(0, 5).forEach((r, i) => {
     const li = document.createElement('li');
     li.textContent = `${i + 1}위: ${r.name} (${r.amount})`;
@@ -30,10 +50,12 @@ function createPlot(index) {
   const plot = document.createElement('div');
   plot.className = 'starlight-plot';
   plot.dataset.index = index;
-  plot.dataset.state = 'empty';
+  plot.dataset.state = plots[index];
   plot.addEventListener('click', () => {
-    if (plot.dataset.state === 'empty' && seeds > 0) {
-      plot.dataset.state = 'planted';
+    // 이미 씨앗이 심긴 땅에는 씨앗을 다시 심을 수 없음
+    if (plot.dataset.state !== 'empty') return;
+    if (seeds > 0) {
+      plots[index] = 'planted';
       seeds--;
       renderPlots();
       updateInventory();
@@ -131,6 +153,7 @@ document.getElementById('donate-stars').onclick = () => {
 function initGame() {
   plots = Array(NUM_INITIAL_PLOTS).fill('empty');
   updateInventory();
+  ensureUserInRanking();
   updateRanking();
   renderPlots();
 }

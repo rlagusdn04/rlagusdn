@@ -8,7 +8,8 @@ import {
   limit, 
   serverTimestamp,
   getDoc,
-  doc
+  doc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -19,6 +20,8 @@ const contactChatSend = document.getElementById('contact-chat-send');
 const devStatus = document.getElementById('dev-status');
 
 let contactUnsubscribeMessages = null;
+const DEV_UID = 'XXuJ2w1h84Ry5lrF9UUHGOTawhp2';
+let selectedTargetUID = null;
 
 // 페이지 로드 시 익명 인증 자동 실행
 const auth = getAuth();
@@ -30,6 +33,52 @@ if (!auth.currentUser) {
     .catch((error) => {
       console.error("익명 인증 실패:", error);
     });
+}
+
+// Dev 계정용 채팅방 선택 UI 생성
+function renderDevChatSelector(userList) {
+  let selector = document.getElementById('dev-chat-selector');
+  if (!selector) {
+    selector = document.createElement('select');
+    selector.id = 'dev-chat-selector';
+    selector.style.margin = '0.5em 0 1em 0';
+    selector.style.fontSize = '1.1em';
+    selector.style.borderRadius = '1em';
+    selector.style.padding = '0.3em 1em';
+    selector.style.background = '#23243a';
+    selector.style.color = '#fff';
+    selector.style.border = '1.5px solid #7ecbff';
+    contactChatMessages.parentElement.insertBefore(selector, contactChatMessages);
+  }
+  selector.innerHTML = '';
+  userList.forEach(uid => {
+    const option = document.createElement('option');
+    option.value = uid;
+    option.textContent = `유저: ${uid}`;
+    selector.appendChild(option);
+  });
+  selector.onchange = () => {
+    selectedTargetUID = selector.value;
+    updateContactChatUI();
+  };
+  if (userList.length > 0) {
+    selectedTargetUID = userList[0];
+  }
+}
+
+// 최근 메시지에서 상대방 UID 목록 추출 (Dev 계정용)
+async function fetchRecentUserUIDsForDev() {
+  // contact-messages 전체에서 최근 메시지 30개를 가져와서, 상대방 UID 추출
+  const q = query(collection(window.firebaseDB, 'contact-messages'), orderBy('timestamp', 'desc'), limit(30));
+  const snapshot = await getDocs(q);
+  const uids = new Set();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.userId && data.userId !== DEV_UID && data.userId !== 'ANON_DEV') {
+      uids.add(data.userId);
+    }
+  });
+  return Array.from(uids);
 }
 
 // Contact 채팅 메시지 전송
@@ -82,17 +131,17 @@ async function sendContactMessage() {
       isAnonymous = true;
       isDev = window.anonymousUser.isDev;
     }
-    const DEV_UID = 'ANON_DEV';
     let chatId;
-    if (isDev) {
-      // DEV 모드에서는 상대방을 지정할 수 없으므로, 일반 유저가 접속한 경우만 처리
-      // (여기서는 DEV가 직접 메시지 전송은 막음, 필요시 UI에서 상대 UID를 선택하도록 확장)
-      alert('DEV 모드에서는 일반 유저가 먼저 메시지를 보내야 합니다.');
-      contactChatSend.disabled = false;
-      contactChatInput.disabled = false;
-      return;
+    if (window.currentUser && window.currentUser.uid === DEV_UID) {
+      if (!selectedTargetUID) {
+        alert('대화할 유저를 선택하세요.');
+        contactChatSend.disabled = false;
+        contactChatInput.disabled = false;
+        return;
+      }
+      chatId = [selectedTargetUID, 'ANON_DEV'].sort().join('_');
     } else {
-      chatId = [myUID, DEV_UID].sort().join('_');
+      chatId = [myUID, 'ANON_DEV'].sort().join('_');
     }
 
     const messageData = {
@@ -153,14 +202,15 @@ function subscribeToContactMessages() {
   } else {
     return;
   }
-  const DEV_UID = 'ANON_DEV';
   let chatId;
-  if (isDev) {
-    // DEV 모드에서는 일반 유저가 먼저 메시지를 보내야 하므로 구독하지 않음
-    contactChatMessages.innerHTML = '<div class="welcome-message"><p>DEV 모드에서는 일반 유저가 먼저 메시지를 보내야 합니다.</p></div>';
-    return;
+  if (window.currentUser && window.currentUser.uid === DEV_UID) {
+    if (!selectedTargetUID) {
+      alert('대화할 유저를 선택하세요.');
+      return;
+    }
+    chatId = [selectedTargetUID, 'ANON_DEV'].sort().join('_');
   } else {
-    chatId = [myUID, DEV_UID].sort().join('_');
+    chatId = [myUID, 'ANON_DEV'].sort().join('_');
   }
 
   try {
@@ -262,6 +312,16 @@ function displayContactMessages(messages) {
 
 // Contact 채팅 UI 업데이트
 function updateContactChatUI() {
+  if (window.currentUser && window.currentUser.uid === DEV_UID) {
+    // Dev 계정: 최근 유저 목록 드롭다운 표시
+    const userList = await fetchRecentUserUIDsForDev();
+    renderDevChatSelector(userList);
+    if (!selectedTargetUID) return;
+  } else {
+    // 기존 동작
+    const selector = document.getElementById('dev-chat-selector');
+    if (selector) selector.remove();
+  }
   if (window.currentUser || window.anonymousUser) {
     // 로그인된 사용자 또는 익명 사용자
     contactChatInput.disabled = false;

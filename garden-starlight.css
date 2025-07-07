@@ -1,6 +1,6 @@
 body.starlight-bg {
-  background: radial-gradient(ellipse at bottom, #23243a 0%, #0a0a1a 100%);
-  color: #e0e6ff;
+  background: radial-gradient(ellipse at bottom, #181a20 0%, #000 100%);
+  color: #f4fff4;
   font-family: 'Roboto Mono', monospace;
   min-height: 100vh;
   margin: 0;
@@ -19,13 +19,13 @@ body.starlight-bg {
 .starlight-header h1 {
   font-size: 2.2em;
   letter-spacing: 0.05em;
-  color: #b6cfff;
-  text-shadow: 0 0 16px #7ecbff, 0 0 32px #fff2;
+  color: #baffb7;
+  text-shadow: 0 0 16px #baffb7, 0 0 32px #fff2;
 }
 .starlight-header .btn {
-  background: #23243a;
-  color: #fff;
-  border: 1.5px solid #7ecbff;
+  background: #181a20;
+  color: #f4fff4;
+  border: 1.5px solid #baffb7;
   border-radius: 1.2em;
   padding: 0.7em 1.5em;
   font-size: 1.1em;
@@ -33,8 +33,8 @@ body.starlight-bg {
   transition: background 0.2s, color 0.2s;
 }
 .starlight-header .btn:hover {
-  background: #7ecbff;
-  color: #23243a;
+  background: #baffb7;
+  color: #181a20;
 }
 .starlight-garden-section {
   display: flex;
@@ -56,8 +56,8 @@ body.starlight-bg {
   height: 110px;
   margin: 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at 60% 40%, #e0e6ff 0%, #7ecbff 60%, #23243a 100%);
-  box-shadow: 0 0 32px 8px #7ecbff55, 0 8px 32px #000a, 0 0 0 4px #fff2 inset;
+  background: radial-gradient(circle at 60% 40%, #f4fff4 0%, #baffb7 60%, #181a20 100%);
+  box-shadow: 0 0 32px 8px #baffb755, 0 8px 32px #000a, 0 0 0 4px #fff2 inset;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,15 +66,15 @@ body.starlight-bg {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 .starlight-plot:hover {
-  box-shadow: 0 0 48px 16px #fff, 0 8px 32px #000a, 0 0 0 6px #7ecbff99 inset;
+  box-shadow: 0 0 48px 16px #fff, 0 8px 32px #000a, 0 0 0 6px #baffb799 inset;
   transform: scale(1.07);
 }
 .starlight-plot .seedling {
   width: 38px;
   height: 38px;
-  background: radial-gradient(circle, #fff 60%, #7ecbff 100%);
+  background: radial-gradient(circle, #fff 60%, #baffb7 100%);
   border-radius: 50%;
-  box-shadow: 0 0 16px #fff8, 0 0 32px #7ecbff88;
+  box-shadow: 0 0 16px #fff8, 0 0 32px #baffb788;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -83,31 +83,31 @@ body.starlight-bg {
   animation: twinkle 2s infinite alternate;
 }
 @keyframes twinkle {
-  0% { box-shadow: 0 0 8px #fff8, 0 0 16px #7ecbff88; }
-  100% { box-shadow: 0 0 24px #fff, 0 0 48px #7ecbffcc; }
+  0% { box-shadow: 0 0 8px #fff8, 0 0 16px #baffb788; }
+  100% { box-shadow: 0 0 24px #fff, 0 0 48px #baffb7cc; }
 }
 .starlight-plot .harvest {
   position: absolute;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  background: #7ecbff;
-  color: #23243a;
+  background: #baffb7;
+  color: #181a20;
   border: none;
   border-radius: 1em;
   padding: 0.3em 1em;
   font-size: 1em;
   cursor: pointer;
-  box-shadow: 0 2px 8px #7ecbff88;
+  box-shadow: 0 2px 8px #baffb788;
   transition: background 0.2s;
 }
 .starlight-plot .harvest:hover {
   background: #fff;
-  color: #23243a;
+  color: #181a20;
 }
 .starlight-side-panel {
   flex: 1;
-  background: rgba(30, 34, 60, 0.85);
+  background: rgba(24,26,32,0.92);
   border-radius: 1.5em;
   box-shadow: 0 2px 24px #0006;
   padding: 2em 1.2em;
@@ -121,16 +121,16 @@ body.starlight-bg {
 }
 .starlight-inventory h3, .starlight-shop h3, .starlight-donate h3, .starlight-ranking h3 {
   margin-top: 0;
-  color: #b6cfff;
+  color: #baffb7;
   font-size: 1.1em;
   margin-bottom: 0.5em;
 }
 .starlight-shop .btn, .starlight-donate .btn {
   width: 100%;
   margin-bottom: 0.5em;
-  background: #23243a;
-  color: #fff;
-  border: 1.5px solid #7ecbff;
+  background: #181a20;
+  color: #f4fff4;
+  border: 1.5px solid #baffb7;
   border-radius: 1.2em;
   padding: 0.6em 1em;
   font-size: 1em;
@@ -138,18 +138,18 @@ body.starlight-bg {
   transition: background 0.2s, color 0.2s;
 }
 .starlight-shop .btn:hover, .starlight-donate .btn:hover {
-  background: #7ecbff;
-  color: #23243a;
+  background: #baffb7;
+  color: #181a20;
 }
 .starlight-ranking ol {
   padding-left: 1.2em;
   margin: 0;
-  color: #fff;
+  color: #f4fff4;
   font-size: 1em;
 }
 .starlight-ranking li {
   margin-bottom: 0.2em;
-  text-shadow: 0 0 8px #7ecbff88;
+  text-shadow: 0 0 8px #baffb788;
 }
 @media (max-width: 900px) {
   .starlight-garden-section {

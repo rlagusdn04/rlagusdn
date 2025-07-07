@@ -1,24 +1,18 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 메시지 컬렉션 - 모든 사용자가 읽기/쓰기 가능
+    // 프로필(사용자 정보) 읽기/쓰기 허용 (로그인한 사용자만)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    // Contact 1:1 채팅 (로그인/익명 인증된 사용자만 허용)
+    match /contact-messages/{chatId}/messages/{messageId} {
+      allow read, write: if request.auth != null;
+    }
+    // 익명 채팅방 (모두 허용, 실제 서비스에서는 제한 필요)
     match /messages/{messageId} {
       allow read, write: if true;
-    }
-    
-    // 사용자 컬렉션 - 인증된 사용자만 읽기/쓰기 가능
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Contact 1:1 채팅: 테스트용으로 모두 허용
-    match /contact-messages/{chatId}/messages/{messageId} {
-      allow read, write: if true;
-    }
-    
-    // 기본 규칙 - 모든 접근 거부
-    match /{document=**} {
-      allow read, write: if false;
     }
   }
 }
