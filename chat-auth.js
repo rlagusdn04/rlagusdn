@@ -101,7 +101,7 @@ function initializeAuthStateListener() {
         window.anonymousUser = anonymousUser;
         // [신규 회원] 기본 별가루 500개 지급
         (async () => {
-          const { getDoc, setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+          const { getDoc, setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
           const userRef = doc(window.firebaseDB, 'users', user.uid);
           const userSnap = await getDoc(userRef);
           if (!userSnap.exists()) {
@@ -110,12 +110,19 @@ function initializeAuthStateListener() {
             if (window.updateStarBalanceUI) window.updateStarBalanceUI();
             alert('회원가입 축하! 별가루 500개가 지급되었습니다.');
           } else {
-            // [출석 체크] 마지막 출석일과 오늘 날짜 비교
+            // [출석 체크] 마지막 출석일과 오늘 날짜 비교 (유저별로 Firestore에 저장)
             const data = userSnap.data();
-            const lastAttendance = data.lastAttendance ? new Date(data.lastAttendance.seconds ? data.lastAttendance.seconds * 1000 : data.lastAttendance) : null;
+            let lastAttendance = null;
+            if (data.lastAttendance) {
+              if (typeof data.lastAttendance === 'object' && data.lastAttendance.seconds) {
+                lastAttendance = new Date(data.lastAttendance.seconds * 1000);
+              } else {
+                lastAttendance = new Date(data.lastAttendance);
+              }
+            }
             const today = new Date();
             if (!lastAttendance || lastAttendance.toDateString() !== today.toDateString()) {
-              // 오늘 첫 로그인(출석): 별가루 100개 지급
+              // 오늘 첫 로그인(출석): 별가루 100개 지급 (유저별 1일 1회)
               const newStars = (typeof data.stars === 'number' ? data.stars : 0) + 100;
               await setDoc(userRef, { stars: newStars, lastAttendance: today }, { merge: true });
               if (window.updateStarBalanceUI) window.updateStarBalanceUI();
