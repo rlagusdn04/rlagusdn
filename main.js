@@ -384,18 +384,31 @@ async function updateSlotBalanceUI() {
   el.textContent = `별가루: ${stars}`;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  // 슬롯머신 UI를 #slot-ui에 심플하게 렌더링 (색상 제거, 순서: 버튼-결과-별가루)
-  const slotUi = document.getElementById('slot-ui');
-  if (slotUi) {
-    slotUi.innerHTML = `
-      <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
-      <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
-      <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
-    `;
-    document.getElementById('slot-btn').onclick = playSlotMachine;
-    updateSlotBalanceUI();
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  onAuthStateChanged(window.firebaseAuth, (user) => {
+    if (!user) {
+      // 로그인 안내 또는 별가루 기능 제한
+      return;
+    }
+    // 별가루 관련 함수/이벤트/UI 초기화는 여기서만!
+    // 슬롯머신 UI, 버튼 바인딩, 기부 버튼 바인딩, 별가루 잔고 UI 등
+    const slotUi = document.getElementById('slot-ui');
+    if (slotUi) {
+      slotUi.innerHTML = `
+        <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
+        <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+        <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
+      `;
+      document.getElementById('slot-btn').onclick = playSlotMachine;
+      updateSlotBalanceUI();
+    }
+    // 기부 버튼 바인딩
+    setupDonateUI();
+    // 별가루 잔고 UI 동기화
+    updateStarBalanceUI();
+    // 기부 랭킹 구독
+    subscribeDonationRanking();
+  });
 });
 
 // updateUserStars 함수 Firestore만 사용하도록 수정
@@ -444,7 +457,6 @@ function setupDonateUI() {
     };
   }
 }
-document.addEventListener('DOMContentLoaded', setupDonateUI);
 
 // 별가루 변동 시 잔고 UI 자동 갱신
 const prevUpdateUserStars = window.updateUserStars;
@@ -455,6 +467,8 @@ window.updateUserStars = async function(newStars) {
 
 // 기부 랭킹 실시간 구독 함수 추가
 import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 function subscribeDonationRanking() {
   if (!window.firebaseDB) return;
   const q = query(collection(window.firebaseDB, 'donation-ranking'), orderBy('stars', 'desc'));
@@ -474,6 +488,5 @@ function subscribeDonationRanking() {
     });
   });
 }
-document.addEventListener('DOMContentLoaded', subscribeDonationRanking);
 
 
