@@ -178,4 +178,25 @@ body.fishing-bg.night {
   .lake-area {
     height: 160px;
   }
+}
+.float-success {
+  animation: float-bounce 0.7s cubic-bezier(.4,0,.2,1);
+}
+@keyframes float-bounce {
+  0% { transform: scale(1) translate(-50%, -50%); }
+  30% { transform: scale(1.25,0.8) translate(-50%, -50%); }
+  60% { transform: scale(0.9,1.1) translate(-50%, -50%); }
+  100% { transform: scale(1) translate(-50%, -50%); }
+}
+.float-fail {
+  animation: float-shake 0.7s cubic-bezier(.4,0,.2,1);
+  background: #ff4a4a !important;
+}
+@keyframes float-shake {
+  0% { transform: translate(-50%, -50%) rotate(-8deg); }
+  20% { transform: translate(-50%, -50%) rotate(8deg); }
+  40% { transform: translate(-50%, -50%) rotate(-6deg); }
+  60% { transform: translate(-50%, -50%) rotate(6deg); }
+  80% { transform: translate(-50%, -50%) rotate(-3deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
 } 

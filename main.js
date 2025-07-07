@@ -342,7 +342,18 @@ function getCurrentUserInfo() {
   } else if (window.anonymousUser) {
     return { uid: window.anonymousUser.uid, name: window.anonymousUser.name };
   }
-  return { uid: 'guest', name: 'Guest' };
+  // localStorage 기반 익명 유저 생성/유지
+  let uid = localStorage.getItem('anon-uid');
+  let name = localStorage.getItem('anon-name');
+  if (!uid) {
+    uid = 'anon-' + Math.random().toString(36).slice(2, 12);
+    localStorage.setItem('anon-uid', uid);
+  }
+  if (!name) {
+    name = 'Guest-' + Math.floor(Math.random() * 10000);
+    localStorage.setItem('anon-name', name);
+  }
+  return { uid, name };
 }
 
 // 별가루 획득/소비 시 Firestore에 업데이트

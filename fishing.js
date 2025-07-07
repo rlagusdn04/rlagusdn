@@ -122,6 +122,7 @@ document.getElementById('sell-fish').onclick = () => {
   updateMyStars(window.fishingStars);
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
   alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
+  saveFishingState();
 };
 document.getElementById('upgrade-rod').onclick = () => {
   rodLevel++;
@@ -129,11 +130,25 @@ document.getElementById('upgrade-rod').onclick = () => {
 };
 function updateMyStars(stars) {
   document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
+  saveFishingState();
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
 }
 window.updateMyStars = updateMyStars;
 // 별가루 변화 시마다 호출
 updateMyStars(window.fishingStars || 0);
+
+// 찌 이펙트 함수
+function floatEffect(type) {
+  const floatEl = document.getElementById('float');
+  if (!floatEl) return;
+  floatEl.classList.remove('float-success', 'float-fail');
+  void floatEl.offsetWidth; // reflow
+  if (type === 'success') {
+    floatEl.classList.add('float-success');
+  } else if (type === 'fail') {
+    floatEl.classList.add('float-fail');
+  }
+}
 
 function catchFish() {
   if (!fishData) return;
@@ -154,7 +169,9 @@ function catchFish() {
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
   updateFishCounts();
   updateMyStars(window.fishingStars);
+  saveFishingState();
   setTimeout(resetUI, 2000);
+  floatEffect('success');
 }
 
 castBtn.addEventListener('click', () => {
@@ -165,6 +182,17 @@ catchBtn.addEventListener('click', () => {
   if (!fishing) return;
   fishing = false;
   clearTimeout(fishTimeout);
+  if (!fishData) {
+    // 실패 처리
+    document.getElementById('catch-result').textContent = '실패!';
+    floatEffect('fail');
+    setTimeout(() => {
+      document.getElementById('catch-result').textContent = '';
+      floatEffect();
+    }, 1200);
+    return;
+  }
+  floatEffect('success');
   catchFish();
 });
 
@@ -184,7 +212,23 @@ donateBtn.onclick = () => {
     updateMyStars(window.fishingStars);
     if (window.updateUnifiedRanking) window.updateUnifiedRanking();
     alert(`모든 물고기를 기부해 ${donate} 별가루를 사회에 환원했습니다! (랭킹에 반영됨)`);
+    saveFishingState();
   } else {
     alert('기부할 별가루가 부족하거나 물고기가 없습니다.');
   }
-}; 
+};
+
+function saveFishingState() {
+  localStorage.setItem('fishing-stars', window.fishingStars || 0);
+  localStorage.setItem('fishing-album', JSON.stringify(window.fishingAlbum || []));
+}
+function loadFishingState() {
+  window.fishingStars = parseInt(localStorage.getItem('fishing-stars')) || 0;
+  window.fishingAlbum = JSON.parse(localStorage.getItem('fishing-album') || '[]');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadFishingState();
+  updateMyStars(window.fishingStars || 0);
+  updateFishCounts();
+}); 

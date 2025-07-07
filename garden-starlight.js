@@ -19,9 +19,25 @@ const SEED_TYPES = [
 
 function randomBetween(a, b) { return Math.random() * (b - a) + a; }
 
+function saveGardenState() {
+  localStorage.setItem('garden-plots', JSON.stringify(plots));
+  localStorage.setItem('garden-seeds', seeds);
+  localStorage.setItem('garden-stars', stars);
+}
+
+function loadGardenState() {
+  const savedPlots = localStorage.getItem('garden-plots');
+  const savedSeeds = localStorage.getItem('garden-seeds');
+  const savedStars = localStorage.getItem('garden-stars');
+  plots = savedPlots ? JSON.parse(savedPlots) : Array(NUM_INITIAL_PLOTS).fill('empty');
+  seeds = savedSeeds ? parseInt(savedSeeds) : 3;
+  stars = savedStars ? parseInt(savedStars) : 100;
+}
+
 function updateInventory() {
   document.getElementById('inventory-seeds').textContent = `씨앗: ${seeds}`;
   document.getElementById('inventory-stars').textContent = `별가루: ${stars}`;
+  saveGardenState();
   if (window.updateMyStars) window.updateMyStars(stars);
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
 }
@@ -138,6 +154,7 @@ function renderPlots() {
     garden.appendChild(plot);
   });
   arrangePlotsCircle();
+  saveGardenState();
 }
 
 function arrangePlotsCircle() {
@@ -187,7 +204,7 @@ document.getElementById('donate-stars').onclick = () => {
 };
 
 function initGame() {
-  plots = Array(NUM_INITIAL_PLOTS).fill('empty');
+  loadGardenState();
   updateInventory();
   ensureUserInRanking();
   updateRanking();
