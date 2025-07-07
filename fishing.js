@@ -122,54 +122,65 @@ document.getElementById('sell-fish').onclick = () => {
   updateMyStars(window.fishingStars);
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
   alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
-  saveFishingState();
 };
 document.getElementById('upgrade-rod').onclick = () => {
   rodLevel++;
   alert(`낚싯대가 레벨 ${rodLevel}로 업그레이드 되었습니다! (더 큰 물고기 확률 증가)`);
 };
+
+// 별가루 Firestore 연동 함수
+function getCurrentUserStars() {
+  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
+    const { uid } = window.firebaseAuth.currentUser;
+    return import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ getDoc, doc }) =>
+      getDoc(doc(window.firebaseDB, 'users', uid)).then(snap => {
+        const data = snap.data();
+        return (data && typeof data.stars === 'number') ? data.stars : 0;
+      })
+    );
+  } else {
+    // 익명 유저는 별가루 기능 제한
+    return Promise.resolve(0);
+  }
+}
+
+function setCurrentUserStars(newStars) {
+  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
+    const { uid } = window.firebaseAuth.currentUser;
+    return import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ setDoc, doc }) =>
+      setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true })
+    );
+  } else {
+    // 익명 유저는 별가루 기능 제한
+    return Promise.resolve();
+  }
+}
+
+// updateMyStars 함수 Firestore만 사용
 function updateMyStars(stars) {
   document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
-  saveFishingState();
+  setCurrentUserStars(stars);
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
-  if (typeof updateUserStars === 'function') updateUserStars(stars);
+  if (typeof window.updateUserStars === 'function') window.updateUserStars(stars);
 }
 window.updateMyStars = updateMyStars;
-// 별가루 변화 시마다 호출
-updateMyStars(window.fishingStars || 0);
 
-// 별가루 잔고 표시 갱신 함수
-function updateStarBalance() {
+// 별가루 잔고 UI 동기화 함수 Firestore만 사용
+async function updateStarBalance() {
   const el = document.getElementById('star-balance');
-  if (el) el.textContent = `별가루 잔고: ${window.fishingStars || 0}`;
+  if (!el) return;
+  const stars = await getCurrentUserStars();
+  el.textContent = `별가루 잔고: ${stars}`;
 }
-// 별가루 변화 시마다 호출
-const prevUpdateMyStars = window.updateMyStars;
-window.updateMyStars = function(stars) {
-  if (prevUpdateMyStars) prevUpdateMyStars(stars);
+window.updateStarBalance = updateStarBalance;
+
+// 별가루 상태 동기화(초기화)
+document.addEventListener('DOMContentLoaded', async () => {
+  const stars = await getCurrentUserStars();
+  updateMyStars(stars);
+  updateFishCounts();
   updateStarBalance();
-};
-updateStarBalance();
-// 기부하기 버튼 동작
-const donateBtn = document.getElementById('donate-btn');
-if (donateBtn) {
-  donateBtn.onclick = function() {
-    const input = document.getElementById('donate-amount');
-    let amount = parseInt(input.value, 10);
-    if (isNaN(amount) || amount <= 0) {
-      alert('기부할 별가루 수를 올바르게 입력하세요.');
-      return;
-    }
-    if ((window.fishingStars || 0) < amount) {
-      alert('별가루가 부족합니다.');
-      return;
-    }
-    window.fishingStars -= amount;
-    window.updateMyStars(window.fishingStars);
-    alert(`별가루 ${amount}개를 기부했습니다!`);
-    input.value = '';
-  };
-}
+});
 
 // 찌 이펙트 함수
 function floatEffect(type) {
@@ -219,17 +230,23 @@ catchBtn.addEventListener('click', () => {
 resetUI();
 updateFishCounts();
 
-function saveFishingState() {
-  localStorage.setItem('fishing-stars', window.fishingStars || 0);
-  localStorage.setItem('fishing-album', JSON.stringify(window.fishingAlbum || []));
-}
-function loadFishingState() {
-  window.fishingStars = parseInt(localStorage.getItem('fishing-stars')) || 0;
-  window.fishingAlbum = JSON.parse(localStorage.getItem('fishing-album') || '[]');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadFishingState();
-  updateMyStars(window.fishingStars || 0);
-  updateFishCounts();
-}); 
+// 기부하기 버튼 동작
+const donateBtn = document.getElementById('donate-btn');
+if (donateBtn) {
+  donateBtn.onclick = function() {
+    const input = document.getElementById('donate-amount');
+    let amount = parseInt(input.value, 10);
+    if (isNaN(amount) || amount <= 0) {
+      alert('기부할 별가루 수를 올바르게 입력하세요.');
+      return;
+    }
+    if ((window.fishingStars || 0) < amount) {
+      alert('별가루가 부족합니다.');
+      return;
+    }
+    window.fishingStars -= amount;
+    window.updateMyStars(window.fishingStars);
+    alert(`별가루 ${amount}개를 기부했습니다!`);
+    input.value = '';
+  };
+} 

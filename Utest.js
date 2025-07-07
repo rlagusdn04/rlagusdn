@@ -328,10 +328,15 @@ function showQuestion() {
     document.getElementById("result-title").textContent = resultMsg;
     // 100%일 때 별가루 1000개 지급
     if(percent === 100) {
-      let stars = parseInt(localStorage.getItem('star') || '0', 10);
-      stars += 1000;
-      updateUserStars(stars);
-      alert('축하합니다! 유사도 100% 달성으로 별가루 1000개를 획득했습니다.');
+      if (window.firebaseAuth && window.firebaseAuth.currentUser && window.updateUserStars) {
+        // Firestore에만 지급
+        getCurrentUserStars().then(stars => {
+          window.updateUserStars(stars + 1000);
+          alert('축하합니다! 유사도 100% 달성으로 별가루 1000개를 획득했습니다.');
+        });
+      } else {
+        alert('로그인한 유저만 별가루를 획득할 수 있습니다.');
+      }
     }
     return;
   }

@@ -73,19 +73,13 @@ window.anonymousUser = anonymousUser;
 
 // 익명 사용자 정보를 로컬 스토리지에서 불러오기
 function loadAnonymousUser() {
-  const saved = localStorage.getItem('anonymousUser');
-  if (saved) {
-    anonymousUser = JSON.parse(saved);
-    return true;
-  }
+  // localStorage 제거: 항상 false 반환
   return false;
 }
 
 // 익명 사용자 정보를 로컬 스토리지에 저장
 function saveAnonymousUser() {
-  if (anonymousUser) {
-    localStorage.setItem('anonymousUser', JSON.stringify(anonymousUser));
-  }
+  // localStorage 제거: 아무 동작 안 함
 }
 
 // 랜덤 UID 생성
@@ -102,16 +96,13 @@ function initializeAuthStateListener() {
       window.currentUser = currentUser; // 전역 변수 업데이트
       
       if (user) {
-        // 로그인된 경우 익명 사용자 정보 초기화
-        console.log('로그인 사용자:', user.email);
+        // 로그인된 경우 익명 정보 초기화
         anonymousUser = null;
-        window.anonymousUser = anonymousUser; // 전역 변수 업데이트
-        localStorage.removeItem('anonymousUser');
+        window.anonymousUser = anonymousUser;
       } else {
-        // 로그아웃된 경우 익명 사용자 정보 복원
-        const hasAnonymousUser = loadAnonymousUser();
-        window.anonymousUser = anonymousUser; // 전역 변수 업데이트
-        console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
+        // 로그아웃된 경우 익명 정보 복원 시도(이제 없음)
+        loadAnonymousUser();
+        window.anonymousUser = anonymousUser;
       }
       
       updateUI().then(() => {
@@ -314,7 +305,6 @@ anonymousSubmit.addEventListener('click', () => {
   }
   
   window.anonymousUser = anonymousUser; // 전역 변수 업데이트
-  saveAnonymousUser();
   anonymousModal.classList.add('hidden');
   clearForm(anonymousName);
   updateUI();

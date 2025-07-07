@@ -306,24 +306,67 @@ const slotEmojis = ['🫨','😡','😮‍💨','🤗','🤔','🤭','🥺'];
 function getRandomSlot() {
   return slotEmojis[Math.floor(Math.random() * slotEmojis.length)];
 }
-function playSlotMachine() {
-  let stars = parseInt(localStorage.getItem('star') || '0', 10);
+
+function getCurrentUserStars() {
+  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
+    const { uid } = window.firebaseAuth.currentUser;
+    const { getDoc, doc } = window.firebaseDB;
+    return import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ getDoc, doc }) =>
+      getDoc(doc(window.firebaseDB, 'users', uid)).then(snap => {
+        const data = snap.data();
+        return (data && typeof data.stars === 'number') ? data.stars : 0;
+      })
+    );
+  } else {
+    // 익명 유저는 별가루 기능 제한
+    return Promise.resolve(0);
+  }
+}
+
+function setCurrentUserStars(newStars) {
+  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
+    const { uid } = window.firebaseAuth.currentUser;
+    return import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ setDoc, doc }) =>
+      setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true })
+    );
+  } else {
+    // 익명 유저는 별가루 기능 제한
+    return Promise.resolve();
+  }
+}
+
+// 슬롯머신 플레이 함수 리팩토링
+async function playSlotMachine() {
+  const user = window.firebaseAuth && window.firebaseAuth.currentUser;
+  if (!user) {
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
+    return;
+  }
+  let stars = await getCurrentUserStars();
   if (stars < 100) {
     alert('별가루가 100개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
     return;
   }
   stars -= 100;
   const slots = [getRandomSlot(), getRandomSlot(), getRandomSlot()];
-  // 일치 개수 계산
   const counts = {};
   slots.forEach(e => counts[e] = (counts[e]||0)+1);
   let maxMatch = Math.max(...Object.values(counts));
   let reward = maxMatch * 100;
   stars += reward;
-  updateUserStars(stars);
+  await setCurrentUserStars(stars);
   document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개, 보상: ${reward} 별가루`;
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
 }
+
+// DOMContentLoaded 시 별가루 UI 동기화
+async function updateSlotBalanceUI() {
+  const el = document.getElementById('slot-balance');
+  if (!el) return;
+  const stars = await getCurrentUserStars();
+  el.textContent = `별가루: ${stars}`;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // 슬롯머신 UI를 #slot-ui에 심플하게 렌더링 (색상 제거, 순서: 버튼-결과-별가루)
   const slotUi = document.getElementById('slot-ui');
@@ -331,81 +374,40 @@ document.addEventListener('DOMContentLoaded', function() {
     slotUi.innerHTML = `
       <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
       <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
-      <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: ${localStorage.getItem('star')||0}</div>
+      <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
     `;
     document.getElementById('slot-btn').onclick = playSlotMachine;
+    updateSlotBalanceUI();
   }
 });
 
-// 별가루 상태를 /users/{userId}의 stars 필드로 관리(익명은 localStorage)
-async function updateUserStars(newStars) {
-  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
-    try {
-      const { uid } = window.firebaseAuth.currentUser;
-      const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-      await setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true });
-    } catch (e) {
-      console.error('별가루 Firestore 저장 실패:', e);
-    }
-  } else {
-    localStorage.setItem('star', newStars);
-  }
-}
-window.updateUserStars = updateUserStars;
+// updateUserStars 함수 Firestore만 사용하도록 수정
+window.updateUserStars = async function(newStars) {
+  await setCurrentUserStars(newStars);
+  await updateSlotBalanceUI();
+};
 
-// 별가루 기부 랭킹 UI를 donation-ranking 컬렉션의 stars 기준 내림차순으로 실시간 표시
-import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-function subscribeDonationRanking() {
-  if (!window.firebaseDB) return;
-  const q = query(collection(window.firebaseDB, 'donation-ranking'), orderBy('stars', 'desc'));
-  onSnapshot(q, (snapshot) => {
-    const ranking = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (typeof data.stars === 'number') ranking.push(data);
-    });
-    const rankingBox = document.getElementById('donation-ranking-list');
-    if (!rankingBox) return;
-    rankingBox.innerHTML = '';
-    ranking.forEach((u, i) => {
-      const li = document.createElement('li');
-      li.textContent = `${i+1}위: ${u.userName || u.name || '익명'} - 기부: ${u.stars}`;
-      rankingBox.appendChild(li);
-    });
-  });
-}
-document.addEventListener('DOMContentLoaded', subscribeDonationRanking);
-
-// 별가루 잔고 표시 갱신 (로그인 유저는 Firestore에서, 익명은 localStorage)
+// 별가루 잔고 UI 동기화 함수도 Firestore만 사용
 async function updateStarBalanceUI() {
   const el = document.getElementById('star-balance');
   if (!el) return;
-  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
-    try {
-      const { uid } = window.firebaseAuth.currentUser;
-      const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-      const snap = await getDoc(doc(window.firebaseDB, 'users', uid));
-      const data = snap.data();
-      el.textContent = `별가루 잔고: ${data && typeof data.stars === 'number' ? data.stars : 0}`;
-    } catch (e) {
-      el.textContent = '별가루 잔고: -';
-    }
-  } else {
-    el.textContent = `별가루 잔고: ${localStorage.getItem('star')||0}`;
-  }
+  const stars = await getCurrentUserStars();
+  el.textContent = `별가루 잔고: ${stars}`;
 }
+window.updateStarBalanceUI = updateStarBalanceUI;
 
-// 기부하기 버튼 동작 (전액기부, 입력란 없음)
+// 기부 버튼 동작도 Firestore만 사용
 function setupDonateUI() {
   const donateBtn = document.getElementById('donate-btn');
   if (donateBtn) {
     donateBtn.onclick = async function() {
-      if (!(window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser)) {
+      const user = window.firebaseAuth && window.firebaseAuth.currentUser;
+      if (!user) {
         alert('로그인 후 기부할 수 있습니다.');
         return;
       }
-      const { uid, displayName, email } = window.firebaseAuth.currentUser;
-      const { getDoc, setDoc, doc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const { uid, displayName, email } = user;
+      const { getDoc, setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
       const userDoc = await getDoc(doc(window.firebaseDB, 'users', uid));
       const userData = userDoc.data();
       const stars = (userData && typeof userData.stars === 'number') ? userData.stars : 0;
@@ -413,15 +415,13 @@ function setupDonateUI() {
         alert('기부할 별가루가 없습니다.');
         return;
       }
-      // donation-ranking 컬렉션에 누적
       const name = userData.userName || displayName || (email ? email.split('@')[0] : '익명');
       await setDoc(doc(window.firebaseDB, 'donation-ranking', uid), {
         userName: name,
         stars: stars,
         updatedAt: new Date()
       }, { merge: true });
-      // 잔고 0으로
-      await setDoc(doc(window.firebaseDB, 'users', uid), { stars: 0 }, { merge: true });
+      await setCurrentUserStars(0);
       alert(`별가루 ${stars}개를 전액 기부했습니다!`);
       await updateStarBalanceUI();
     };
