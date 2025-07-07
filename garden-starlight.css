@@ -4,51 +4,200 @@ body.garden-bg.night {
   font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif';
   transition: background 0.7s, color 0.7s;
 }
+.garden-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2em 1em;
+}
+.garden-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5em;
+}
+.garden-header h1 {
+  font-size: 2.2em;
+  letter-spacing: 0.05em;
+  color: #baffb7;
+  text-shadow: 0 0 16px #baffb7, 0 0 32px #fff2;
+  transition: color 0.7s, text-shadow 0.7s;
+}
+.garden-header .btn {
+  background: #181a20;
+  color: #f4fff4;
+  border: 1.5px solid #baffb7;
+  border-radius: 1.2em;
+  padding: 0.7em 1.5em;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.garden-header .btn:hover {
+  background: #baffb7;
+  color: #181a20;
+}
 .starlight-garden-section {
+  display: flex;
+  gap: 2em;
+  min-height: 600px;
   background: none;
   border-radius: 2em;
   box-shadow: 0 8px 32px #b7e6f955, 0 2px 8px #fff8 inset;
   padding: 2em 1em 1.5em 1em;
   margin: 0 auto 1.5em auto;
-  max-width: 700px;
+  max-width: 900px;
   position: relative;
 }
 .starlight-garden {
+  flex: 2;
   display: flex;
   flex-wrap: wrap;
-  gap: 1.2em;
+  align-items: center;
   justify-content: center;
-  align-items: flex-end;
-  min-height: 220px;
-  margin-bottom: 1.2em;
+  min-height: 500px;
   position: relative;
+  background: transparent;
 }
-.plot {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(160deg, #eafbe7 60%, #b7e6f9 100%);
-  border-radius: 1.2em 1.2em 1em 1em;
-  box-shadow: 0 4px 16px #23243a55, 0 2px 8px #fff8 inset;
-  margin: 0.2em;
-  position: relative;
-  z-index: 1;
-  border: 2.5px solid #b7e6f9;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  transition: box-shadow 0.2s, background 0.2s;
-}
-.plot.planted {
-  background: linear-gradient(160deg, #b7e6f9 60%, #eafbe7 100%);
-  box-shadow: 0 6px 24px #b7e6f955, 0 2px 8px #fff8 inset;
-}
-.glow-dot {
-  position: absolute;
-  z-index: 10;
+.starlight-plot {
+  width: 110px;
+  height: 110px;
+  margin: 18px;
   border-radius: 50%;
-  pointer-events: none;
-  box-shadow: 0 0 16px 8px #fff8, 0 0 32px 16px #b7e6f955;
-  background: rgba(255,255,255,0.85);
-  opacity: 0.7;
-  transition: opacity 0.7s, transform 0.7s;
+  background: radial-gradient(circle at 60% 40%, #f4f4f4 0%, #b7e5c9 60%, #eafbe7 100%);
+  box-shadow: 0 8px 24px #b7e5c955, 0 2px 8px #fff8 inset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 0.3s, background 0.3s, transform 0.2s;
+  overflow: visible;
+}
+.starlight-plot:hover {
+  box-shadow: 0 0 48px 16px #fff, 0 8px 32px #000a, 0 0 0 6px #baffb799 inset;
+  transform: scale(1.07);
+}
+.starlight-plot:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px #b7e5c955;
+}
+.starlight-plot .seedling {
+  width: 38px;
+  height: 38px;
+  background: radial-gradient(circle, #fff 60%, #b7e5c9 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 12px #eafbe7cc, 0 0 24px #b7e5c988;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  z-index: 2;
+  animation: grow 1.2s cubic-bezier(.4,0,.2,1);
+  transition: box-shadow 0.3s, background 0.3s;
+}
+@keyframes grow {
+  0% { transform: scale(0.5) translate(-50%, -60%); opacity: 0.2; }
+  100% { transform: scale(1) translate(-50%, -60%); opacity: 1; }
+}
+.starlight-plot .harvest {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #baffb7;
+  color: #181a20;
+  border: none;
+  border-radius: 1em;
+  padding: 0.3em 1em;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #baffb788;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.starlight-plot .harvest:hover {
+  background: #fff;
+  color: #181a20;
+}
+.starlight-plot .seed-type1 {
+  background: radial-gradient(circle, #fff 60%, #b7e5c9 100%);
+}
+.starlight-plot .seed-type2 {
+  background: radial-gradient(circle, #fff 60%, #f9e6b7 100%);
+}
+.starlight-plot .seed-type3 {
+  background: radial-gradient(circle, #fff 60%, #e6b7f9 100%);
+}
+.starlight-plot .seed-type4 {
+  background: radial-gradient(circle, #fff 60%, #b7e6f9 100%);
+}
+.starlight-plot .seedling.shake {
+  animation: shake 0.5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes shake {
+  0% { transform: translate(-50%, -60%) rotate(-5deg); }
+  20% { transform: translate(-50%, -60%) rotate(5deg); }
+  40% { transform: translate(-50%, -60%) rotate(-3deg); }
+  60% { transform: translate(-50%, -60%) rotate(3deg); }
+  80% { transform: translate(-50%, -60%) rotate(-2deg); }
+  100% { transform: translate(-50%, -60%) rotate(0deg); }
+}
+.starlight-side-panel {
+  flex: 1;
+  background: rgba(24,26,32,0.92);
+  border-radius: 1.5em;
+  box-shadow: 0 2px 24px #0006;
+  padding: 2em 1.2em;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+.starlight-inventory, .starlight-shop, .starlight-donate, .starlight-ranking {
+  margin-bottom: 1em;
+}
+.starlight-inventory h3, .starlight-shop h3, .starlight-donate h3, .starlight-ranking h3 {
+  margin-top: 0;
+  color: #baffb7;
+  font-size: 1.1em;
+  margin-bottom: 0.5em;
+}
+.starlight-shop .btn, .starlight-donate .btn {
+  width: 100%;
+  margin-bottom: 0.5em;
+  background: #181a20;
+  color: #f4fff4;
+  border: 1.5px solid #baffb7;
+  border-radius: 1.2em;
+  padding: 0.6em 1em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.starlight-shop .btn:hover, .starlight-donate .btn:hover {
+  background: #baffb7;
+  color: #181a20;
+}
+.starlight-ranking ol {
+  padding-left: 1.2em;
+  margin: 0;
+  color: #f4fff4;
+  font-size: 1em;
+}
+.starlight-ranking li {
+  margin-bottom: 0.2em;
+  text-shadow: 0 0 8px #baffb788;
+}
+@media (max-width: 900px) {
+  .starlight-garden-section {
+    flex-direction: column;
+    gap: 1em;
+  }
+  .starlight-side-panel {
+    min-width: 0;
+    width: 100%;
+    padding: 1.2em 0.7em;
+  }
+  .starlight-garden {
+    min-height: 320px;
+  }
 } 

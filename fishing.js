@@ -101,9 +101,13 @@ function showFish(waitSec) {
 
 // 물고기 등급별 수량 표시
 function updateFishCounts() {
-  const counts = { common: 0, rare: 0, legend: 0 };
+  const counts = { common: 0, rare: 0, epic: 0, legend: 0 };
   (window.fishingAlbum || []).forEach(f => counts[f.rarity] = (counts[f.rarity] || 0) + 1);
-  document.getElementById('fish-counts').textContent = `일반: ${counts.common} / 희귀: ${counts.rare} / 전설: ${counts.legend}`;
+  document.getElementById('fish-counts').innerHTML =
+    `<span style='color:#fff'>●</span> ${counts.common} ` +
+    `<span style='color:#4ac6ff'>●</span> ${counts.rare} ` +
+    `<span style='color:#b97fff'>●</span> ${counts.epic} ` +
+    `<span style='color:#ffb84a'>●</span> ${counts.legend}`;
 }
 
 // 판매/업그레이드/기부 버튼 기능(더미)
@@ -122,14 +126,12 @@ document.getElementById('upgrade-rod').onclick = () => {
   rodLevel++;
   alert(`낚싯대가 레벨 ${rodLevel}로 업그레이드 되었습니다! (더 큰 물고기 확률 증가)`);
 };
-document.getElementById('donate-fish').onclick = () => {
-  let album = window.fishingAlbum || [];
-  let donate = 0;
-  album.forEach(f => { donate += Math.round(f.size * f.multiplier * 0.5); });
-  window.fishingAlbum = [];
-  updateFishCounts();
-  alert(`모든 물고기를 기부해 ${donate} 별가루를 사회에 환원했습니다! (별가루는 증가하지 않음)`);
-};
+function updateMyStars(stars) {
+  document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
+}
+window.updateMyStars = updateMyStars;
+// 별가루 변화 시마다 호출
+updateMyStars(window.fishingStars || 0);
 
 function catchFish() {
   if (!fishData) return;
@@ -164,4 +166,23 @@ catchBtn.addEventListener('click', () => {
 });
 
 resetUI();
-updateFishCounts(); 
+updateFishCounts();
+
+// 기부 버튼 클릭 시 별가루 차감 및 랭킹 반영
+const donateBtn = document.getElementById('donate-fish');
+donateBtn.onclick = () => {
+  let album = window.fishingAlbum || [];
+  let donate = 0;
+  album.forEach(f => { donate += Math.round(f.size * f.multiplier * 0.5); });
+  if ((window.fishingStars || 0) >= donate && donate > 0) {
+    window.fishingStars -= donate;
+    window.fishingAlbum = [];
+    updateFishCounts();
+    updateMyStars(window.fishingStars);
+    // 랭킹 시스템 연동: window.updateUnifiedRanking() 등 호출
+    if (window.updateUnifiedRanking) window.updateUnifiedRanking();
+    alert(`모든 물고기를 기부해 ${donate} 별가루를 사회에 환원했습니다! (랭킹에 반영됨)`);
+  } else {
+    alert('기부할 별가루가 부족하거나 물고기가 없습니다.');
+  }
+}; 
