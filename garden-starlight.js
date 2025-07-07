@@ -1,6 +1,6 @@
 // 별빛 온실 게임 - 기본 인터랙션 (프론트엔드 더미)
 
-const NUM_INITIAL_PLOTS = 5;
+const NUM_INITIAL_PLOTS = 2;
 const MAX_PLOTS = 16;
 let plots = Array(NUM_INITIAL_PLOTS).fill('empty');
 let seeds = 3;
@@ -81,6 +81,36 @@ function createPlot(index) {
   plot.className = 'starlight-plot';
   plot.dataset.index = index;
   plot.dataset.state = plots[index]?.state || 'empty';
+  // 드래그 앤 드롭 속성
+  plot.draggable = true;
+  plot.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', index);
+    plot.classList.add('dragging');
+  });
+  plot.addEventListener('dragend', (e) => {
+    plot.classList.remove('dragging');
+  });
+  plot.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    plot.classList.add('drag-over');
+  });
+  plot.addEventListener('dragleave', (e) => {
+    plot.classList.remove('drag-over');
+  });
+  plot.addEventListener('drop', (e) => {
+    e.preventDefault();
+    plot.classList.remove('drag-over');
+    const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+    const toIdx = index;
+    if (fromIdx !== toIdx) {
+      // plots 배열 순서 교환
+      const temp = plots[fromIdx];
+      plots[fromIdx] = plots[toIdx];
+      plots[toIdx] = temp;
+      saveGardenState();
+      renderPlots();
+    }
+  });
   plot.addEventListener('click', () => {
     // 이미 씨앗이 심긴 땅에는 씨앗을 다시 심을 수 없음
     if (plot.dataset.state !== 'empty') return;
@@ -112,9 +142,44 @@ function renderPlots() {
     plot.className = 'starlight-plot';
     plot.dataset.index = i;
     plot.dataset.state = state;
+    if (state === 'empty') plot.classList.add('empty');
+    if (state === 'planted') plot.classList.add('planted');
+    if (state === 'grown') plot.classList.add('grown');
+    // 드래그 앤 드롭 속성
+    plot.draggable = true;
+    plot.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', index);
+      plot.classList.add('dragging');
+    });
+    plot.addEventListener('dragend', (e) => {
+      plot.classList.remove('dragging');
+    });
+    plot.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      plot.classList.add('drag-over');
+    });
+    plot.addEventListener('dragleave', (e) => {
+      plot.classList.remove('drag-over');
+    });
+    plot.addEventListener('drop', (e) => {
+      e.preventDefault();
+      plot.classList.remove('drag-over');
+      const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+      const toIdx = index;
+      if (fromIdx !== toIdx) {
+        // plots 배열 순서 교환
+        const temp = plots[fromIdx];
+        plots[fromIdx] = plots[toIdx];
+        plots[toIdx] = temp;
+        saveGardenState();
+        renderPlots();
+      }
+    });
     plot.addEventListener('click', () => {
+      // 이미 씨앗이 심긴 땅에는 씨앗을 다시 심을 수 없음
       if (plot.dataset.state !== 'empty') return;
       if (seeds > 0) {
+        // 씨앗 종류 랜덤
         const seedType = SEED_TYPES[Math.floor(Math.random() * SEED_TYPES.length)];
         plots[i] = { state: 'planted', seed: seedType.class };
         seeds--;
@@ -122,35 +187,6 @@ function renderPlots() {
         updateInventory();
       }
     });
-    if (state === 'empty') {
-      // nothing
-    } else if (state === 'planted') {
-      const seedling = document.createElement('div');
-      seedling.className = 'seedling ' + seedClass;
-      plot.appendChild(seedling);
-      // 성장 애니메이션 후 grown으로 변경
-      setTimeout(() => {
-        if (plots[i] && plots[i].state === 'planted') {
-          plots[i].state = 'grown';
-          renderPlots();
-        }
-      }, 3000);
-    } else if (state === 'grown') {
-      const seedling = document.createElement('div');
-      seedling.className = 'seedling ' + seedClass + ' shake';
-      plot.appendChild(seedling);
-      const harvestBtn = document.createElement('button');
-      harvestBtn.className = 'harvest';
-      harvestBtn.textContent = '수확';
-      harvestBtn.onclick = (e) => {
-        e.stopPropagation();
-        plots[i] = 'empty';
-        stars += 20;
-        renderPlots();
-        updateInventory();
-      };
-      plot.appendChild(harvestBtn);
-    }
     garden.appendChild(plot);
   });
   arrangePlotsCircle();

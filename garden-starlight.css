@@ -63,7 +63,7 @@ body.garden-bg.night {
   height: 110px;
   margin: 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at 60% 40%, #f4f4f4 0%, #b7e5c9 60%, #eafbe7 100%);
+  background: #f4f4f4;
   box-shadow: 0 8px 24px #b7e5c955, 0 2px 8px #fff8 inset;
   display: flex;
   align-items: center;
@@ -72,6 +72,38 @@ body.garden-bg.night {
   cursor: pointer;
   transition: box-shadow 0.3s, background 0.3s, transform 0.2s;
   overflow: visible;
+}
+.starlight-plot.empty::after {
+  content: '+';
+  color: #b7e6f9;
+  font-size: 2.5em;
+  font-weight: 700;
+  opacity: 0.5;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.starlight-plot.planted {
+  background: linear-gradient(160deg, #eafbe7 60%, #b7e6f9 100%);
+  box-shadow: 0 6px 24px #b7e6f955, 0 2px 8px #fff8 inset;
+  animation: plot-grow 1.2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes plot-grow {
+  0% { transform: scale(0.7); opacity: 0.2; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.starlight-plot.grown {
+  background: linear-gradient(160deg, #b7e6f9 60%, #eafbe7 100%);
+  box-shadow: 0 0 32px #b7e6f9cc, 0 2px 8px #fff8 inset;
+  border: 2.5px solid #ffd700;
+  animation: plot-harvest 1.2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes plot-harvest {
+  0% { box-shadow: 0 0 0 #fff0; }
+  60% { box-shadow: 0 0 32px #ffd700cc; }
+  100% { box-shadow: 0 0 32px #b7e6f9cc; }
 }
 .starlight-plot:hover {
   box-shadow: 0 0 48px 16px #fff, 0 8px 32px #000a, 0 0 0 6px #baffb799 inset;
@@ -104,15 +136,21 @@ body.garden-bg.night {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  background: #baffb7;
+  background: #ffd700;
   color: #181a20;
   border: none;
   border-radius: 1em;
   padding: 0.3em 1em;
   font-size: 1em;
   cursor: pointer;
-  box-shadow: 0 2px 8px #baffb788;
+  box-shadow: 0 2px 8px #ffd70088;
+  font-weight: 700;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  animation: harvest-btn-pop 0.7s cubic-bezier(.4,0,.2,1);
+}
+@keyframes harvest-btn-pop {
+  0% { transform: scale(0.7) translateX(-50%); opacity: 0.2; }
+  100% { transform: scale(1) translateX(-50%); opacity: 1; }
 }
 .starlight-plot .harvest:hover {
   background: #fff;
@@ -186,6 +224,15 @@ body.garden-bg.night {
 .starlight-ranking li {
   margin-bottom: 0.2em;
   text-shadow: 0 0 8px #baffb788;
+}
+.starlight-plot.dragging {
+  opacity: 0.5;
+  box-shadow: 0 0 32px #7ecbff, 0 8px 32px #000a;
+  z-index: 10;
+}
+.starlight-plot.drag-over {
+  border: 3px dashed #7ecbff;
+  background: #eafbe7cc;
 }
 @media (max-width: 900px) {
   .starlight-garden-section {

@@ -202,19 +202,16 @@ updateFishCounts();
 // 기부 버튼 클릭 시 별가루 차감 및 랭킹 반영
 const donateBtn = document.getElementById('donate-fish');
 donateBtn.onclick = () => {
-  let album = window.fishingAlbum || [];
-  let donate = 0;
-  album.forEach(f => { donate += Math.round(f.size * f.multiplier * 0.5); });
-  if ((window.fishingStars || 0) >= donate && donate > 0) {
-    window.fishingStars -= donate;
-    window.fishingAlbum = [];
+  const donate = window.fishingStars || 0;
+  if (donate > 0) {
+    window.fishingStars = 0;
     updateFishCounts();
-    updateMyStars(window.fishingStars);
+    updateMyStars(0);
     if (window.updateUnifiedRanking) window.updateUnifiedRanking();
-    alert(`모든 물고기를 기부해 ${donate} 별가루를 사회에 환원했습니다! (랭킹에 반영됨)`);
+    alert(`보유 별가루 ${donate} 전액을 기부했습니다! (랭킹에 반영됨)`);
     saveFishingState();
   } else {
-    alert('기부할 별가루가 부족하거나 물고기가 없습니다.');
+    alert('기부할 별가루가 없습니다.');
   }
 };
 
