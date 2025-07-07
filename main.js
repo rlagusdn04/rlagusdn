@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
   audioPlayer = document.getElementById('audio-player');
   volumeValue = document.getElementById('volume-value');
 
-  // 이벤트 바인딩
+  // 이벤트 바인딩 (모두 null 체크)
   if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
   if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
   if (musicTitle) musicTitle.addEventListener('click', () => {
@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } while (nextIdx === currentMusicIdx && musicList.length > 1);
     currentMusicIdx = nextIdx;
     updateMusicInfo();
-    audioPlayer.play();
+    if (audioPlayer) audioPlayer.play();
   });
-  if (audioPlayer) {
+  if (audioPlayer && playPauseBtn) {
     audioPlayer.addEventListener('play', () => {
       playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
     });
@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateMusicInfo() {
+  if (!musicTitle || !audioPlayer) return;
   musicTitle.textContent = musicList[currentMusicIdx].title;
   audioPlayer.src = musicList[currentMusicIdx].src;
 }
@@ -60,6 +61,7 @@ function togglePlayPause() {
 }
 
 function updateVolume() {
+  if (!audioPlayer || !volumeSlider || !volumeValue) return;
   audioPlayer.volume = volumeSlider.value;
   volumeValue.textContent = Math.round(volumeSlider.value * 100) + '%';
 }
@@ -299,7 +301,7 @@ setInterval(showNextProfileImage, 60000);
 // 클릭 시 수동 변경
 profileImage.addEventListener('click', showNextProfileImage);
 
-// 슬롯머신 이모티콘
+// 슬롯머신 이모티콘 배열 복구
 const slotEmojis = ['🫨','😡','😮‍💨','🤗','🤔','🤭','🥺'];
 function getRandomSlot() {
   return slotEmojis[Math.floor(Math.random() * slotEmojis.length)];
@@ -351,28 +353,28 @@ async function updateUserStars(newStars) {
 }
 window.updateUserStars = updateUserStars;
 
-// 별가루 랭킹 UI를 /users 컬렉션의 stars 기준 내림차순으로 실시간 표시
+// 별가루 기부 랭킹 UI를 donation-ranking 컬렉션의 stars 기준 내림차순으로 실시간 표시
 import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-function subscribeUserStarsRanking() {
+function subscribeDonationRanking() {
   if (!window.firebaseDB) return;
-  const q = query(collection(window.firebaseDB, 'users'), orderBy('stars', 'desc'));
+  const q = query(collection(window.firebaseDB, 'donation-ranking'), orderBy('stars', 'desc'));
   onSnapshot(q, (snapshot) => {
     const ranking = [];
     snapshot.forEach(doc => {
       const data = doc.data();
       if (typeof data.stars === 'number') ranking.push(data);
     });
-    const rankingBox = document.getElementById('unified-ranking-list');
+    const rankingBox = document.getElementById('donation-ranking-list');
     if (!rankingBox) return;
     rankingBox.innerHTML = '';
     ranking.forEach((u, i) => {
       const li = document.createElement('li');
-      li.textContent = `${i+1}위: ${u.userName || u.name || '익명'} - 별가루: ${u.stars}`;
+      li.textContent = `${i+1}위: ${u.userName || u.name || '익명'} - 기부: ${u.stars}`;
       rankingBox.appendChild(li);
     });
   });
 }
-document.addEventListener('DOMContentLoaded', subscribeUserStarsRanking);
+document.addEventListener('DOMContentLoaded', subscribeDonationRanking);
 
 // 별가루 잔고 표시 갱신 (로그인 유저는 Firestore에서, 익명은 localStorage)
 async function updateStarBalanceUI() {
@@ -393,34 +395,39 @@ async function updateStarBalanceUI() {
   }
 }
 
-// 기부하기 버튼 동작
+// 기부하기 버튼 동작 (전액기부, 입력란 없음)
 function setupDonateUI() {
   const donateBtn = document.getElementById('donate-btn');
   if (donateBtn) {
-    donateBtn.onclick = function() {
-      const input = document.getElementById('donate-amount');
-      let amount = parseInt(input.value, 10);
-      let stars = parseInt(localStorage.getItem('star')||'0',10);
-      if (isNaN(amount) || amount <= 0) {
-        alert('기부할 별가루 수를 올바르게 입력하세요.');
+    donateBtn.onclick = async function() {
+      if (!(window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser)) {
+        alert('로그인 후 기부할 수 있습니다.');
         return;
       }
-      if (stars < amount) {
-        alert('별가루가 부족합니다.');
+      const { uid, displayName, email } = window.firebaseAuth.currentUser;
+      const { getDoc, setDoc, doc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const userDoc = await getDoc(doc(window.firebaseDB, 'users', uid));
+      const userData = userDoc.data();
+      const stars = (userData && typeof userData.stars === 'number') ? userData.stars : 0;
+      if (stars <= 0) {
+        alert('기부할 별가루가 없습니다.');
         return;
       }
-      stars -= amount;
-      updateUserStars(stars);
-      alert(`별가루 ${amount}개를 기부했습니다!`);
-      input.value = '';
-      updateStarBalanceUI();
+      // donation-ranking 컬렉션에 누적
+      const name = userData.userName || displayName || (email ? email.split('@')[0] : '익명');
+      await setDoc(doc(window.firebaseDB, 'donation-ranking', uid), {
+        userName: name,
+        stars: stars,
+        updatedAt: new Date()
+      }, { merge: true });
+      // 잔고 0으로
+      await setDoc(doc(window.firebaseDB, 'users', uid), { stars: 0 }, { merge: true });
+      alert(`별가루 ${stars}개를 전액 기부했습니다!`);
+      await updateStarBalanceUI();
     };
   }
 }
-document.addEventListener('DOMContentLoaded', () => {
-  updateStarBalanceUI();
-  setupDonateUI();
-});
+document.addEventListener('DOMContentLoaded', setupDonateUI);
 
 // 별가루 변동 시 잔고 UI 자동 갱신
 const prevUpdateUserStars = window.updateUserStars;
