@@ -359,8 +359,14 @@ function getCurrentUserInfo() {
 // 별가루 획득/소비 시 Firestore에 업데이트
 window.updateMyStars = async function(newStars) {
   const { uid, name } = getCurrentUserInfo();
+  if (!uid || !name || typeof newStars !== 'number') {
+    console.error('updateMyStars: 잘못된 값', { uid, name, stars: newStars });
+    alert('별가루 저장에 필요한 정보가 올바르지 않습니다.');
+    return;
+  }
   try {
     await setDoc(doc(window.firebaseDB, 'unified-ranking', uid), { name, stars: newStars }, { merge: true });
+    console.log('setDoc success', { uid, name, stars: newStars });
   } catch (err) {
     console.error('Firestore setDoc error:', err);
     alert('별가루 랭킹 저장 중 오류가 발생했습니다. 콘솔을 확인하세요.');

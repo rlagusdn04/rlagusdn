@@ -71,6 +71,7 @@ function ensureUserInRanking() {
 
 function updateRanking() {
   const list = document.getElementById('starlight-ranking-list');
+  if (!list) return;
   list.innerHTML = '';
   ranking.sort((a, b) => b.amount - a.amount);
   ranking.forEach((r) => {

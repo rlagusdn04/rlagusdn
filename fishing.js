@@ -152,24 +152,10 @@ function floatEffect(type) {
 
 function catchFish() {
   if (!fishData) return;
-  const reward = Math.round(fishData.size * fishData.multiplier);
-  window.fishingStars += reward;
-  window.fishingAlbum.push(fishData);
-  const userName = (window.currentUser && window.currentUser.displayName) || (window.currentUser && window.currentUser.email) || (window.anonymousUser && window.anonymousUser.name) || 'Guest';
-  let userRank = window.fishingRanking.find(r => r.name === userName);
-  if (!userRank) {
-    userRank = { name: userName, stars: 0, fish: 0, maxSize: 0 };
-    window.fishingRanking.push(userRank);
-  }
-  userRank.stars += reward;
-  userRank.fish += 1;
-  if (fishData.size > userRank.maxSize) userRank.maxSize = fishData.size;
+  window.fishingAlbum.push(fishData); // 별가루 증가 X
   catchResult.innerHTML = `<span style="color:${fishData.color}; font-weight:600;">${fishData.name}</span> (${fishData.size}cm) 잡음!`;
-  fishingReward.textContent = `보상: +${reward} 별가루`;
-  if (window.updateUnifiedRanking) window.updateUnifiedRanking();
+  fishingReward.textContent = `보상: +${Math.round(fishData.size * fishData.multiplier)} 별가루`;
   updateFishCounts();
-  updateMyStars(window.fishingStars);
-  saveFishingState();
   setTimeout(resetUI, 2000);
   floatEffect('success');
 }
