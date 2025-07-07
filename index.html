@@ -9,6 +9,20 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
 </head>
 <body class="dark-theme">
+  <!-- 사이드바 토글 버튼 -->
+  <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+  <!-- 사이드바 메뉴 -->
+  <nav id="sidebar" class="sidebar hidden">
+    <ul>
+      <li><a href="#hero">홈</a></li>
+      <li><a href="#projects">프로젝트</a></li>
+      <li><a href="#about">About Me</a></li>
+      <li><a href="#contents-section">Contents</a></li>
+      <li><a href="#chat-section">채팅</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="garden-starlight.html" target="_blank">별빛 온실</a></li>
+    </ul>
+  </nav>
   <canvas id="bgFractal" class="background-canvas"></canvas>
   <div class="container">
     <header class="header">
@@ -298,6 +312,23 @@
           <p>나와 얼마나 닮았을까? 질문들을 통해 알아보세요!</p>
           <a href="Utest.html" class="btn primary-btn">테스트 시작 &rarr;</a>
         </div>
+
+        <!-- 별빛 온실 게임 카드 추가 -->
+        <div class="content-card">
+          <h3>🌌 별빛 온실 가꾸기</h3>
+          <p>씨앗을 심고, 수확하고, 기부 랭킹 1위를 노려보세요!</p>
+          <button class="btn primary-btn" onclick="window.open('garden-starlight.html', '_blank')">
+            게임 시작
+          </button>
+          <div class="garden-ranking">
+            <h4>현재 기부 랭킹</h4>
+            <ol id="garden-ranking-list">
+              <li>1위: Alice (5000)</li>
+              <li>2위: Bob (3200)</li>
+              <li>3위: Carol (2100)</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -372,5 +403,7 @@
   <script src="fractal-bg.js"></script>
   <script src="mouse-animation.js"></script>
   <script src="main.js"></script>
+  <link rel="stylesheet" href="sidebar.css" />
+  <script src="sidebar.js"></script>
 </body>
 </html>
