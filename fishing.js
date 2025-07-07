@@ -181,15 +181,21 @@ async function updateStarBalance() {
 window.updateStarBalance = updateStarBalance;
 
 // 별가루 상태 동기화(초기화)
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
-    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
-    return;
-  }
-  const stars = await getCurrentUserStars();
-  updateMyStars(stars);
-  updateFishCounts();
-  updateStarBalance();
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+document.addEventListener('DOMContentLoaded', () => {
+  onAuthStateChanged(window.firebaseAuth, (user) => {
+    if (!user) {
+      alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
+      return;
+    }
+    // 별가루 동기화, UI 초기화 등은 인증 상태 확인 후에만 실행
+    getCurrentUserStars().then(stars => {
+      updateMyStars(stars);
+      updateFishCounts();
+      updateStarBalance();
+    });
+  });
 });
 
 // 찌 이펙트 함수
