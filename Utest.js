@@ -326,6 +326,13 @@ function showQuestion() {
     else if (percent <= 90) resultMsg = "어라 ?";
     else if (percent <= 100) resultMsg = "이럴 순 없는거야.";
     document.getElementById("result-title").textContent = resultMsg;
+    // 100%일 때 별가루 1000개 지급
+    if(percent === 100) {
+      let stars = parseInt(localStorage.getItem('star') || '0', 10);
+      stars += 1000;
+      syncStars(stars); // Firestore+localStorage 동기화
+      alert('축하합니다! 유사도 100% 달성으로 별가루 1000개를 획득했습니다.');
+    }
     return;
   }
   document.getElementById("question-box").style.display = "block";

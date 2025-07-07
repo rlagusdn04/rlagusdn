@@ -298,106 +298,57 @@ setInterval(showNextProfileImage, 60000);
 // 클릭 시 수동 변경
 profileImage.addEventListener('click', showNextProfileImage);
 
-window.updateUnifiedRanking = function() {
-  // 합산 랭킹 영역이 있으면 갱신
-  const rankingBox = document.getElementById('unified-ranking-list');
-  if (!rankingBox) return;
-  // 정원/낚시 랭킹 데이터 합산
-  const gardenRanking = (window.ranking || []).map(r => ({
-    name: r.name,
-    stars: r.amount || 0,
-    fish: 0,
-    maxSize: 0
-  }));
-  const fishingRanking = (window.fishingRanking || []);
-  // 닉네임 기준 합산
-  const allNames = new Set([
-    ...gardenRanking.map(r => r.name),
-    ...fishingRanking.map(r => r.name)
-  ]);
-  const unified = Array.from(allNames).map(name => {
-    const g = gardenRanking.find(r => r.name === name) || { stars: 0 };
-    const f = fishingRanking.find(r => r.name === name) || { stars: 0, fish: 0, maxSize: 0 };
-    return {
-      name,
-      stars: (g.stars || 0) + (f.stars || 0),
-      fish: f.fish || 0,
-      maxSize: f.maxSize || 0
-    };
-  });
-  unified.sort((a, b) => b.stars - a.stars);
-  rankingBox.innerHTML = '';
-  unified.forEach(u => {
-    const li = document.createElement('li');
-    li.textContent = `${u.name} - 별가루: ${u.stars} / 물고기: ${u.fish} / 최대크기: ${u.maxSize}cm`;
-    rankingBox.appendChild(li);
-  });
-};
-
-import { collection, query, orderBy, onSnapshot, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-function getCurrentUserInfo() {
-  if (window.currentUser) {
-    return { uid: window.currentUser.uid, name: window.currentUser.displayName || window.currentUser.email.split('@')[0] };
-  } else if (window.anonymousUser) {
-    return { uid: window.anonymousUser.uid, name: window.anonymousUser.name };
-  }
-  // localStorage 기반 익명 유저 생성/유지
-  let uid = localStorage.getItem('anon-uid');
-  let name = localStorage.getItem('anon-name');
-  if (!uid) {
-    uid = 'anon-' + Math.random().toString(36).slice(2, 12);
-    localStorage.setItem('anon-uid', uid);
-  }
-  if (!name) {
-    name = 'Guest-' + Math.floor(Math.random() * 10000);
-    localStorage.setItem('anon-name', name);
-  }
-  return { uid, name };
+// 슬롯머신 이모티콘
+const slotEmojis = ['🫨','😡','😮‍💨','🤗','🤔','🤭','🥺'];
+function getRandomSlot() {
+  return slotEmojis[Math.floor(Math.random() * slotEmojis.length)];
 }
-
-// 별가루 획득/소비 시 Firestore에 업데이트
-window.updateMyStars = async function(newStars) {
-  const { uid, name } = getCurrentUserInfo();
-  if (!uid || !name || typeof newStars !== 'number') {
-    console.error('updateMyStars: 잘못된 값', { uid, name, stars: newStars });
-    alert('별가루 저장에 필요한 정보가 올바르지 않습니다.');
+function playSlotMachine() {
+  let stars = parseInt(localStorage.getItem('star') || '0', 10);
+  if (stars < 100) {
+    alert('별가루가 100개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
     return;
   }
-  try {
-    await setDoc(doc(window.firebaseDB, 'unified-ranking', uid), { name, stars: newStars }, { merge: true });
-    console.log('setDoc success', { uid, name, stars: newStars });
-  } catch (err) {
-    console.error('Firestore setDoc error:', err);
-    alert('별가루 랭킹 저장 중 오류가 발생했습니다. 콘솔을 확인하세요.');
-  }
-};
+  stars -= 100;
+  const slots = [getRandomSlot(), getRandomSlot(), getRandomSlot()];
+  // 일치 개수 계산
+  const counts = {};
+  slots.forEach(e => counts[e] = (counts[e]||0)+1);
+  let maxMatch = Math.max(...Object.values(counts));
+  let reward = maxMatch * 100;
+  stars += reward;
+  syncStars(stars); // Firestore+localStorage 동기화
+  document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개, 보상: ${reward} 별가루`;
+  document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  // 슬롯머신 UI 삽입
+  const slotDiv = document.createElement('div');
+  slotDiv.innerHTML = `
+    <div style="margin:18px 0; padding:12px; border:2px solid #eee; border-radius:12px; max-width:340px;">
+      <div style="font-size:1.2em; font-weight:bold; margin-bottom:6px;">🎰 슬롯머신</div>
+      <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+      <button id="slot-btn" class="btn">슬롯 돌리기 (-100)</button>
+      <div id="slot-balance" style="margin-top:6px; font-size:1em;">별가루: ${localStorage.getItem('star')||0}</div>
+    </div>
+  `;
+  document.body.appendChild(slotDiv);
+  document.getElementById('slot-btn').onclick = playSlotMachine;
+});
 
-// 실시간 별가루 랭킹 구독
-function subscribeUnifiedRanking() {
-  const q = query(collection(window.firebaseDB, 'unified-ranking'), orderBy('stars', 'desc'));
-  try {
-    onSnapshot(q, (snapshot) => {
-      const ranking = [];
-      snapshot.forEach(doc => ranking.push(doc.data()));
-      const rankingBox = document.getElementById('unified-ranking-list');
-      if (!rankingBox) return;
-      rankingBox.innerHTML = '';
-      ranking.forEach(u => {
-        const li = document.createElement('li');
-        li.textContent = `${u.name} - 별가루: ${u.stars}`;
-        rankingBox.appendChild(li);
-      });
-    }, (err) => {
-      console.error('Firestore onSnapshot error:', err);
-      alert('합산 랭킹 구독 중 오류가 발생했습니다. 콘솔을 확인하세요.');
-    });
-  } catch (err) {
-    console.error('Firestore subscribeUnifiedRanking error:', err);
-    alert('합산 랭킹 구독 중 오류가 발생했습니다. 콘솔을 확인하세요.');
+// 별가루 동기화 함수 (로그인/익명 자동 구분)
+async function syncStars(newStars) {
+  localStorage.setItem('star', newStars);
+  if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
+    try {
+      const { uid, displayName, email } = window.firebaseAuth.currentUser;
+      const name = displayName || (email ? email.split('@')[0] : '익명');
+      const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      await setDoc(doc(window.firebaseDB, 'unified-ranking', uid), { name, stars: newStars }, { merge: true });
+    } catch (e) {
+      console.error('별가루 Firestore 저장 실패:', e);
+    }
   }
 }
-
-document.addEventListener('DOMContentLoaded', subscribeUnifiedRanking);
 
 

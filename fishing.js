@@ -132,10 +132,44 @@ function updateMyStars(stars) {
   document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
   saveFishingState();
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
+  if (typeof syncStars === 'function') syncStars(stars); // Firestore+localStorage 동기화
 }
 window.updateMyStars = updateMyStars;
 // 별가루 변화 시마다 호출
 updateMyStars(window.fishingStars || 0);
+
+// 별가루 잔고 표시 갱신 함수
+function updateStarBalance() {
+  const el = document.getElementById('star-balance');
+  if (el) el.textContent = `별가루 잔고: ${window.fishingStars || 0}`;
+}
+// 별가루 변화 시마다 호출
+const prevUpdateMyStars = window.updateMyStars;
+window.updateMyStars = function(stars) {
+  if (prevUpdateMyStars) prevUpdateMyStars(stars);
+  updateStarBalance();
+};
+updateStarBalance();
+// 기부하기 버튼 동작
+const donateBtn = document.getElementById('donate-btn');
+if (donateBtn) {
+  donateBtn.onclick = function() {
+    const input = document.getElementById('donate-amount');
+    let amount = parseInt(input.value, 10);
+    if (isNaN(amount) || amount <= 0) {
+      alert('기부할 별가루 수를 올바르게 입력하세요.');
+      return;
+    }
+    if ((window.fishingStars || 0) < amount) {
+      alert('별가루가 부족합니다.');
+      return;
+    }
+    window.fishingStars -= amount;
+    window.updateMyStars(window.fishingStars);
+    alert(`별가루 ${amount}개를 기부했습니다!`);
+    input.value = '';
+  };
+}
 
 // 찌 이펙트 함수
 function floatEffect(type) {
@@ -185,22 +219,6 @@ catchBtn.addEventListener('click', () => {
 resetUI();
 updateFishCounts();
 
-// 기부 버튼 클릭 시 별가루 차감 및 랭킹 반영
-const donateBtn = document.getElementById('donate-fish');
-donateBtn.onclick = () => {
-  const donate = window.fishingStars || 0;
-  if (donate > 0) {
-    window.fishingStars = 0;
-    updateFishCounts();
-    updateMyStars(0);
-    if (window.updateUnifiedRanking) window.updateUnifiedRanking();
-    alert(`보유 별가루 ${donate} 전액을 기부했습니다! (랭킹에 반영됨)`);
-    saveFishingState();
-  } else {
-    alert('기부할 별가루가 없습니다.');
-  }
-};
-
 function saveFishingState() {
   localStorage.setItem('fishing-stars', window.fishingStars || 0);
   localStorage.setItem('fishing-album', JSON.stringify(window.fishingAlbum || []));
@@ -214,4 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFishingState();
   updateMyStars(window.fishingStars || 0);
   updateFishCounts();
-}); 
+});
+
+// main.js의 syncStars 함수 사용 (없으면 경고)
+if (typeof syncStars !== 'function') {
+  window.syncStars = function(stars) { console.warn('syncStars 함수가 없습니다. main.js를 먼저 로드하세요.'); };
+} 

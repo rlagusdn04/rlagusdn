@@ -32,12 +32,16 @@
         <div id="fish-counts"></div>
         <button class="btn" id="sell-fish">물고기 판매</button>
         <button class="btn" id="upgrade-rod">낚싯대 업그레이드</button>
-        <button class="btn" id="donate-fish">기부</button>
       </div>
     </main>
     <aside>
       <div class="fishing-album"></div>
       <div class="fishing-ranking"></div>
+      <div id="star-balance" style="margin-top:10px; font-weight:bold;">별가루 잔고: 0</div>
+      <div id="donate-ui" style="margin-top:6px;">
+        <input type="number" id="donate-amount" min="1" placeholder="기부할 별가루" style="width:90px;">
+        <button class="btn" id="donate-btn">기부하기</button>
+      </div>
     </aside>
   </div>
   <script src="fishing.js"></script>
