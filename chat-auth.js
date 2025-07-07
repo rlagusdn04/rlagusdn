@@ -438,7 +438,8 @@ signupSubmit.addEventListener('click', async () => {
     await setDoc(doc(window.firebaseDB, 'users', userCredential.user.uid), {
       userName: username,
       email: email,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      stars: 0
     });
     
     authModal.classList.add('hidden');

@@ -322,13 +322,13 @@ function playSlotMachine() {
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
 }
 document.addEventListener('DOMContentLoaded', function() {
-  // 슬롯머신 UI를 #slot-ui에 심플하게 렌더링
+  // 슬롯머신 UI를 #slot-ui에 심플하게 렌더링 (색상 제거, 순서: 버튼-결과-별가루)
   const slotUi = document.getElementById('slot-ui');
   if (slotUi) {
     slotUi.innerHTML = `
-      <div id="slot-result" style="font-size:2em; margin-bottom:8px; color:#ffd700; font-weight:bold;">결과: -</div>
       <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
-      <div id="slot-balance" style="font-size:1em; color:#7ecbff; font-weight:600;">별가루: ${localStorage.getItem('star')||0}</div>
+      <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+      <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: ${localStorage.getItem('star')||0}</div>
     `;
     document.getElementById('slot-btn').onclick = playSlotMachine;
   }
