@@ -149,7 +149,9 @@ function setCurrentUserStars(newStars) {
     const { uid } = window.firebaseAuth.currentUser;
     return import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ setDoc, doc }) =>
       setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true })
-    );
+    ).then(() => {
+      if (window.updateStarBalance) window.updateStarBalance();
+    });
   } else {
     // 익명 유저는 별가루 기능 제한
     return Promise.resolve();
@@ -162,6 +164,7 @@ function updateMyStars(stars) {
   setCurrentUserStars(stars);
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
   if (typeof window.updateUserStars === 'function') window.updateUserStars(stars);
+  if (window.updateStarBalance) window.updateStarBalance();
 }
 window.updateMyStars = updateMyStars;
 

@@ -352,11 +352,15 @@ async function playSlotMachine() {
   const counts = {};
   slots.forEach(e => counts[e] = (counts[e]||0)+1);
   let maxMatch = Math.max(...Object.values(counts));
-  let reward = maxMatch * 100;
+  // 보상 로직: 1개 일치=0, 2개=100, 3개=200
+  let reward = 0;
+  if (maxMatch === 2) reward = 100;
+  else if (maxMatch === 3) reward = 200;
   stars += reward;
   await setCurrentUserStars(stars);
-  document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개, 보상: ${reward} 별가루`;
+  document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개\n보상: ${reward} 별가루`;
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
+  if (window.updateStarBalanceUI) window.updateStarBalanceUI();
 }
 
 // DOMContentLoaded 시 별가루 UI 동기화
@@ -435,5 +439,28 @@ window.updateUserStars = async function(newStars) {
   if (prevUpdateUserStars) await prevUpdateUserStars(newStars);
   await updateStarBalanceUI();
 };
+
+// 기부 랭킹 실시간 구독 함수 추가
+import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+function subscribeDonationRanking() {
+  if (!window.firebaseDB) return;
+  const q = query(collection(window.firebaseDB, 'donation-ranking'), orderBy('stars', 'desc'));
+  onSnapshot(q, (snapshot) => {
+    const ranking = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (typeof data.stars === 'number') ranking.push(data);
+    });
+    const rankingBox = document.getElementById('donation-ranking-list');
+    if (!rankingBox) return;
+    rankingBox.innerHTML = '';
+    ranking.forEach((u, i) => {
+      const li = document.createElement('li');
+      li.textContent = `${i+1}위: ${u.userName || u.name || '익명'} - 기부: ${u.stars}`;
+      rankingBox.appendChild(li);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', subscribeDonationRanking);
 
 

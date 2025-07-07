@@ -99,6 +99,30 @@ function initializeAuthStateListener() {
         // 로그인된 경우 익명 정보 초기화
         anonymousUser = null;
         window.anonymousUser = anonymousUser;
+        // [신규 회원] 기본 별가루 500개 지급
+        (async () => {
+          const { getDoc, setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+          const userRef = doc(window.firebaseDB, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          if (!userSnap.exists()) {
+            // 신규 회원: 기본 별가루 500개 지급
+            await setDoc(userRef, { stars: 500, lastAttendance: new Date() }, { merge: true });
+            if (window.updateStarBalanceUI) window.updateStarBalanceUI();
+            alert('회원가입 축하! 별가루 500개가 지급되었습니다.');
+          } else {
+            // [출석 체크] 마지막 출석일과 오늘 날짜 비교
+            const data = userSnap.data();
+            const lastAttendance = data.lastAttendance ? new Date(data.lastAttendance.seconds ? data.lastAttendance.seconds * 1000 : data.lastAttendance) : null;
+            const today = new Date();
+            if (!lastAttendance || lastAttendance.toDateString() !== today.toDateString()) {
+              // 오늘 첫 로그인(출석): 별가루 100개 지급
+              const newStars = (typeof data.stars === 'number' ? data.stars : 0) + 100;
+              await setDoc(userRef, { stars: newStars, lastAttendance: today }, { merge: true });
+              if (window.updateStarBalanceUI) window.updateStarBalanceUI();
+              alert('출석체크! 별가루 100개가 지급되었습니다.');
+            }
+          }
+        })();
       } else {
         // 로그아웃된 경우 익명 정보 복원 시도(이제 없음)
         loadAnonymousUser();
