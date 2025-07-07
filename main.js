@@ -322,18 +322,19 @@ function playSlotMachine() {
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
 }
 document.addEventListener('DOMContentLoaded', function() {
-  // 슬롯머신 UI 삽입
-  const slotDiv = document.createElement('div');
-  slotDiv.innerHTML = `
-    <div style="margin:18px 0; padding:12px; border:2px solid #eee; border-radius:12px; max-width:340px;">
-      <div style="font-size:1.2em; font-weight:bold; margin-bottom:6px;">🎰 슬롯머신</div>
-      <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
-      <button id="slot-btn" class="btn">슬롯 돌리기 (-100)</button>
-      <div id="slot-balance" style="margin-top:6px; font-size:1em;">별가루: ${localStorage.getItem('star')||0}</div>
-    </div>
-  `;
-  document.body.appendChild(slotDiv);
-  document.getElementById('slot-btn').onclick = playSlotMachine;
+  // 슬롯머신 UI를 #slot-ui에 렌더링
+  const slotUi = document.getElementById('slot-ui');
+  if (slotUi) {
+    slotUi.innerHTML = `
+      <div style="margin:8px 0; padding:12px; border:2px solid #eee; border-radius:12px; max-width:340px; background:#23272f; color:#fff;">
+        <div style="font-size:1.2em; font-weight:bold; margin-bottom:6px;">🎰 슬롯머신</div>
+        <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+        <button id="slot-btn" class="btn primary-btn">슬롯 돌리기 (-100)</button>
+        <div id="slot-balance" style="margin-top:6px; font-size:1em;">별가루: ${localStorage.getItem('star')||0}</div>
+      </div>
+    `;
+    document.getElementById('slot-btn').onclick = playSlotMachine;
+  }
 });
 
 // 별가루 동기화 함수 (로그인/익명 자동 구분)
@@ -350,5 +351,67 @@ async function syncStars(newStars) {
     }
   }
 }
+
+// 합산 랭킹 실시간 구독 및 UI 갱신
+import { collection, query, orderBy, onSnapshot, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+function subscribeUnifiedRanking() {
+  if (!window.firebaseDB) return;
+  const q = query(collection(window.firebaseDB, 'unified-ranking'), orderBy('stars', 'desc'));
+  onSnapshot(q, (snapshot) => {
+    const ranking = [];
+    snapshot.forEach(doc => ranking.push(doc.data()));
+    const rankingBox = document.getElementById('unified-ranking-list');
+    if (!rankingBox) return;
+    rankingBox.innerHTML = '';
+    ranking.forEach((u, i) => {
+      const li = document.createElement('li');
+      li.textContent = `${i+1}위: ${u.name} - 별가루: ${u.stars}`;
+      rankingBox.appendChild(li);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', subscribeUnifiedRanking);
+
+// 잔고 표시 갱신
+function updateStarBalanceUI() {
+  const el = document.getElementById('star-balance');
+  if (el) el.textContent = `별가루 잔고: ${localStorage.getItem('star')||0}`;
+}
+
+// 기부하기 버튼 동작
+function setupDonateUI() {
+  const donateBtn = document.getElementById('donate-btn');
+  if (donateBtn) {
+    donateBtn.onclick = function() {
+      const input = document.getElementById('donate-amount');
+      let amount = parseInt(input.value, 10);
+      let stars = parseInt(localStorage.getItem('star')||'0',10);
+      if (isNaN(amount) || amount <= 0) {
+        alert('기부할 별가루 수를 올바르게 입력하세요.');
+        return;
+      }
+      if (stars < amount) {
+        alert('별가루가 부족합니다.');
+        return;
+      }
+      stars -= amount;
+      syncStars(stars);
+      alert(`별가루 ${amount}개를 기부했습니다!`);
+      input.value = '';
+      updateStarBalanceUI();
+    };
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  updateStarBalanceUI();
+  setupDonateUI();
+});
+
+// 별가루 변동 시 잔고 UI 자동 갱신
+const prevSyncStars = window.syncStars;
+window.syncStars = function(newStars) {
+  if (prevSyncStars) prevSyncStars(newStars);
+  updateStarBalanceUI();
+};
 
 

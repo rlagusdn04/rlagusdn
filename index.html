@@ -313,13 +313,11 @@
           <a href="Utest.html" class="btn primary-btn">테스트 시작 &rarr;</a>
         </div>
 
-        <!-- 별빛 온실 게임 카드 추가 -->
-        <div class="content-card">
-          <h3>🌌 별빛 온실 가꾸기</h3>
-          <p>씨앗을 심고, 수확하고, 기부 랭킹 1위를 노려보세요!</p>
-          <button class="btn primary-btn" onclick="window.open('garden-starlight.html', '_blank')">
-            게임 시작
-          </button>
+        <!-- 슬롯머신 카드 추가 -->
+        <div class="content-card" id="slot-card">
+          <h3>🎰 슬롯머신</h3>
+          <p>이모티콘 슬롯을 돌려서 별가루를 획득하세요! (참가비 100)</p>
+          <div id="slot-ui"></div>
         </div>
 
         <!-- 낚시 미니게임 카드 추가 -->
@@ -330,8 +328,13 @@
         </div>
 
         <div class="content-card">
-          <h3>🏆 정원+낚시 합산 랭킹</h3>
+          <h3>🏆 별가루 합산 랭킹</h3>
           <ul id="unified-ranking-list"></ul>
+          <div id="star-balance" style="margin-top:10px; font-weight:bold;">별가루 잔고: 0</div>
+          <div id="donate-ui" style="margin-top:6px;">
+            <input type="number" id="donate-amount" min="1" placeholder="기부할 별가루" style="width:90px;">
+            <button class="btn" id="donate-btn">기부하기</button>
+          </div>
         </div>
       </div>
     </section>

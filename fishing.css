@@ -57,7 +57,7 @@ body.fishing-bg.night {
   width: 100%;
   height: 100%;
   left: 0; top: 0;
-  background: url('assets/fishing/bg-lake.png') center/cover no-repeat;
+  background: #23243a;
   opacity: 0.5;
   z-index: 1;
 }
@@ -67,7 +67,7 @@ body.fishing-bg.night {
   top: 40%;
   width: 32px;
   height: 32px;
-  background: url('assets/fishing/float.svg') center/contain no-repeat, #f9e6b7;
+  background: #f9e6b7;
   border-radius: 50%;
   box-shadow: 0 2px 8px #b7e6f988;
   transform: translate(-50%, -50%);
@@ -90,13 +90,13 @@ body.fishing-bg.night {
   display: none;
 }
 .fish-anim.common {
-  background: url('assets/fishing/fish-common.svg') center/contain no-repeat;
+  background: #b7e5c9;
 }
 .fish-anim.rare {
-  background: url('assets/fishing/fish-rare.svg') center/contain no-repeat;
+  background: #b7e6f9;
 }
 .fish-anim.legend {
-  background: url('assets/fishing/fish-legend.svg') center/contain no-repeat;
+  background: #ffd700;
 }
 .fish-anim.big {
   filter: drop-shadow(0 0 16px #ffd700cc);
