@@ -106,8 +106,10 @@ function initializeAuthStateListener() {
       }
       
       updateUI().then(() => {
+        // 별가루 잔고 UI도 동기화
+        if (window.updateStarBalanceUI) window.updateStarBalanceUI();
         if (user || anonymousUser) {
-          // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
+          // 로그인된 경우 또는 익명 사용자일 때 채팅 메시지 구독
           console.log('채팅 메시지 구독 시작');
           subscribeToMessages();
         } else {
