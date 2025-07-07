@@ -5,6 +5,16 @@ body.starlight-bg {
   min-height: 100vh;
   margin: 0;
 }
+body.starlight-bg.day {
+  background: linear-gradient(160deg, #eafbe7 0%, #f4f4f4 100%);
+  color: #222;
+  transition: background 0.7s cubic-bezier(.4,0,.2,1), color 0.7s;
+}
+body.starlight-bg.night {
+  background: linear-gradient(160deg, #23243a 0%, #181a20 100%);
+  color: #eafbe7;
+  transition: background 0.7s cubic-bezier(.4,0,.2,1), color 0.7s;
+}
 .starlight-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -21,6 +31,7 @@ body.starlight-bg {
   letter-spacing: 0.05em;
   color: #baffb7;
   text-shadow: 0 0 16px #baffb7, 0 0 32px #fff2;
+  transition: color 0.7s, text-shadow 0.7s;
 }
 .starlight-header .btn {
   background: #181a20;
@@ -56,35 +67,41 @@ body.starlight-bg {
   height: 110px;
   margin: 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at 60% 40%, #f4fff4 0%, #baffb7 60%, #181a20 100%);
-  box-shadow: 0 0 32px 8px #baffb755, 0 8px 32px #000a, 0 0 0 4px #fff2 inset;
+  background: radial-gradient(circle at 60% 40%, #f4f4f4 0%, #b7e5c9 60%, #eafbe7 100%);
+  box-shadow: 0 8px 24px #b7e5c955, 0 2px 8px #fff8 inset;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: box-shadow 0.3s, background 0.3s, transform 0.2s;
+  overflow: visible;
 }
 .starlight-plot:hover {
   box-shadow: 0 0 48px 16px #fff, 0 8px 32px #000a, 0 0 0 6px #baffb799 inset;
   transform: scale(1.07);
 }
+.starlight-plot:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px #b7e5c955;
+}
 .starlight-plot .seedling {
   width: 38px;
   height: 38px;
-  background: radial-gradient(circle, #fff 60%, #baffb7 100%);
+  background: radial-gradient(circle, #fff 60%, #b7e5c9 100%);
   border-radius: 50%;
-  box-shadow: 0 0 16px #fff8, 0 0 32px #baffb788;
+  box-shadow: 0 0 12px #eafbe7cc, 0 0 24px #b7e5c988;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -60%);
   z-index: 2;
-  animation: twinkle 2s infinite alternate;
+  animation: grow 1.2s cubic-bezier(.4,0,.2,1);
+  transition: box-shadow 0.3s, background 0.3s;
 }
-@keyframes twinkle {
-  0% { box-shadow: 0 0 8px #fff8, 0 0 16px #baffb788; }
-  100% { box-shadow: 0 0 24px #fff, 0 0 48px #baffb7cc; }
+@keyframes grow {
+  0% { transform: scale(0.5) translate(-50%, -60%); opacity: 0.2; }
+  100% { transform: scale(1) translate(-50%, -60%); opacity: 1; }
 }
 .starlight-plot .harvest {
   position: absolute;
@@ -99,11 +116,34 @@ body.starlight-bg {
   font-size: 1em;
   cursor: pointer;
   box-shadow: 0 2px 8px #baffb788;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .starlight-plot .harvest:hover {
   background: #fff;
   color: #181a20;
+}
+.starlight-plot .seed-type1 {
+  background: radial-gradient(circle, #fff 60%, #b7e5c9 100%);
+}
+.starlight-plot .seed-type2 {
+  background: radial-gradient(circle, #fff 60%, #f9e6b7 100%);
+}
+.starlight-plot .seed-type3 {
+  background: radial-gradient(circle, #fff 60%, #e6b7f9 100%);
+}
+.starlight-plot .seed-type4 {
+  background: radial-gradient(circle, #fff 60%, #b7e6f9 100%);
+}
+.starlight-plot .seedling.shake {
+  animation: shake 0.5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes shake {
+  0% { transform: translate(-50%, -60%) rotate(-5deg); }
+  20% { transform: translate(-50%, -60%) rotate(5deg); }
+  40% { transform: translate(-50%, -60%) rotate(-3deg); }
+  60% { transform: translate(-50%, -60%) rotate(3deg); }
+  80% { transform: translate(-50%, -60%) rotate(-2deg); }
+  100% { transform: translate(-50%, -60%) rotate(0deg); }
 }
 .starlight-side-panel {
   flex: 1;

@@ -7,6 +7,31 @@ let seeds = 3;
 let stars = 100;
 let ranking = [];
 
+// 폰트 적용
+if (document.body) document.body.style.fontFamily = "'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif'";
+
+const SEED_TYPES = [
+  { name: '연두새싹', class: 'seed-type1' },
+  { name: '노랑꽃씨', class: 'seed-type2' },
+  { name: '보라꽃씨', class: 'seed-type3' },
+  { name: '하늘꽃씨', class: 'seed-type4' }
+];
+
+// 낮/밤 테마 전환
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.addEventListener('click', () => {
+  const body = document.body;
+  if (body.classList.contains('day')) {
+    body.classList.remove('day');
+    body.classList.add('night');
+    themeToggle.textContent = '🌙';
+  } else {
+    body.classList.remove('night');
+    body.classList.add('day');
+    themeToggle.textContent = '🌞';
+  }
+});
+
 function updateInventory() {
   document.getElementById('inventory-seeds').textContent = `씨앗: ${seeds}`;
   document.getElementById('inventory-stars').textContent = `별가루: ${stars}`;
@@ -39,9 +64,9 @@ function updateRanking() {
   const list = document.getElementById('starlight-ranking-list');
   list.innerHTML = '';
   ranking.sort((a, b) => b.amount - a.amount);
-  ranking.slice(0, 5).forEach((r, i) => {
+  ranking.forEach((r) => {
     const li = document.createElement('li');
-    li.textContent = `${i + 1}위: ${r.name} (${r.amount})`;
+    li.textContent = `${r.name} (${r.amount})`;
     list.appendChild(li);
   });
 }
@@ -50,12 +75,14 @@ function createPlot(index) {
   const plot = document.createElement('div');
   plot.className = 'starlight-plot';
   plot.dataset.index = index;
-  plot.dataset.state = plots[index];
+  plot.dataset.state = plots[index]?.state || 'empty';
   plot.addEventListener('click', () => {
     // 이미 씨앗이 심긴 땅에는 씨앗을 다시 심을 수 없음
     if (plot.dataset.state !== 'empty') return;
     if (seeds > 0) {
-      plots[index] = 'planted';
+      // 씨앗 종류 랜덤
+      const seedType = SEED_TYPES[Math.floor(Math.random() * SEED_TYPES.length)];
+      plots[index] = { state: 'planted', seed: seedType.class };
       seeds--;
       renderPlots();
       updateInventory();
@@ -67,24 +94,45 @@ function createPlot(index) {
 function renderPlots() {
   const garden = document.getElementById('starlight-garden');
   garden.innerHTML = '';
-  plots.forEach((state, i) => {
-    const plot = createPlot(i);
+  plots.forEach((plotObj, i) => {
+    let state, seedClass;
+    if (typeof plotObj === 'string') {
+      state = plotObj;
+      seedClass = '';
+    } else {
+      state = plotObj.state;
+      seedClass = plotObj.seed;
+    }
+    const plot = document.createElement('div');
+    plot.className = 'starlight-plot';
+    plot.dataset.index = i;
+    plot.dataset.state = state;
+    plot.addEventListener('click', () => {
+      if (plot.dataset.state !== 'empty') return;
+      if (seeds > 0) {
+        const seedType = SEED_TYPES[Math.floor(Math.random() * SEED_TYPES.length)];
+        plots[i] = { state: 'planted', seed: seedType.class };
+        seeds--;
+        renderPlots();
+        updateInventory();
+      }
+    });
     if (state === 'empty') {
       // nothing
     } else if (state === 'planted') {
       const seedling = document.createElement('div');
-      seedling.className = 'seedling';
+      seedling.className = 'seedling ' + seedClass;
       plot.appendChild(seedling);
-      // 수확 버튼 (3초 후 활성화)
+      // 성장 애니메이션 후 grown으로 변경
       setTimeout(() => {
-        if (plot.dataset.state === 'planted') {
-          plot.dataset.state = 'grown';
+        if (plots[i] && plots[i].state === 'planted') {
+          plots[i].state = 'grown';
           renderPlots();
         }
       }, 3000);
     } else if (state === 'grown') {
       const seedling = document.createElement('div');
-      seedling.className = 'seedling';
+      seedling.className = 'seedling ' + seedClass + ' shake';
       plot.appendChild(seedling);
       const harvestBtn = document.createElement('button');
       harvestBtn.className = 'harvest';
