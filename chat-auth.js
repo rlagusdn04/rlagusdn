@@ -104,14 +104,14 @@ function initializeAuthStateListener() {
           const { getDoc, setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
           const userRef = doc(window.firebaseDB, 'users', user.uid);
           const userSnap = await getDoc(userRef);
-          if (!userSnap.exists()) {
-            // 신규 회원: 기본 별가루 500개 지급
+          const data = userSnap.exists() ? userSnap.data() : {};
+          if (!userSnap.exists() || typeof data.stars !== 'number') {
+            // 신규 회원: 기본 별가루 500개 지급 (stars 필드가 없을 때만)
             await setDoc(userRef, { stars: 500, lastAttendance: new Date() }, { merge: true });
             if (window.updateStarBalanceUI) window.updateStarBalanceUI();
             alert('회원가입 축하! 별가루 500개가 지급되었습니다.');
           } else {
             // [출석 체크] 마지막 출석일과 오늘 날짜 비교 (유저별로 Firestore에 저장)
-            const data = userSnap.data();
             let lastAttendance = null;
             if (data.lastAttendance) {
               if (typeof data.lastAttendance === 'object' && data.lastAttendance.seconds) {

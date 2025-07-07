@@ -139,7 +139,7 @@ function getCurrentUserStars() {
       })
     );
   } else {
-    // 익명 유저는 별가루 기능 제한
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
     return Promise.resolve(0);
   }
 }
@@ -153,13 +153,16 @@ function setCurrentUserStars(newStars) {
       if (window.updateStarBalance) window.updateStarBalance();
     });
   } else {
-    // 익명 유저는 별가루 기능 제한
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
     return Promise.resolve();
   }
 }
 
-// updateMyStars 함수 Firestore만 사용
 function updateMyStars(stars) {
+  if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
+    return;
+  }
   document.getElementById('fishing-stars').textContent = `별가루: ${stars}`;
   setCurrentUserStars(stars);
   if (window.updateUnifiedRanking) window.updateUnifiedRanking();
@@ -179,6 +182,10 @@ window.updateStarBalance = updateStarBalance;
 
 // 별가루 상태 동기화(초기화)
 document.addEventListener('DOMContentLoaded', async () => {
+  if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
+    return;
+  }
   const stars = await getCurrentUserStars();
   updateMyStars(stars);
   updateFishCounts();

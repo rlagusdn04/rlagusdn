@@ -231,12 +231,12 @@ const prevBtn = document.getElementById('prev-project');
 const nextBtn = document.getElementById('next-project');
 
 function updateNavButtons() {
+  if (!projectGrid || !prevBtn || !nextBtn) return;
   if (projectGrid.scrollLeft <= 0) {
     prevBtn.disabled = true;
   } else {
     prevBtn.disabled = false;
   }
-  
   if (projectGrid.scrollLeft >= projectGrid.scrollWidth - projectGrid.clientWidth) {
     nextBtn.disabled = true;
   } else {
@@ -244,32 +244,34 @@ function updateNavButtons() {
   }
 }
 
-prevBtn.addEventListener('click', () => {
-  const card = projectGrid.querySelector('.project-card');
-  const cardWidth = card ? card.offsetWidth : 450;
-  const gap = 32; // gap: 2rem = 32px
-  const scrollDistance = cardWidth + gap;
-  projectGrid.scrollBy({
-    left: -scrollDistance,
-    behavior: 'smooth'
+if (prevBtn && projectGrid) {
+  prevBtn.addEventListener('click', () => {
+    const card = projectGrid.querySelector('.project-card');
+    const cardWidth = card ? card.offsetWidth : 450;
+    const gap = 32;
+    const scrollDistance = cardWidth + gap;
+    projectGrid.scrollBy({
+      left: -scrollDistance,
+      behavior: 'smooth'
+    });
   });
-});
-
-nextBtn.addEventListener('click', () => {
-  const card = projectGrid.querySelector('.project-card');
-  const cardWidth = card ? card.offsetWidth : 450;
-  const gap = 32; // gap: 2rem = 32px
-  const scrollDistance = cardWidth + gap;
-  projectGrid.scrollBy({
-    left: scrollDistance,
-    behavior: 'smooth'
+}
+if (nextBtn && projectGrid) {
+  nextBtn.addEventListener('click', () => {
+    const card = projectGrid.querySelector('.project-card');
+    const cardWidth = card ? card.offsetWidth : 450;
+    const gap = 32;
+    const scrollDistance = cardWidth + gap;
+    projectGrid.scrollBy({
+      left: scrollDistance,
+      behavior: 'smooth'
+    });
   });
-});
-
-projectGrid.addEventListener('scroll', updateNavButtons);
-
-// Initial button state
-document.addEventListener('DOMContentLoaded', updateNavButtons);
+}
+if (projectGrid) {
+  projectGrid.addEventListener('scroll', updateNavButtons);
+  document.addEventListener('DOMContentLoaded', updateNavButtons);
+}
 
 // 프로필 이미지 1분마다 교체 + 클릭 시 수동 변경
 const profileImage = document.querySelector('.profile-image');
@@ -369,7 +371,7 @@ async function playSlotMachine() {
   else if (maxMatch === 3) reward = 200;
   stars += reward;
   await setCurrentUserStars(stars);
-  document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개\n보상: ${reward} 별가루`;
+  document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개   보상: ${reward} 별가루`;
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
   if (window.updateStarBalanceUI) window.updateStarBalanceUI();
 }
