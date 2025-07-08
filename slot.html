@@ -2,44 +2,42 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>낚시 게임</title>
+  <title>슬롯머신 게임</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #eaf6fb; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f7fafd; margin: 0; padding: 0; }
     .container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #0001; padding: 24px; }
-    h1 { text-align: center; color: #2a6fa1; }
+    h1 { text-align: center; color: #a12a6f; }
     #star-balance { font-size: 1.1em; font-weight: bold; margin-bottom: 16px; text-align: right; }
-    #fishing-inventory { min-height: 60px; background: #f4f8fa; border-radius: 8px; padding: 12px; margin-bottom: 16px; }
-    .btn { padding: 10px 18px; border: none; border-radius: 6px; background: #2a6fa1; color: #fff; font-size: 1em; cursor: pointer; margin-right: 8px; }
+    #slot-result { font-size: 2em; margin: 16px 0; text-align: center; min-height: 40px; }
+    .btn { padding: 10px 18px; border: none; border-radius: 6px; background: #a12a6f; color: #fff; font-size: 1em; cursor: pointer; margin-right: 8px; }
     .btn:disabled { background: #aaa; cursor: not-allowed; }
     #msg { margin: 12px 0; color: #d9534f; min-height: 20px; text-align: center; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🎣 낚시 게임</h1>
+    <h1>🎰 슬롯머신</h1>
     <div id="star-balance">별가루: -</div>
-    <div id="fishing-inventory">인벤토리 불러오는 중...</div>
-    <button id="fish-btn" class="btn">낚시하기 (-30)</button>
-    <button id="sell-btn" class="btn">모두 판매</button>
+    <div id="slot-result">-</div>
+    <button id="slot-btn" class="btn">슬롯 돌리기 (-50)</button>
     <div id="msg"></div>
   </div>
   <script type="module">
     import './firebase-config.js';
     import { StarSystem } from './star-system.js';
-    import './fishing.js';
+    import './slot.js';
 
-    // 로그인 상태 확인
     function getCurrentUser() {
       return window.firebaseAuth && window.firebaseAuth.currentUser;
     }
 
     const msgBox = document.getElementById('msg');
-    function showMsg(msg, color='#2a6fa1') {
+    function showMsg(msg, color='#a12a6f') {
       msgBox.textContent = msg;
       msgBox.style.color = color;
     }
 
-    let starSystem, fishingGame;
+    let starSystem, slotMachine;
     async function updateStarBalance() {
       if (!starSystem) return;
       try {
@@ -53,22 +51,17 @@
     async function init() {
       if (!getCurrentUser()) {
         showMsg('로그인 후 이용해 주세요.', '#d9534f');
-        document.getElementById('fish-btn').disabled = true;
-        document.getElementById('sell-btn').disabled = true;
+        document.getElementById('slot-btn').disabled = true;
         return;
       }
       starSystem = new StarSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
       starSystem.setUser(getCurrentUser());
-      fishingGame = new window.FishingGame(starSystem);
-      await fishingGame.loadInventory();
+      slotMachine = new window.SlotMachine(starSystem);
       await updateStarBalance();
-      showMsg('낚시를 시작해보세요!');
-      document.getElementById('fish-btn').onclick = async () => {
-        await fishingGame.fish();
-        await updateStarBalance();
-      };
-      document.getElementById('sell-btn').onclick = async () => {
-        await fishingGame.sellAll();
+      showMsg('슬롯머신을 돌려보세요!');
+      document.getElementById('slot-btn').onclick = async () => {
+        const { result, match, reward, stars } = await slotMachine.play();
+        document.getElementById('slot-result').textContent = result.length ? `${result.join(' ')} | 일치: ${match}개 | 보상: ${reward} 별가루` : '-';
         await updateStarBalance();
       };
     }

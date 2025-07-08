@@ -1,32 +1,92 @@
 // 필요한 곳에서 동적 import 사용 예시:
 // await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ getDoc, setDoc, doc, serverTimestamp, collection, query, orderBy, onSnapshot }) => { ... });
 
+// 별가루/유저 관리 시스템 (Firestore users/{uid} 기반)
 export class StarSystem {
   constructor({ auth, db }) {
-    this.auth = auth;
-    this.db = db;
-    this.user = null;
-    this.unsubscribeRanking = null;
-    this._initAuthListener();
+    this.auth = auth; // firebaseAuth
+    this.db = db;     // firebaseDB
+    this.user = null; // 현재 로그인 유저
+    // 인증 상태 변화 감지 (onAuthStateChanged 등에서 setUser 호출 필요)
   }
 
-  _initAuthListener() {
-    this.auth.onAuthStateChanged(user => {
-      this.user = user;
-    });
+  // 인증된 유저 정보 설정
+  setUser(user) {
+    this.user = user;
   }
 
+  // Firestore users/{uid} 문서 참조 반환
+  getUserRef() {
+    if (!this.user || !this.user.uid) throw new Error('로그인 필요');
+    return [this.db, 'users', this.user.uid];
+  }
+
+  // 별가루 잔고 읽기
   async getCurrentUserStars() {
-    if (!this.user) return 0;
-    const userRef = doc(this.db, 'users', this.user.uid);
-    const snap = await getDoc(userRef);
-    return snap.exists() && snap.data().stars ? snap.data().stars : 0;
+    const [db, col, uid] = this.getUserRef();
+    const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    const snap = await getDoc(doc(db, col, uid));
+    const data = snap.exists() ? snap.data() : {};
+    return (typeof data.stars === 'number') ? data.stars : 0;
   }
 
-  async setCurrentUserStars(stars) {
-    if (!this.user) return;
-    const userRef = doc(this.db, 'users', this.user.uid);
-    await setDoc(userRef, { stars }, { merge: true });
+  // 별가루 잔고 저장
+  async setCurrentUserStars(newStars) {
+    const [db, col, uid] = this.getUserRef();
+    const { setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    newStars = Math.max(0, Number(newStars) || 0);
+    await setDoc(doc(db, col, uid), {
+      stars: newStars,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    return newStars;
+  }
+
+  // 유저 프로필 읽기 (userName, email, stars 등)
+  async getUserProfile() {
+    const [db, col, uid] = this.getUserRef();
+    const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    const snap = await getDoc(doc(db, col, uid));
+    return snap.exists() ? snap.data() : null;
+  }
+
+  // 유저 프로필 저장 (userName, email 등)
+  async setUserProfile(profile) {
+    const [db, col, uid] = this.getUserRef();
+    const { setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    await setDoc(doc(db, col, uid), {
+      ...profile,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+  }
+
+  // 유저 프로필 필수 필드 보정/동기화 (최초 가입/로그인 시)
+  async syncUserProfile() {
+    const [db, col, uid] = this.getUserRef();
+    const { getDoc, setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    const userRef = doc(db, col, uid);
+    const snap = await getDoc(userRef);
+    let data = snap.exists() ? snap.data() : {};
+    let changed = false;
+    // userName 보정
+    let userName = data.userName;
+    if (!userName || typeof userName !== 'string' || userName.trim() === '') {
+      userName = this.user.displayName || this.user.email?.split('@')[0] || `사용자${uid.slice(-4)}`;
+      changed = true;
+    }
+    // stars 보정
+    let stars = (typeof data.stars === 'number') ? data.stars : 500; // 첫 가입 500
+    if (typeof data.stars !== 'number') changed = true;
+    // Firestore에 필드 보정
+    if (changed) {
+      await setDoc(userRef, {
+        userName,
+        stars,
+        email: this.user.email,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+    }
+    return { userName, stars };
   }
 
   /**
