@@ -1,5 +1,3 @@
-//import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
 const quiz = [
   {
     question: "추억을 떠올리는 감각은?",
@@ -369,24 +367,34 @@ function showQuestion() {
 }
 
 // 결과창 버튼 이벤트
+// DOMContentLoaded 이후 동적 import로 onAuthStateChanged 사용
+
 document.addEventListener('DOMContentLoaded', () => {
-  onAuthStateChanged(window.firebaseAuth, (user) => {
-    if (!user) {
-      // 로그인 안내 또는 별가루 기능 제한
-      return;
-    }
-    // 별가루 관련 함수/이벤트/UI 초기화는 여기서만!
-    // 퀴즈 시작, 버튼 바인딩 등
-    document.getElementById("retry-btn").onclick = function() {
-      document.getElementById("result-box").style.display = "none";
-      document.getElementById("main-container").classList.remove("result-mode");
-      document.getElementById("question-box").style.display = "block";
+  import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ onAuthStateChanged }) => {
+    onAuthStateChanged(window.firebaseAuth, (user) => {
+      if (!user) {
+        // 로그인 안내 또는 별가루 기능 제한
+        return;
+      }
+      // 별가루 관련 함수/이벤트/UI 초기화는 여기서만!
+      // 퀴즈 시작, 버튼 바인딩 등
+      const retryBtn = document.getElementById("retry-btn");
+      if (retryBtn) {
+        retryBtn.onclick = function() {
+          document.getElementById("result-box").style.display = "none";
+          document.getElementById("main-container").classList.remove("result-mode");
+          document.getElementById("question-box").style.display = "block";
+          startQuiz();
+        };
+      }
+      const goTitleBtn = document.getElementById("go-title-btn");
+      if (goTitleBtn) {
+        goTitleBtn.onclick = function() {
+          window.location.href = "index.html";
+        };
+      }
+      // 퀴즈 시작
       startQuiz();
-    };
-    document.getElementById("go-title-btn").onclick = function() {
-      window.location.href = "index.html";
-    };
-    // 퀴즈 시작
-    startQuiz();
+    });
   });
 });

@@ -455,30 +455,26 @@ function initAuthUI() {
 
 // 슬롯머신 플레이 함수 리팩토링
 async function playSlotMachine() {
-  const user = window.firebaseAuth && window.firebaseAuth.currentUser;
-  if (!user) {
-    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
-    return;
-  }
   let stars = await starSystem.getCurrentUserStars();
-  if (stars < 100) {
-    alert('별가루가 100개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
+  const COST = 50;
+  if (stars < COST) {
+    alert('별가루가 50개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
     return;
   }
-  stars -= 100;
+  // 슬롯 결과(이모티콘 3개)
   const slots = [getRandomSlot(), getRandomSlot(), getRandomSlot()];
+  // 일치 개수 계산
   const counts = {};
   slots.forEach(e => counts[e] = (counts[e]||0)+1);
-  let maxMatch = Math.max(...Object.values(counts));
-  // 보상 로직: 1개 일치=0, 2개=100, 3개=200
+  const maxMatch = Math.max(...Object.values(counts));
+  // 보상 계산
   let reward = 0;
   if (maxMatch === 2) reward = 100;
-  else if (maxMatch === 3) reward = 200;
-  stars += reward;
+  else if (maxMatch === 3) reward = 300;
+  stars = stars - COST + reward;
   await starSystem.setCurrentUserStars(stars);
   document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개   보상: ${reward} 별가루`;
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
-  if (window.updateStarBalanceUI) window.updateStarBalanceUI();
 }
 
 // DOMContentLoaded 시 별가루 UI 동기화
@@ -500,11 +496,11 @@ function initStarSystemUI() {
     const slotUi = document.getElementById('slot-ui');
     if (slotUi) {
       slotUi.innerHTML = `
-        <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
-        <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
-        <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
-      `;
-      document.getElementById('slot-btn').onclick = () => starSystem.playSlot();
+  <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-50)</button>
+  <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+  <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
+  `;
+      document.getElementById('slot-btn').onclick = playSlotMachine;
       updateSlotBalanceUI();
     }
     // 기부 버튼 바인딩

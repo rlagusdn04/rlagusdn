@@ -182,98 +182,117 @@ async function updateStarBalance() {
 window.updateStarBalance = updateStarBalance;
 
 // 별가루 상태 동기화(초기화)
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; // 삭제
 
-document.addEventListener('DOMContentLoaded', () => {
-  onAuthStateChanged(window.firebaseAuth, (user) => {
-    if (!user) {
-      alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
-      return;
-    }
+// 예시: 로그인 상태 변화 감지 시 동적 import 사용
+function bindFishingAuthEvents() {
+  import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ onAuthStateChanged }) => {
+    onAuthStateChanged(window.firebaseAuth, (user) => {
+      if (!user) {
+        alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
+        return;
+      }
 
-    // 별가루 관련 임시 변수 동기화 및 UI 초기화
-    getCurrentUserStars().then(stars => {
-      window.fishingStars = stars;
-      updateMyStars(stars);
-      updateFishCounts();
-      updateStarBalance();
-    });
-
-    // 버튼 바인딩, UI 초기화 등도 여기서만!
-    if (castBtn) {
-      castBtn.addEventListener('click', () => {
-        if (fishing) return;
-        startFishing();
-      });
-    }
-    if (catchBtn) {
-      catchBtn.addEventListener('click', () => {
-        if (!fishing) return;
-        fishing = false;
-        clearTimeout(fishTimeout);
-        if (!fishData) {
-          document.getElementById('catch-result').textContent = '실패!';
-          floatEffect('fail');
-          setTimeout(() => {
-            document.getElementById('catch-result').textContent = '';
-            floatEffect();
-          }, 1200);
-          return;
-        }
-        floatEffect('success');
-        catchFish();
-      });
-    }
-
-    // 기타 UI 초기화
-    resetUI();
-    updateFishCounts();
-
-    // 기부 버튼 바인딩도 여기서!
-    const donateBtn = document.getElementById('donate-btn');
-    if (donateBtn) {
-      donateBtn.onclick = function() {
-        const input = document.getElementById('donate-amount');
-        let amount = parseInt(input.value, 10);
-        if (isNaN(amount) || amount <= 0) {
-          alert('기부할 별가루 수를 올바르게 입력하세요.');
-          return;
-        }
-        if ((window.fishingStars || 0) < amount) {
-          alert('별가루가 부족합니다.');
-          return;
-        }
-        window.fishingStars -= amount;
-        window.updateMyStars(window.fishingStars);
-        alert(`별가루 ${amount}개를 기부했습니다!`);
-        input.value = '';
-      };
-    }
-
-    // 판매/업그레이드 버튼 바인딩도 여기서!
-    const sellFishBtn = document.getElementById('sell-fish');
-    if (sellFishBtn) {
-      sellFishBtn.onclick = () => {
-        let album = window.fishingAlbum || [];
-        let stars = 0;
-        album.forEach(f => { stars += Math.round(f.size * f.multiplier); });
-        window.fishingStars += stars;
-        window.fishingAlbum = [];
+      // 별가루 관련 임시 변수 동기화 및 UI 초기화
+      getCurrentUserStars().then(stars => {
+        window.fishingStars = stars;
+        updateMyStars(stars);
         updateFishCounts();
-        updateMyStars(window.fishingStars);
-        if (window.updateUnifiedRanking) window.updateUnifiedRanking();
-        alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
-      };
-    }
-    const upgradeRodBtn = document.getElementById('upgrade-rod');
-    if (upgradeRodBtn) {
-      upgradeRodBtn.onclick = () => {
-        rodLevel++;
-        alert(`낚싯대가 레벨 ${rodLevel}로 업그레이드 되었습니다! (더 큰 물고기 확률 증가)`);
-      };
-    }
+        updateStarBalance();
+      });
+
+      // 버튼 바인딩, UI 초기화 등도 여기서만!
+      if (castBtn) {
+        castBtn.addEventListener('click', () => {
+          if (fishing) return;
+          startFishing();
+        });
+      }
+      if (catchBtn) {
+        catchBtn.addEventListener('click', () => {
+          if (!fishing) return;
+          fishing = false;
+          clearTimeout(fishTimeout);
+          if (!fishData) {
+            document.getElementById('catch-result').textContent = '실패!';
+            floatEffect('fail');
+            setTimeout(() => {
+              document.getElementById('catch-result').textContent = '';
+              floatEffect();
+            }, 1200);
+            return;
+          }
+          floatEffect('success');
+          catchFish();
+        });
+      }
+
+      // 기타 UI 초기화
+      resetUI();
+      updateFishCounts();
+
+      // 기부 버튼 바인딩도 여기서!
+      const donateBtn = document.getElementById('donate-btn');
+      if (donateBtn) {
+        donateBtn.onclick = function() {
+          const input = document.getElementById('donate-amount');
+          let amount = parseInt(input.value, 10);
+          if (isNaN(amount) || amount <= 0) {
+            alert('기부할 별가루 수를 올바르게 입력하세요.');
+            return;
+          }
+          if ((window.fishingStars || 0) < amount) {
+            alert('별가루가 부족합니다.');
+            return;
+          }
+          window.fishingStars -= amount;
+          window.updateMyStars(window.fishingStars);
+          alert(`별가루 ${amount}개를 기부했습니다!`);
+          input.value = '';
+        };
+      }
+
+      // 판매/업그레이드 버튼 바인딩도 여기서!
+      const sellFishBtn = document.getElementById('sell-fish');
+      if (sellFishBtn) {
+        sellFishBtn.onclick = () => {
+          let album = window.fishingAlbum || [];
+          let stars = 0;
+          album.forEach(f => { stars += Math.round(f.size * f.multiplier); });
+          window.fishingStars += stars;
+          window.fishingAlbum = [];
+          updateFishCounts();
+          updateMyStars(window.fishingStars);
+          if (window.updateUnifiedRanking) window.updateUnifiedRanking();
+          alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
+        };
+      }
+      const upgradeRodBtn = document.getElementById('upgrade-rod');
+      if (upgradeRodBtn) {
+        upgradeRodBtn.onclick = () => {
+          rodLevel++;
+          alert(`낚싯대가 레벨 ${rodLevel}로 업그레이드 되었습니다! (더 큰 물고기 확률 증가)`);
+        };
+      }
+    });
   });
-});
+}
+
+// addEventListener, onclick 등 null 체크 예시
+const sellBtn = document.getElementById('sell-fish');
+if (sellBtn) {
+  sellBtn.onclick = () => {
+    let album = window.fishingAlbum || [];
+    let stars = 0;
+    album.forEach(f => { stars += Math.round(f.size * f.multiplier); });
+    window.fishingStars += stars;
+    window.fishingAlbum = [];
+    updateFishCounts();
+    updateMyStars(window.fishingStars);
+    if (window.updateUnifiedRanking) window.updateUnifiedRanking();
+    alert(`모든 물고기를 판매해 ${stars} 별가루를 얻었습니다!`);
+  };
+}
 
 // 찌 이펙트 함수
 function floatEffect(type) {
