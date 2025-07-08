@@ -518,15 +518,30 @@ function initStarSystemUI() {
 
 // updateUserStars 함수 Firestore만 사용하도록 수정
 window.updateUserStars = async function(newStars) {
-  await starSystem.setCurrentUserStars(newStars);
-  await updateSlotBalanceUI();
+  if (!window.firebaseAuth || !window.firebaseDB || !window.firebaseAuth.currentUser) return;
+  const { uid } = window.firebaseAuth.currentUser;
+  newStars = Math.max(0, Number(newStars) || 0); // 음수 및 NaN 방지
+  await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ setDoc, doc }) =>
+    setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true })
+  );
+  if (window.updateStarBalance) window.updateStarBalance();
 };
 
 // 별가루 잔고 UI 동기화 함수도 Firestore만 사용
 async function updateStarBalanceUI() {
   const el = document.getElementById('star-balance');
   if (!el) return;
-  const stars = await starSystem.getCurrentUserStars();
+  if (!window.firebaseAuth || !window.firebaseDB || !window.firebaseAuth.currentUser) {
+    el.textContent = '별가루 잔고: 0';
+    return;
+  }
+  const { uid } = window.firebaseAuth.currentUser;
+  const stars = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ getDoc, doc }) =>
+    getDoc(doc(window.firebaseDB, 'users', uid)).then(snap => {
+      const data = snap.data();
+      return (data && typeof data.stars === 'number') ? data.stars : 0;
+    })
+  );
   el.textContent = `별가루 잔고: ${stars}`;
 }
 window.updateStarBalanceUI = updateStarBalanceUI;

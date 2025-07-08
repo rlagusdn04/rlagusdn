@@ -147,6 +147,7 @@ function getCurrentUserStars() {
 function setCurrentUserStars(newStars) {
   if (window.firebaseAuth && window.firebaseDB && window.firebaseAuth.currentUser) {
     const { uid } = window.firebaseAuth.currentUser;
+    newStars = Math.max(0, Number(newStars) || 0); // 음수 및 NaN 방지
     return import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ setDoc, doc }) =>
       setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true })
     ).then(() => {
