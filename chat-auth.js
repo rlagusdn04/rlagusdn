@@ -67,21 +67,19 @@ let currentUser = null;
 let anonymousUser = null;
 let unsubscribeMessages = null;
 
+// 전역 변수로 설정 (Contact 채팅에서 접근 가능하도록)
+window.currentUser = currentUser;
+window.anonymousUser = anonymousUser;
+
 // 익명 사용자 정보를 로컬 스토리지에서 불러오기
 function loadAnonymousUser() {
-  const saved = localStorage.getItem('anonymousUser');
-  if (saved) {
-    anonymousUser = JSON.parse(saved);
-    return true;
-  }
+  // localStorage 제거: 항상 false 반환
   return false;
 }
 
 // 익명 사용자 정보를 로컬 스토리지에 저장
 function saveAnonymousUser() {
-  if (anonymousUser) {
-    localStorage.setItem('anonymousUser', JSON.stringify(anonymousUser));
-  }
+  // localStorage 제거: 아무 동작 안 함
 }
 
 // 랜덤 UID 생성
@@ -95,21 +93,21 @@ function initializeAuthStateListener() {
     onAuthStateChanged(window.firebaseAuth, (user) => {
       console.log('인증 상태 변경:', user ? '로그인됨' : '로그아웃됨');
       currentUser = user;
+      window.currentUser = currentUser; // 전역 변수 업데이트
       
       if (user) {
-        // 로그인된 경우 익명 사용자 정보 초기화
-        console.log('로그인 사용자:', user.email);
+        // 로그인된 경우 익명 정보 초기화
         anonymousUser = null;
-        localStorage.removeItem('anonymousUser');
+        window.anonymousUser = anonymousUser;
       } else {
-        // 로그아웃된 경우 익명 사용자 정보 복원
-        const hasAnonymousUser = loadAnonymousUser();
-        console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
+        // 로그아웃된 경우 익명 정보 복원 시도(이제 없음)
+        loadAnonymousUser();
+        window.anonymousUser = anonymousUser;
       }
       
       updateUI().then(() => {
         if (user || anonymousUser) {
-          // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
+          // 로그인된 경우 또는 익명 사용자일 때 채팅 메시지 구독
           console.log('채팅 메시지 구독 시작');
           subscribeToMessages();
         } else {
@@ -189,6 +187,11 @@ async function updateUI() {
       </div>
     `;
   }
+  
+  // Contact 채팅 UI 업데이트
+  if (window.updateContactChatUI) {
+    window.updateContactChatUI();
+  }
 }
 
 // 모달 관련 이벤트
@@ -240,7 +243,6 @@ closeProfileModalBtn.addEventListener('click', () => {
   clearErrors();
 });
 
-// 모달 외부 클릭 시 닫기
 authModal.addEventListener('click', (e) => {
   if (e.target === authModal) {
     authModal.classList.add('hidden');
@@ -283,14 +285,25 @@ anonymousSubmit.addEventListener('click', () => {
     return;
   }
   
-  // 익명 사용자 정보 생성
-  anonymousUser = {
-    uid: generateRandomUID(),
-    name: name,
-    isAnonymous: true
-  };
+  // DEV 모드 분기
+  if (name === 'USER_13') {
+    anonymousUser = {
+      uid: 'ANON_DEV',
+      name: 'DEV',
+      isAnonymous: true,
+      isDev: true
+    };
+  } else {
+    // 익명 사용자 정보 생성
+    anonymousUser = {
+      uid: generateRandomUID(),
+      name: name,
+      isAnonymous: true,
+      isDev: false
+    };
+  }
   
-  saveAnonymousUser();
+  window.anonymousUser = anonymousUser; // 전역 변수 업데이트
   anonymousModal.classList.add('hidden');
   clearForm(anonymousName);
   updateUI();
@@ -339,7 +352,6 @@ profileSubmit.addEventListener('click', async () => {
   }
 });
 
-// 탭 전환
 authTabs.forEach(tab => {
   tab.addEventListener('click', () => {
     const targetTab = tab.dataset.tab;
@@ -414,7 +426,8 @@ signupSubmit.addEventListener('click', async () => {
     await setDoc(doc(window.firebaseDB, 'users', userCredential.user.uid), {
       userName: username,
       email: email,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      stars: 0
     });
     
     authModal.classList.add('hidden');
@@ -445,56 +458,6 @@ chatInput.addEventListener('keypress', (e) => {
     sendMessage();
   }
 });
-
-// 테스트 메시지 전송 (디버깅용)
-window.sendTestMessage = async () => {
-  console.log('테스트 메시지 전송 시작');
-  
-  if (!window.firebaseDB) {
-    console.error('Firebase DB가 없습니다!');
-    return;
-  }
-  
-  try {
-    const testMessage = {
-      text: '테스트 메시지 - ' + new Date().toLocaleTimeString(),
-      userId: 'test_user',
-      userName: '테스트 사용자',
-      isAnonymous: true,
-      timestamp: serverTimestamp()
-    };
-    
-    const docRef = await addDoc(collection(window.firebaseDB, 'messages'), testMessage);
-    console.log('테스트 메시지 전송 완료:', docRef.id);
-  } catch (error) {
-    console.error('테스트 메시지 전송 실패:', error);
-    console.error('에러 코드:', error.code);
-    console.error('에러 메시지:', error.message);
-  }
-};
-
-// Firebase 연결 테스트 (디버깅용)
-window.testFirebaseConnection = async () => {
-  console.log('Firebase 연결 테스트 시작');
-  
-  if (!window.firebaseDB) {
-    console.error('Firebase DB가 없습니다!');
-    return false;
-  }
-  
-  try {
-    // 간단한 읽기 테스트
-    const testQuery = query(collection(window.firebaseDB, 'messages'), limit(1));
-    const snapshot = await getDocs(testQuery);
-    console.log('Firebase 읽기 테스트 성공:', snapshot.docs.length, '개 문서');
-    return true;
-  } catch (error) {
-    console.error('Firebase 연결 테스트 실패:', error);
-    console.error('에러 코드:', error.code);
-    console.error('에러 메시지:', error.message);
-    return false;
-  }
-};
 
 async function sendMessage() {
   const message = chatInput.value.trim();

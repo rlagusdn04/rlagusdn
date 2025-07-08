@@ -8,13 +8,8 @@ import {
   limit, 
   serverTimestamp,
   getDoc,
-  doc,
-  getDocs
+  doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { AuthSystem } from './auth-system.js';
-import { firebaseAuth, firebaseDB } from './firebase-config.js';
-const authSystem = new AuthSystem({ auth: firebaseAuth, db: firebaseDB });
 
 // Contact 채팅 관련 DOM 요소들
 const contactChatMessages = document.getElementById('contact-chat-messages');
@@ -23,66 +18,6 @@ const contactChatSend = document.getElementById('contact-chat-send');
 const devStatus = document.getElementById('dev-status');
 
 let contactUnsubscribeMessages = null;
-const DEV_UID = 'XXuJ2w1h84Ry5lrF9UUHGOTawhp2';
-let selectedTargetUID = null;
-
-// 페이지 로드 시 익명 인증 자동 실행
-const auth = getAuth();
-if (!auth.currentUser) {
-  signInAnonymously(auth)
-    .then(() => {
-      console.log("익명 인증 성공");
-    })
-    .catch((error) => {
-      console.error("익명 인증 실패:", error);
-    });
-}
-
-// Dev 계정용 채팅방 선택 UI 생성
-function renderDevChatSelector(userList) {
-  let selector = document.getElementById('dev-chat-selector');
-  if (!selector) {
-    selector = document.createElement('select');
-    selector.id = 'dev-chat-selector';
-    selector.style.margin = '0.5em 0 1em 0';
-    selector.style.fontSize = '1.1em';
-    selector.style.borderRadius = '1em';
-    selector.style.padding = '0.3em 1em';
-    selector.style.background = '#23243a';
-    selector.style.color = '#fff';
-    selector.style.border = '1.5px solid #7ecbff';
-    contactChatMessages.parentElement.insertBefore(selector, contactChatMessages);
-  }
-  selector.innerHTML = '';
-  userList.forEach(uid => {
-    const option = document.createElement('option');
-    option.value = uid;
-    option.textContent = `유저: ${uid}`;
-    selector.appendChild(option);
-  });
-  selector.onchange = () => {
-    selectedTargetUID = selector.value;
-    updateContactChatUI();
-  };
-  if (userList.length > 0) {
-    selectedTargetUID = userList[0];
-  }
-}
-
-// 최근 메시지에서 상대방 UID 목록 추출 (Dev 계정용)
-async function fetchRecentUserUIDsForDev() {
-  // contact-messages 전체에서 최근 메시지 30개를 가져와서, 상대방 UID 추출
-  const q = query(collection(window.firebaseDB, 'contact-messages'), orderBy('timestamp', 'desc'), limit(30));
-  const snapshot = await getDocs(q);
-  const uids = new Set();
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    if (data.userId && data.userId !== DEV_UID && data.userId !== 'ANON_DEV') {
-      uids.add(data.userId);
-    }
-  });
-  return Array.from(uids);
-}
 
 // Contact 채팅 메시지 전송
 async function sendContactMessage() {
@@ -109,61 +44,46 @@ async function sendContactMessage() {
   try {
     contactChatSend.disabled = true;
     contactChatInput.disabled = true;
-
-    // chatId 생성: 항상 [본인 UID, 'ANON_DEV'].sort().join('_')
-    let myUID, myName, isAnonymous, isDev;
+    
+    const messageData = {
+      text: message,
+      timestamp: serverTimestamp(),
+      type: 'contact' // Contact 채팅임을 표시
+    };
+    
     if (window.currentUser) {
-      myUID = window.currentUser.uid;
-      isAnonymous = false;
-      isDev = false;
+      // 로그인된 사용자
+      messageData.userId = window.currentUser.uid;
+      messageData.userEmail = window.currentUser.email;
+      
       // 저장된 사용자 이름 가져오기
       try {
         const userDoc = await getDoc(doc(window.firebaseDB, 'users', window.currentUser.uid));
         if (userDoc.exists()) {
-          myName = userDoc.data().userName;
+          messageData.userName = userDoc.data().userName;
         } else {
-          myName = window.currentUser.email; // 폴백
+          messageData.userName = window.currentUser.email; // 폴백
         }
       } catch (error) {
         console.error('사용자 이름 가져오기 오류:', error);
-        myName = window.currentUser.email; // 폴백
+        messageData.userName = window.currentUser.email; // 폴백
       }
+      
+      messageData.isAnonymous = false;
     } else {
-      myUID = window.anonymousUser.uid;
-      myName = window.anonymousUser.name;
-      isAnonymous = true;
-      isDev = window.anonymousUser.isDev;
+      // 익명 사용자
+      messageData.userId = window.anonymousUser.uid;
+      messageData.userName = window.anonymousUser.name;
+      messageData.isAnonymous = true;
     }
-    let chatId;
-    if (window.currentUser && window.currentUser.uid === DEV_UID) {
-      if (!selectedTargetUID) {
-        alert('대화할 유저를 선택하세요.');
-        contactChatSend.disabled = false;
-        contactChatInput.disabled = false;
-        return;
-      }
-      chatId = [selectedTargetUID, 'ANON_DEV'].sort().join('_');
-    } else {
-      chatId = [myUID, 'ANON_DEV'].sort().join('_');
-    }
-
-    const messageData = {
-      text: message,
-      timestamp: serverTimestamp(),
-      type: 'contact',
-      userId: myUID,
-      userName: myName,
-      isAnonymous: isAnonymous,
-      isDev: isDev || false
-    };
-
-    console.log('Contact 메시지 전송 시작:', messageData, 'chatId:', chatId);
-
-    // Contact 메시지를 chatId별 하위 컬렉션에 저장
-    const docRef = await addDoc(collection(window.firebaseDB, 'contact-messages', chatId, 'messages'), messageData);
-
+    
+    console.log('Contact 메시지 전송 시작:', messageData);
+    
+    // Contact 메시지를 별도 컬렉션에 저장
+    const docRef = await addDoc(collection(window.firebaseDB, 'contact-messages'), messageData);
+    
     console.log('Contact 메시지 전송 완료, 문서 ID:', docRef.id);
-
+    
     // 입력창 비우기
     contactChatInput.value = '';
     
@@ -194,37 +114,14 @@ function subscribeToContactMessages() {
     contactUnsubscribeMessages = null;
   }
   
-  // chatId 생성: 항상 [본인 UID, 'ANON_DEV'].sort().join('_')
-  let myUID, isDev;
-  if (window.currentUser) {
-    myUID = window.currentUser.uid;
-    isDev = false;
-  } else if (window.anonymousUser) {
-    myUID = window.anonymousUser.uid;
-    isDev = window.anonymousUser.isDev;
-  } else {
-    return;
-  }
-  let chatId;
-  if (window.currentUser && window.currentUser.uid === DEV_UID) {
-    if (!selectedTargetUID) {
-      alert('대화할 유저를 선택하세요.');
-      return;
-    }
-    chatId = [selectedTargetUID, 'ANON_DEV'].sort().join('_');
-  } else {
-    chatId = [myUID, 'ANON_DEV'].sort().join('_');
-  }
-
   try {
-    // Contact 메시지 쿼리 (chatId별 하위 컬렉션)
+    // Contact 메시지 쿼리
     const contactMessagesQuery = query(
-      collection(window.firebaseDB, 'contact-messages', chatId, 'messages'),
-      orderBy('timestamp', 'asc'),
+      collection(window.firebaseDB, 'contact-messages'),
       limit(50)
     );
     
-    console.log('Contact Firestore 쿼리 생성 완료', chatId);
+    console.log('Contact Firestore 쿼리 생성 완료');
     
     contactUnsubscribeMessages = onSnapshot(contactMessagesQuery, (snapshot) => {
       console.log('새 Contact 메시지 수신:', snapshot.docs.length, '개');
@@ -314,27 +211,19 @@ function displayContactMessages(messages) {
 }
 
 // Contact 채팅 UI 업데이트
-async function updateContactChatUI() {
-  if (window.currentUser && window.currentUser.uid === DEV_UID) {
-    // Dev 계정: 최근 유저 목록 드롭다운 표시
-    const userList = await fetchRecentUserUIDsForDev();
-    renderDevChatSelector(userList);
-    if (!selectedTargetUID) return;
-  } else {
-    // 기존 동작
-    const selector = document.getElementById('dev-chat-selector');
-    if (selector) selector.remove();
-  }
+function updateContactChatUI() {
   if (window.currentUser || window.anonymousUser) {
     // 로그인된 사용자 또는 익명 사용자
     contactChatInput.disabled = false;
     contactChatSend.disabled = false;
+    
     // Contact 메시지 구독 시작
     subscribeToContactMessages();
   } else {
     // 로그인하지 않은 사용자
     contactChatInput.disabled = true;
     contactChatSend.disabled = true;
+    
     // 환영 메시지 표시
     contactChatMessages.innerHTML = `
       <div class="welcome-message">
@@ -342,6 +231,7 @@ async function updateContactChatUI() {
         <p>로그인하거나 익명으로 참여할 수 있습니다.</p>
       </div>
     `;
+    
     // 구독 해제
     if (contactUnsubscribeMessages) {
       contactUnsubscribeMessages();
