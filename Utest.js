@@ -1,5 +1,3 @@
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
 const quiz = [
   {
     question: "추억을 떠올리는 감각은?",
@@ -328,18 +326,6 @@ function showQuestion() {
     else if (percent <= 90) resultMsg = "어라 ?";
     else if (percent <= 100) resultMsg = "이럴 순 없는거야.";
     document.getElementById("result-title").textContent = resultMsg;
-    // 100%일 때 별가루 1000개 지급
-    if(percent === 100) {
-      if (window.firebaseAuth && window.firebaseAuth.currentUser && window.updateUserStars) {
-        // Firestore에만 지급
-        getCurrentUserStars().then(stars => {
-          window.updateUserStars(stars + 1000);
-          alert('축하합니다! 유사도 100% 달성으로 별가루 1000개를 획득했습니다.');
-        });
-      } else {
-        alert('로그인한 유저만 별가루를 획득할 수 있습니다.');
-      }
-    }
     return;
   }
   document.getElementById("question-box").style.display = "block";
@@ -369,24 +355,17 @@ function showQuestion() {
 }
 
 // 결과창 버튼 이벤트
-document.addEventListener('DOMContentLoaded', () => {
-  onAuthStateChanged(window.firebaseAuth, (user) => {
-    if (!user) {
-      // 로그인 안내 또는 별가루 기능 제한
-      return;
-    }
-    // 별가루 관련 함수/이벤트/UI 초기화는 여기서만!
-    // 퀴즈 시작, 버튼 바인딩 등
-    document.getElementById("retry-btn").onclick = function() {
-      document.getElementById("result-box").style.display = "none";
-      document.getElementById("main-container").classList.remove("result-mode");
-      document.getElementById("question-box").style.display = "block";
-      startQuiz();
-    };
-    document.getElementById("go-title-btn").onclick = function() {
-      window.location.href = "index.html";
-    };
-    // 퀴즈 시작
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("retry-btn").onclick = function() {
+    document.getElementById("result-box").style.display = "none";
+    document.getElementById("main-container").classList.remove("result-mode");
+    document.getElementById("question-box").style.display = "block";
     startQuiz();
-  });
+  };
+  document.getElementById("go-title-btn").onclick = function() {
+    window.location.href = "index.html";
+  };
 });
+
+// 퀴즈 시작
+startQuiz();

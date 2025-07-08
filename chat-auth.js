@@ -67,19 +67,21 @@ let currentUser = null;
 let anonymousUser = null;
 let unsubscribeMessages = null;
 
-// 전역 변수로 설정 (Contact 채팅에서 접근 가능하도록)
-window.currentUser = currentUser;
-window.anonymousUser = anonymousUser;
-
 // 익명 사용자 정보를 로컬 스토리지에서 불러오기
 function loadAnonymousUser() {
-  // localStorage 제거: 항상 false 반환
+  const saved = localStorage.getItem('anonymousUser');
+  if (saved) {
+    anonymousUser = JSON.parse(saved);
+    return true;
+  }
   return false;
 }
 
 // 익명 사용자 정보를 로컬 스토리지에 저장
 function saveAnonymousUser() {
-  // localStorage 제거: 아무 동작 안 함
+  if (anonymousUser) {
+    localStorage.setItem('anonymousUser', JSON.stringify(anonymousUser));
+  }
 }
 
 // 랜덤 UID 생성
@@ -93,54 +95,21 @@ function initializeAuthStateListener() {
     onAuthStateChanged(window.firebaseAuth, (user) => {
       console.log('인증 상태 변경:', user ? '로그인됨' : '로그아웃됨');
       currentUser = user;
-      window.currentUser = currentUser; // 전역 변수 업데이트
       
       if (user) {
-        // 로그인된 경우 익명 정보 초기화
+        // 로그인된 경우 익명 사용자 정보 초기화
+        console.log('로그인 사용자:', user.email);
         anonymousUser = null;
-        window.anonymousUser = anonymousUser;
-        // [신규 회원] 기본 별가루 500개 지급
-        (async () => {
-          const { getDoc, setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-          const userRef = doc(window.firebaseDB, 'users', user.uid);
-          const userSnap = await getDoc(userRef);
-          const data = userSnap.exists() ? userSnap.data() : {};
-          if (!userSnap.exists() || typeof data.stars !== 'number') {
-            // 신규 회원: 기본 별가루 500개 지급 (stars 필드가 없을 때만)
-            await setDoc(userRef, { stars: 500, lastAttendance: new Date() }, { merge: true });
-            if (window.updateStarBalanceUI) window.updateStarBalanceUI();
-            alert('회원가입 축하! 별가루 500개가 지급되었습니다.');
-          } else {
-            // [출석 체크] 마지막 출석일과 오늘 날짜 비교 (유저별로 Firestore에 저장)
-            let lastAttendance = null;
-            if (data.lastAttendance) {
-              if (typeof data.lastAttendance === 'object' && data.lastAttendance.seconds) {
-                lastAttendance = new Date(data.lastAttendance.seconds * 1000);
-              } else {
-                lastAttendance = new Date(data.lastAttendance);
-              }
-            }
-            const today = new Date();
-            if (!lastAttendance || lastAttendance.toDateString() !== today.toDateString()) {
-              // 오늘 첫 로그인(출석): 별가루 100개 지급 (유저별 1일 1회)
-              const newStars = (typeof data.stars === 'number' ? data.stars : 0) + 100;
-              await setDoc(userRef, { stars: newStars, lastAttendance: today }, { merge: true });
-              if (window.updateStarBalanceUI) window.updateStarBalanceUI();
-              alert('출석체크! 별가루 100개가 지급되었습니다.');
-            }
-          }
-        })();
+        localStorage.removeItem('anonymousUser');
       } else {
-        // 로그아웃된 경우 익명 정보 복원 시도(이제 없음)
-        loadAnonymousUser();
-        window.anonymousUser = anonymousUser;
+        // 로그아웃된 경우 익명 사용자 정보 복원
+        const hasAnonymousUser = loadAnonymousUser();
+        console.log('익명 사용자 복원:', hasAnonymousUser ? anonymousUser?.name : '없음');
       }
       
       updateUI().then(() => {
-        // 별가루 잔고 UI도 동기화
-        if (window.updateStarBalanceUI) window.updateStarBalanceUI();
         if (user || anonymousUser) {
-          // 로그인된 경우 또는 익명 사용자일 때 채팅 메시지 구독
+          // 로그인된 경우 또는 익명 사용자인 경우 채팅 메시지 구독
           console.log('채팅 메시지 구독 시작');
           subscribeToMessages();
         } else {
@@ -219,11 +188,6 @@ async function updateUI() {
         <p>로그인하거나 익명으로 참여할 수 있습니다.</p>
       </div>
     `;
-  }
-  
-  // Contact 채팅 UI 업데이트
-  if (window.updateContactChatUI) {
-    window.updateContactChatUI();
   }
 }
 
@@ -319,25 +283,14 @@ anonymousSubmit.addEventListener('click', () => {
     return;
   }
   
-  // DEV 모드 분기
-  if (name === 'USER_13') {
-    anonymousUser = {
-      uid: 'ANON_DEV',
-      name: 'DEV',
-      isAnonymous: true,
-      isDev: true
-    };
-  } else {
-    // 익명 사용자 정보 생성
-    anonymousUser = {
-      uid: generateRandomUID(),
-      name: name,
-      isAnonymous: true,
-      isDev: false
-    };
-  }
+  // 익명 사용자 정보 생성
+  anonymousUser = {
+    uid: generateRandomUID(),
+    name: name,
+    isAnonymous: true
+  };
   
-  window.anonymousUser = anonymousUser; // 전역 변수 업데이트
+  saveAnonymousUser();
   anonymousModal.classList.add('hidden');
   clearForm(anonymousName);
   updateUI();
@@ -461,8 +414,7 @@ signupSubmit.addEventListener('click', async () => {
     await setDoc(doc(window.firebaseDB, 'users', userCredential.user.uid), {
       userName: username,
       email: email,
-      createdAt: serverTimestamp(),
-      stars: 0
+      createdAt: serverTimestamp()
     });
     
     authModal.classList.add('hidden');
