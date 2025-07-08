@@ -32,31 +32,3 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
     alert("Firebase 초기화에 실패했습니다. 콘솔을 확인하세요.");
   }
 })();
-
-// 전역으로 내보내기
-window.firebaseAuth = auth;
-window.firebaseDB = db;
-window.firebaseAnalytics = analytics;
-
-// 모듈로 내보내기
-export { auth as firebaseAuth, db as firebaseDB, analytics as firebaseAnalytics };
-
-// Firebase 초기화 확인
-console.log('Firebase 초기화 완료:');
-console.log('- Auth:', !!auth);
-console.log('- Firestore:', !!db);
-console.log('- Analytics:', !!analytics);
-
-// Firebase 연결 상태 확인 함수
-function checkFirebaseConnection() {
-  console.log('Firebase 연결 상태 확인:');
-  console.log('- Auth 객체:', !!window.firebaseAuth);
-  console.log('- DB 객체:', !!window.firebaseDB);
-  
-  if (!window.firebaseAuth || !window.firebaseDB) {
-    console.error('Firebase 객체가 초기화되지 않았습니다!');
-    return false;
-  }
-  
-  return true;
-}
