@@ -477,12 +477,90 @@ async function playSlotMachine() {
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
 }
 
-// DOMContentLoaded 시 별가루 UI 동기화
+// 인증 상태 체크 함수
+function isLoggedIn() {
+  return window.firebaseAuth && window.firebaseAuth.currentUser && starSystem.user && starSystem.user.uid;
+}
+
+// 별가루 잔고 UI 동기화 함수 예시
 async function updateSlotBalanceUI() {
   const el = document.getElementById('slot-balance');
   if (!el) return;
+  if (!isLoggedIn()) {
+    el.textContent = '별가루: -';
+    // 슬롯머신 버튼 등도 비활성화
+    const slotBtn = document.getElementById('slot-btn');
+    if (slotBtn) slotBtn.disabled = true;
+    return;
+  }
   const stars = await starSystem.getCurrentUserStars();
   el.textContent = `별가루: ${stars}`;
+  const slotBtn = document.getElementById('slot-btn');
+  if (slotBtn) slotBtn.disabled = false;
+}
+
+// 슬롯머신 버튼 등 주요 기능 버튼 바인딩 시
+const slotBtn = document.getElementById('slot-btn');
+if (slotBtn) {
+  slotBtn.onclick = async () => {
+    if (!isLoggedIn()) {
+      alert('로그인 후 이용해 주세요.');
+      return;
+    }
+    await playSlotMachine();
+  };
+}
+
+// 안내 메시지 출력 함수
+function showMessage(msg, type = 'info') {
+  const el = document.getElementById('ui-message');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = `msg-${type}`;
+  el.style.display = 'block';
+  setTimeout(() => {
+    el.style.display = 'none';
+  }, 3000);
+}
+
+// 인증 상태 변경 시 UI 및 안내 메시지 갱신
+if (window.authSystem && typeof window.authSystem.onAuthStateChanged === 'function') {
+  window.authSystem.onAuthStateChanged(user => {
+    starSystem.setUser(user);
+    updateSlotBalanceUI();
+    if (user) {
+      showMessage('로그인되었습니다.', 'success');
+    } else {
+      showMessage('로그아웃되었습니다.', 'info');
+    }
+    // ... 기타 UI도 로그인 상태에 따라 활성/비활성 처리 ...
+  });
+}
+
+// 주요 기능 버튼 예시 (슬롯머신)
+if (slotBtn) {
+  slotBtn.onclick = async () => {
+    if (!isLoggedIn()) {
+      showMessage('로그인 후 이용해 주세요.', 'warning');
+      return;
+    }
+    try {
+      await playSlotMachine();
+    } catch (e) {
+      showMessage('에러: ' + (e.message || e), 'error');
+      // 추가로 콘솔에 상세 로그
+      console.error('[슬롯머신 에러]', e);
+    }
+  };
+}
+
+// 인증 상태 변경 시 UI 즉시 갱신
+if (window.authSystem && typeof window.authSystem.onAuthStateChanged === 'function') {
+  window.authSystem.onAuthStateChanged(user => {
+    starSystem.setUser(user);
+    updateSlotBalanceUI();
+    // ... 기타 UI도 로그인 상태에 따라 활성/비활성 처리 ...
+  });
 }
 
 function initStarSystemUI() {
