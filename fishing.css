@@ -1,0 +1,202 @@
+body.fishing-bg.day {
+  background: linear-gradient(160deg, #eafbe7 0%, #b7e6f9 100%);
+  color: #222;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif';
+  transition: background 0.7s, color 0.7s;
+}
+body.fishing-bg.night {
+  background: linear-gradient(160deg, #23243a 0%, #181a20 100%);
+  color: #eafbe7;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif';
+  transition: background 0.7s, color 0.7s;
+}
+.fishing-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2em 1em;
+}
+.fishing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5em;
+}
+.fishing-header h1 {
+  font-size: 2em;
+  color: #7ecbff;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 12px #b7e6f9, 0 0 24px #fff2;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif';
+}
+.fishing-header .btn {
+  background: #eafbe7;
+  color: #222;
+  border: 1.5px solid #b7e6f9;
+  border-radius: 1.2em;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.fishing-header .btn:hover {
+  background: #b7e6f9;
+  color: #222;
+}
+.lake-area {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  background: linear-gradient(180deg, #b7e6f9 0%, #4ac6ff 60%, #23243a 100%);
+  border-radius: 2em 2em 1.5em 1.5em;
+  box-shadow: 0 8px 32px #b7e6f955, 0 2px 8px #fff8 inset;
+  margin-bottom: 1.2em;
+  overflow: hidden;
+}
+.lake-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0; top: 0;
+  background: #23243a;
+  opacity: 0.5;
+  z-index: 1;
+}
+.float {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 32px;
+  height: 32px;
+  background: #f9e6b7;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px #b7e6f988;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition: top 0.5s cubic-bezier(.4,0,.2,1);
+  animation: float-bob 2s infinite alternate;
+  display: none;
+}
+@keyframes float-bob {
+  0% { top: 40%; }
+  100% { top: 44%; }
+}
+.fish-anim {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  width: 60px;
+  height: 36px;
+  z-index: 3;
+  display: none;
+}
+.fish-anim.common {
+  background: #b7e5c9;
+}
+.fish-anim.rare {
+  background: #b7e6f9;
+}
+.fish-anim.legend {
+  background: #ffd700;
+}
+.fish-anim.big {
+  filter: drop-shadow(0 0 16px #ffd700cc);
+  animation: fish-bounce 1.2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes fish-bounce {
+  0% { transform: scale(0.7) translateY(20px); opacity: 0.2; }
+  60% { transform: scale(1.1) translateY(-10px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.fishing-controls {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+.fishing-controls .btn {
+  background: #eafbe7;
+  color: #222;
+  border: 1.5px solid #b7e6f9;
+  border-radius: 1.2em;
+  padding: 0.7em 1.5em;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.fishing-controls .btn:hover {
+  background: #b7e6f9;
+  color: #222;
+}
+.fishing-info {
+  text-align: center;
+  font-size: 1.1em;
+  margin-bottom: 1em;
+  min-height: 2.5em;
+}
+.fishing-album, .fishing-ranking {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 1.2em;
+  padding: 1em;
+  margin: 1em 0;
+  font-size: 1em;
+  color: #eafbe7;
+}
+.fishing-ranking {
+  background: #eafbe7cc;
+}
+.fishing-bottom-panel {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  justify-content: center;
+  margin: 1.5em 0 0.5em 0;
+}
+#fish-counts {
+  font-size: 1.05em;
+  color: #eafbe7;
+  margin-right: 1em;
+}
+.fishing-bottom-panel .btn {
+  background: #23243a;
+  color: #eafbe7;
+  border: 1.5px solid #b7e6f9;
+  border-radius: 1.2em;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.fishing-bottom-panel .btn:hover {
+  background: #b7e6f9;
+  color: #23243a;
+}
+@media (max-width: 700px) {
+  .fishing-container {
+    padding: 1em 0.2em;
+  }
+  .lake-area {
+    height: 160px;
+  }
+}
+.float-success {
+  animation: float-bounce 0.7s cubic-bezier(.4,0,.2,1);
+}
+@keyframes float-bounce {
+  0% { transform: scale(1) translate(-50%, -50%); }
+  30% { transform: scale(1.25,0.8) translate(-50%, -50%); }
+  60% { transform: scale(0.9,1.1) translate(-50%, -50%); }
+  100% { transform: scale(1) translate(-50%, -50%); }
+}
+.float-fail {
+  animation: float-shake 0.7s cubic-bezier(.4,0,.2,1);
+  background: #ff4a4a !important;
+}
+@keyframes float-shake {
+  0% { transform: translate(-50%, -50%) rotate(-8deg); }
+  20% { transform: translate(-50%, -50%) rotate(8deg); }
+  40% { transform: translate(-50%, -50%) rotate(-6deg); }
+  60% { transform: translate(-50%, -50%) rotate(6deg); }
+  80% { transform: translate(-50%, -50%) rotate(-3deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+} 

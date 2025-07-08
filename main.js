@@ -9,18 +9,54 @@ const musicList = [
 ];
 
 let currentMusicIdx = 3; // Default to 'Time to Start Another Day'
-const audioPlayer = document.getElementById('audio-player');
-const musicTitle = document.getElementById('music-title');
-const playPauseBtn = document.getElementById('play-pause-btn');
-const volumeSlider = document.getElementById('volume-slider');
-const volumeValue = document.getElementById('volume-value');
+
+// 전역 변수 선언
+let playPauseBtn = document.getElementById('play-pause-btn');
+let volumeSlider = document.getElementById('volume-slider');
+let musicTitle = document.getElementById('music-title');
+let audioPlayer = document.getElementById('audio-player');
+let volumeValue = document.getElementById('volume-value');
+
+document.addEventListener('DOMContentLoaded', function() {
+  // 요소 할당
+  playPauseBtn = document.getElementById('play-pause-btn');
+  volumeSlider = document.getElementById('volume-slider');
+  musicTitle = document.getElementById('music-title');
+  audioPlayer = document.getElementById('audio-player');
+  volumeValue = document.getElementById('volume-value');
+
+  // 이벤트 바인딩 (모두 null 체크)
+  if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
+  if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
+  if (musicTitle) musicTitle.addEventListener('click', () => {
+    let nextIdx;
+    do {
+      nextIdx = Math.floor(Math.random() * musicList.length);
+    } while (nextIdx === currentMusicIdx && musicList.length > 1);
+    currentMusicIdx = nextIdx;
+    updateMusicInfo();
+    if (audioPlayer) audioPlayer.play();
+  });
+  if (audioPlayer && playPauseBtn) {
+    audioPlayer.addEventListener('play', () => {
+      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>';
+    });
+    audioPlayer.addEventListener('pause', () => {
+      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause icon
+    });
+  }
+  updateMusicInfo();
+  updateVolume();
+});
 
 function updateMusicInfo() {
+  if (!musicTitle || !audioPlayer) return;
   musicTitle.textContent = musicList[currentMusicIdx].title;
   audioPlayer.src = musicList[currentMusicIdx].src;
 }
 
 function togglePlayPause() {
+  if (!audioPlayer || !playPauseBtn) return;
   if (audioPlayer.paused) {
     audioPlayer.play();
     playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>'; // Play icon
@@ -31,145 +67,105 @@ function togglePlayPause() {
 }
 
 function updateVolume() {
+  if (!audioPlayer || !volumeSlider || !volumeValue) return;
   audioPlayer.volume = volumeSlider.value;
   volumeValue.textContent = Math.round(volumeSlider.value * 100) + '%';
 }
 
-// Event Listeners
-playPauseBtn.addEventListener('click', togglePlayPause);
-volumeSlider.addEventListener('input', updateVolume);
-
-// Initial setup
-updateMusicInfo();
-updateVolume();
-
-// Auto-play on user interaction (if allowed by browser)
-document.addEventListener('DOMContentLoaded', () => {
-  // 사용자 상호작용 후 자동 재생 시도
-  const tryAutoplay = () => {
-    audioPlayer.play().catch(error => {
-      console.log('Autoplay prevented:', error);
-    });
-  };
-  
-  // 페이지 로드 시 한 번 시도
-  tryAutoplay();
-  
-  // 사용자 상호작용 시 재생 시도
-  document.addEventListener('click', tryAutoplay, { once: true });
-  document.addEventListener('keydown', tryAutoplay, { once: true });
-});
-
-// Shuffle music on title click
-musicTitle.addEventListener('click', () => {
-  let nextIdx;
-  do {
-    nextIdx = Math.floor(Math.random() * musicList.length);
-  } while (nextIdx === currentMusicIdx && musicList.length > 1);
-  currentMusicIdx = nextIdx;
-  updateMusicInfo();
-  audioPlayer.play();
-});
-
-// Update play/pause button icon when audio state changes
-audioPlayer.addEventListener('play', () => {
-  playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause icon
-});
-
-audioPlayer.addEventListener('pause', () => {
-  playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>'; // Play icon
-});
-
 // Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-
-    document.querySelector(this.getAttribute('href')).scrollIntoView({
-      behavior: 'smooth'
+const anchorLinks = document.querySelectorAll('a[href^="#"]');
+if (anchorLinks && anchorLinks.length > 0) {
+  anchorLinks.forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
     });
   });
-});
+}
 
 // Language Toggle Logic
 const langToggleButton = document.getElementById('lang-toggle-btn');
 const aboutContentEn = document.getElementById('about-content-en');
 const aboutContentKo = document.getElementById('about-content-ko');
 
-langToggleButton.addEventListener('click', () => {
-  if (aboutContentEn.classList.contains('hidden')) {
-    // Currently showing Korean, switch to English
+if (langToggleButton && aboutContentEn && aboutContentKo) {
+  langToggleButton.addEventListener('click', () => {
+    if (aboutContentEn.classList.contains('hidden')) {
+      // Currently showing Korean, switch to English
+      aboutContentEn.classList.remove('hidden');
+      aboutContentKo.classList.add('hidden');
+      langToggleButton.textContent = '한/영';
+    } else {
+      // Currently showing English, switch to Korean
+      aboutContentEn.classList.add('hidden');
+      aboutContentKo.classList.remove('hidden');
+      langToggleButton.textContent = 'Eng/Kor';
+    }
+  });
+
+  // Initial language setup on page load
+  document.addEventListener('DOMContentLoaded', () => {
     aboutContentEn.classList.remove('hidden');
     aboutContentKo.classList.add('hidden');
     langToggleButton.textContent = '한/영';
-  } else {
-    // Currently showing English, switch to Korean
-    aboutContentEn.classList.add('hidden');
-    aboutContentKo.classList.remove('hidden');
-    langToggleButton.textContent = 'Eng/Kor';
-  }
-});
-
-// Initial language setup on page load
-document.addEventListener('DOMContentLoaded', () => {
-  // Ensure English content is visible and Korean is hidden by default
-  aboutContentEn.classList.remove('hidden');
-  aboutContentKo.classList.add('hidden');
-  langToggleButton.textContent = '한/영'; // Set initial button text
-});
-
-// Mosaic Animation Logic
-function startMosaicAnimation() {
-  const heroTitle = document.querySelector('.hero-title');
-
-  const originalText = heroTitle.dataset.originalText;
-  heroTitle.innerHTML = originalText.split('').map(char => `<span>${char}</span>`).join('');
-  const spans = heroTitle.querySelectorAll('span');
-
-  let intervalId;
-
-  function applyMosaic() {
-    const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
-    const indicesToMask = new Set();
-
-    while (indicesToMask.size < numToMask) {
-      const randomIndex = Math.floor(Math.random() * originalText.length);
-      if (originalText[randomIndex] !== ' ') { // Don't mask spaces
-        indicesToMask.add(randomIndex);
-      }
-    }
-
-    spans.forEach((span, index) => {
-      if (indicesToMask.has(index)) {
-        span.classList.add('mosaic');
-      } else {
-        span.classList.remove('mosaic');
-      }
-    });
-
-    setTimeout(() => {
-      spans.forEach(span => span.classList.remove('mosaic'));
-    }, 1500); // 1.5초 후 원래대로 돌아옴
-  }
-
-  intervalId = setInterval(applyMosaic, 3000); // 3초마다 애니메이션 실행
+  });
 }
 
-// Call the animation function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', startMosaicAnimation);
+// Mosaic Animation Logic
+const heroTitle = document.querySelector('.hero-title');
+if (heroTitle) {
+  function startMosaicAnimation() {
+    const originalText = heroTitle.dataset.originalText;
+    heroTitle.innerHTML = originalText.split('').map(char => `<span>${char}</span>`).join('');
+    const spans = heroTitle.querySelectorAll('span');
+
+    let intervalId;
+
+    function applyMosaic() {
+      const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
+      const indicesToMask = new Set();
+
+      while (indicesToMask.size < numToMask) {
+        const randomIndex = Math.floor(Math.random() * originalText.length);
+        if (originalText[randomIndex] !== ' ') { // Don't mask spaces
+          indicesToMask.add(randomIndex);
+        }
+      }
+
+      spans.forEach((span, index) => {
+        if (indicesToMask.has(index)) {
+          span.classList.add('mosaic');
+        } else {
+          span.classList.remove('mosaic');
+        }
+      });
+
+      setTimeout(() => {
+        spans.forEach(span => span.classList.remove('mosaic'));
+      }, 1500); // 1.5초 후 원래대로 돌아옴
+    }
+
+    intervalId = setInterval(applyMosaic, 3000); // 3초마다 애니메이션 실행
+  }
+  document.addEventListener('DOMContentLoaded', startMosaicAnimation);
+}
 
 // Book List Logic
 const toggleBookListBtn = document.getElementById('toggle-book-list');
 const bookList = document.getElementById('book-list');
-
-toggleBookListBtn.addEventListener('click', () => {
-  bookList.classList.toggle('hidden');
-  if (bookList.classList.contains('hidden')) {
-    toggleBookListBtn.textContent = '도서 리스트 보기';
-  } else {
-    toggleBookListBtn.textContent = '도서 리스트 숨기기';
-  }
-});
+if (toggleBookListBtn && bookList) {
+  toggleBookListBtn.addEventListener('click', () => {
+    bookList.classList.toggle('hidden');
+    if (bookList.classList.contains('hidden')) {
+      toggleBookListBtn.textContent = '도서 리스트 보기';
+    } else {
+      toggleBookListBtn.textContent = '도서 리스트 숨기기';
+    }
+  });
+}
 
 // Daily Menu Roulette Logic
 const menuItems = [
@@ -177,56 +173,57 @@ const menuItems = [
 ];
 const rouletteDisplay = document.getElementById('roulette-display');
 const spinRouletteBtn = document.getElementById('spin-roulette');
+if (spinRouletteBtn && rouletteDisplay) {
+  spinRouletteBtn.addEventListener('click', () => {
+    spinRouletteBtn.disabled = true;
+    let spinCount = 0;
+    const totalSpins = 30;
+    const minDelay = 30; // 가장 빠를 때 딜레이(ms)
+    const maxDelay = 300; // 가장 느릴 때 딜레이(ms)
+    const slowDownRatio = 0.7; // 느려지는 구간을 더 길게
 
-spinRouletteBtn.addEventListener('click', () => {
-  spinRouletteBtn.disabled = true;
-  let spinCount = 0;
-  const totalSpins = 30;
-  const minDelay = 30; // 가장 빠를 때 딜레이(ms)
-  const maxDelay = 300; // 가장 느릴 때 딜레이(ms)
-  const slowDownRatio = 0.7; // 느려지는 구간을 더 길게
-
-  function customEase(t) {
-    // 느려지는 구간을 더 길게: t가 slowDownRatio 이상일 때 더 급격히 느려짐
-    if (t < (1 - slowDownRatio)) {
-      // 초반: 빠르게 가속
-      return 2 * t * t;
-    } else {
-      // 후반: 더 천천히 감속
-      const slowT = (t - (1 - slowDownRatio)) / slowDownRatio;
-      return 1 - Math.pow(1 - slowT, 2);
-    }
-  }
-
-  function spinRoulette() {
-    const randomIndex = Math.floor(Math.random() * menuItems.length);
-    rouletteDisplay.textContent = menuItems[randomIndex];
-    spinCount++;
-
-    if (spinCount > totalSpins / 2) {
-      rouletteDisplay.style.transition = 'all 0.5s cubic-bezier(.4,0,.2,1)';
-    } else {
-      rouletteDisplay.style.transition = 'none';
+    function customEase(t) {
+      // 느려지는 구간을 더 길게: t가 slowDownRatio 이상일 때 더 급격히 느려짐
+      if (t < (1 - slowDownRatio)) {
+        // 초반: 빠르게 가속
+        return 2 * t * t;
+      } else {
+        // 후반: 더 천천히 감속
+        const slowT = (t - (1 - slowDownRatio)) / slowDownRatio;
+        return 1 - Math.pow(1 - slowT, 2);
+      }
     }
 
-    if (spinCount < totalSpins) {
-      const t = spinCount / totalSpins;
-      const delay = minDelay + (maxDelay - minDelay) * customEase(t);
-      setTimeout(spinRoulette, delay);
-    } else {
-      spinRouletteBtn.disabled = false;
-      const finalIndex = Math.floor(Math.random() * menuItems.length);
-      rouletteDisplay.textContent = menuItems[finalIndex];
-      // 빛나는 효과
-      rouletteDisplay.classList.add('roulette-flash');
-      setTimeout(() => {
-        rouletteDisplay.classList.remove('roulette-flash');
-      }, 400);
-    }
-  }
+    function spinRoulette() {
+      const randomIndex = Math.floor(Math.random() * menuItems.length);
+      rouletteDisplay.textContent = menuItems[randomIndex];
+      spinCount++;
 
-  spinRoulette();
-});
+      if (spinCount > totalSpins / 2) {
+        rouletteDisplay.style.transition = 'all 0.5s cubic-bezier(.4,0,.2,1)';
+      } else {
+        rouletteDisplay.style.transition = 'none';
+      }
+
+      if (spinCount < totalSpins) {
+        const t = spinCount / totalSpins;
+        const delay = minDelay + (maxDelay - minDelay) * customEase(t);
+        setTimeout(spinRoulette, delay);
+      } else {
+        spinRouletteBtn.disabled = false;
+        const finalIndex = Math.floor(Math.random() * menuItems.length);
+        rouletteDisplay.textContent = menuItems[finalIndex];
+        // 빛나는 효과
+        rouletteDisplay.classList.add('roulette-flash');
+        setTimeout(() => {
+          rouletteDisplay.classList.remove('roulette-flash');
+        }, 400);
+      }
+    }
+
+    spinRoulette();
+  });
+}
 
 // Project Navigation Logic
 const projectGrid = document.querySelector('.project-grid');
@@ -234,12 +231,12 @@ const prevBtn = document.getElementById('prev-project');
 const nextBtn = document.getElementById('next-project');
 
 function updateNavButtons() {
+  if (!projectGrid || !prevBtn || !nextBtn) return;
   if (projectGrid.scrollLeft <= 0) {
     prevBtn.disabled = true;
   } else {
     prevBtn.disabled = false;
   }
-  
   if (projectGrid.scrollLeft >= projectGrid.scrollWidth - projectGrid.clientWidth) {
     nextBtn.disabled = true;
   } else {
@@ -247,32 +244,34 @@ function updateNavButtons() {
   }
 }
 
-prevBtn.addEventListener('click', () => {
-  const card = projectGrid.querySelector('.project-card');
-  const cardWidth = card ? card.offsetWidth : 450;
-  const gap = 32; // gap: 2rem = 32px
-  const scrollDistance = cardWidth + gap;
-  projectGrid.scrollBy({
-    left: -scrollDistance,
-    behavior: 'smooth'
+if (prevBtn && projectGrid) {
+  prevBtn.addEventListener('click', () => {
+    const card = projectGrid.querySelector('.project-card');
+    const cardWidth = card ? card.offsetWidth : 450;
+    const gap = 32;
+    const scrollDistance = cardWidth + gap;
+    projectGrid.scrollBy({
+      left: -scrollDistance,
+      behavior: 'smooth'
+    });
   });
-});
-
-nextBtn.addEventListener('click', () => {
-  const card = projectGrid.querySelector('.project-card');
-  const cardWidth = card ? card.offsetWidth : 450;
-  const gap = 32; // gap: 2rem = 32px
-  const scrollDistance = cardWidth + gap;
-  projectGrid.scrollBy({
-    left: scrollDistance,
-    behavior: 'smooth'
+}
+if (nextBtn && projectGrid) {
+  nextBtn.addEventListener('click', () => {
+    const card = projectGrid.querySelector('.project-card');
+    const cardWidth = card ? card.offsetWidth : 450;
+    const gap = 32;
+    const scrollDistance = cardWidth + gap;
+    projectGrid.scrollBy({
+      left: scrollDistance,
+      behavior: 'smooth'
+    });
   });
-});
-
-projectGrid.addEventListener('scroll', updateNavButtons);
-
-// Initial button state
-document.addEventListener('DOMContentLoaded', updateNavButtons);
+}
+if (projectGrid) {
+  projectGrid.addEventListener('scroll', updateNavButtons);
+  document.addEventListener('DOMContentLoaded', updateNavButtons);
+}
 
 // 프로필 이미지 1분마다 교체 + 클릭 시 수동 변경
 const profileImage = document.querySelector('.profile-image');
@@ -315,230 +314,301 @@ setInterval(showNextProfileImage, 60000);
 // 클릭 시 수동 변경
 profileImage.addEventListener('click', showNextProfileImage);
 
-// === 별가루(스타) 시스템 연동 ===
+// 슬롯머신 이모티콘 배열 복구
+const slotEmojis = ['🫨','😡','😮‍💨','🤗','🤔','🤭','🥺'];
+function getRandomSlot() {
+  return slotEmojis[Math.floor(Math.random() * slotEmojis.length)];
+}
+
+// === star-system, auth-system 연동 ===
 import { StarSystem } from './star-system.js';
+import { AuthSystem } from './auth-system.js';
 import { firebaseAuth, firebaseDB } from './firebase-config.js';
 
-// 별가루 잔고 표시용 UI가 없으면 생성
-function ensureStarBalanceUI() {
-  let el = document.getElementById('star-balance');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'star-balance';
-    el.style.position = 'fixed';
-    el.style.top = '16px';
-    el.style.right = '16px';
-    el.style.background = 'rgba(0,0,0,0.7)';
-    el.style.color = '#ffd700';
-    el.style.padding = '8px 16px';
-    el.style.borderRadius = '16px';
-    el.style.zIndex = '1000';
-    el.style.fontWeight = 'bold';
-    el.textContent = '별가루: 0';
-    document.body.appendChild(el);
-  }
-  return el;
-}
-
-const starBalanceEl = ensureStarBalanceUI();
-
-// StarSystem 인스턴스 생성 및 초기화
 const starSystem = new StarSystem({ auth: firebaseAuth, db: firebaseDB });
+const authSystem = new AuthSystem({ auth: firebaseAuth, db: firebaseDB });
 
-// 출석 보상 지급 시 알림 및 잔고 UI 업데이트
-starSystem.onAttendanceRewarded = (reward, totalStars) => {
-  alert(`출석 보상! 별가루 +${reward} 지급\n현재 별가루: ${totalStars}`);
-  starBalanceEl.textContent = `별가루: ${totalStars}`;
-};
-
-// 별가루 잔고가 바뀔 때마다 UI 업데이트 (추후 슬롯, 낚시 등과 연동)
-starSystem.onStarsChanged = (stars) => {
-  starBalanceEl.textContent = `별가루: ${stars}`;
-};
-
-// === 인증 상태에 따라 미니게임/기부 UI 활성/비활성 ===
-function updateGameUIAuthState() {
-  const slotBtn = document.getElementById('slot-spin-btn');
-  const slotResult = document.getElementById('slot-result');
-  const fishingBtn = document.getElementById('fishing-btn');
-  const sellFishBtn = document.getElementById('sell-fish-btn');
-  const fishingResult = document.getElementById('fishing-result');
-  const donateBtn = document.getElementById('donate-btn');
-  const donateAmount = document.getElementById('donate-amount');
-  const donateResult = document.getElementById('donate-result');
-
-  const isAuthed = !!starSystem.user;
-
-  // 슬롯머신
-  if (slotBtn) {
-    slotBtn.disabled = !isAuthed;
-    if (!isAuthed && slotResult) slotResult.textContent = '로그인 또는 익명 참여 후 이용 가능합니다.';
-    else if (slotResult && slotResult.textContent === '로그인 또는 익명 참여 후 이용 가능합니다.') slotResult.textContent = '';
-  }
-  // 낚시
-  if (fishingBtn) {
-    fishingBtn.disabled = !isAuthed;
-    if (!isAuthed && fishingResult) fishingResult.textContent = '로그인 또는 익명 참여 후 이용 가능합니다.';
-    else if (fishingResult && fishingResult.textContent === '로그인 또는 익명 참여 후 이용 가능합니다.') fishingResult.textContent = '';
-  }
-  if (sellFishBtn) sellFishBtn.disabled = !isAuthed;
-  // 기부
-  if (donateBtn) donateBtn.disabled = !isAuthed;
-  if (donateAmount) donateAmount.disabled = !isAuthed;
-  if (!isAuthed && donateResult) donateResult.textContent = '로그인 또는 익명 참여 후 이용 가능합니다.';
-  else if (donateResult && donateResult.textContent === '로그인 또는 익명 참여 후 이용 가능합니다.') donateResult.textContent = '';
-}
-
-// 인증 상태 변경 시마다 UI 동기화
-starSystem._origInitAuthListener = starSystem.initAuthListener;
-starSystem.initAuthListener = function() {
-  this._origInitAuthListener();
-  // 인증 상태 변경 감지 시 UI 동기화
-  import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ onAuthStateChanged }) => {
-    onAuthStateChanged(this.auth, () => {
-      updateGameUIAuthState();
-    });
-  });
-};
-// 페이지 로드시 1회 동기화
-updateGameUIAuthState();
-
-// === 슬롯머신, 낚시, 기부 카드 UI 연동 ===
+// === 인증/익명/닉네임 UI 연동 ===
 document.addEventListener('DOMContentLoaded', () => {
-  // 슬롯머신
-  const slotBtn = document.getElementById('slot-spin-btn');
-  const slotResult = document.getElementById('slot-result');
-  if (slotBtn && slotResult) {
-    slotBtn.onclick = async () => {
-      slotBtn.disabled = true;
-      slotResult.textContent = '돌리는 중...';
-      try {
-        const { result, matchCount, reward, stars } = await starSystem.playSlot({ betAmount: 100 });
-        const emoji = ['🍒','🍋','🍊','🍇','⭐️'];
-        slotResult.innerHTML =
-          `<span style='font-size:1.5em;'>${result.map(n=>emoji[n]).join(' ')}</span><br>` +
-          (matchCount === 3 ? '🎉 3개 일치! +200 별가루' :
-           matchCount === 2 ? '✨ 2개 일치! +100 별가루' :
-           '꽝!') +
-          `<br>잔고: ${stars}`;
-      } catch(e) {
-        slotResult.textContent = e.message;
-      } finally {
-        slotBtn.disabled = false;
-      }
-    };
-  }
-
-  // 낚시
-  const fishingBtn = document.getElementById('fishing-btn');
-  const sellFishBtn = document.getElementById('sell-fish-btn');
-  const fishingResult = document.getElementById('fishing-result');
-  const fishingInventory = document.getElementById('fishing-inventory');
-  function renderInventory(inv) {
-    if (!inv || inv.length === 0) {
-      fishingInventory.textContent = '인벤토리: (비어있음)';
-      return;
-    }
-    fishingInventory.innerHTML = '인벤토리:<br>' + inv.map(f =>
-      `<span style='color:${f.rarity==='legend'?'#ffd700':f.rarity==='rare'?'#b97fff':'#4ac6ff'};'>${f.name}</span> (${f.size}cm)`
-    ).join(', ');
-  }
-  if (fishingBtn && fishingResult && fishingInventory) {
-    fishingBtn.onclick = async () => {
-      fishingBtn.disabled = true;
-      fishingResult.textContent = '낚시 중...';
-      try {
-        const { fish, stars, inventory } = await starSystem.playFishing({ toolLevel: 1 });
-        fishingResult.innerHTML = `<span style='color:${fish.rarity==='legend'?'#ffd700':fish.rarity==='rare'?'#b97fff':'#4ac6ff'}; font-weight:600;'>${fish.name}</span> (${fish.size}cm) 잡음!<br>잔고: ${stars}`;
-        renderInventory(inventory);
-      } catch(e) {
-        fishingResult.textContent = e.message;
-      } finally {
-        fishingBtn.disabled = false;
-      }
-    };
-    // 페이지 로드시 인벤토리 표시
-    renderInventory(starSystem.inventory);
-  }
-  if (sellFishBtn && fishingResult && fishingInventory) {
-    sellFishBtn.onclick = async () => {
-      sellFishBtn.disabled = true;
-      fishingResult.textContent = '판매 중...';
-      try {
-        const { earned, stars, inventory } = await starSystem.sellItems();
-        fishingResult.innerHTML = `모든 물고기 판매! +${earned} 별가루<br>잔고: ${stars}`;
-        renderInventory(inventory);
-      } catch(e) {
-        fishingResult.textContent = e.message;
-      } finally {
-        sellFishBtn.disabled = false;
-      }
-    };
-  }
-
-  // 기부
-  const donateBtn = document.getElementById('donate-btn');
-  const donateAmount = document.getElementById('donate-amount');
-  const donateResult = document.getElementById('donate-result');
-  const donationRanking = document.getElementById('donation-ranking');
-  if (donateBtn && donateAmount && donateResult) {
-    donateBtn.onclick = async () => {
-      donateBtn.disabled = true;
-      donateResult.textContent = '기부 중...';
-      try {
-        const amount = parseInt(donateAmount.value, 10);
-        if (isNaN(amount) || amount <= 0) throw new Error('기부할 별가루를 올바르게 입력하세요.');
-        const { amount: donated, totalDonation, stars } = await starSystem.donateStars(amount);
-        donateResult.innerHTML = `별가루 ${donated}개 기부 완료!<br>누적 기부: ${totalDonation}<br>잔고: ${stars}`;
-        donateAmount.value = '';
-      } catch(e) {
-        donateResult.textContent = e.message;
-      } finally {
-        donateBtn.disabled = false;
-      }
-    };
-  }
-  // 기부 랭킹 실시간 표시
-  if (donationRanking) {
-    starSystem.fetchRanking({
-      limit: 10,
-      onUpdate: (users) => {
-        donationRanking.innerHTML = users.map((u,i) =>
-          `<span style='font-weight:bold;'>${i+1}위</span> <span style='color:#ffd700;'>${u.userName||'익명'}</span> - <span style='color:#4ac6ff;'>${u.stars} 별가루</span>`
-        ).join('<br>');
-      }
-    });
-  }
-
-  // Contents 섹션 로그인/익명 참여 버튼 연동
-  const loginBtnContents = document.getElementById('login-btn-contents');
-  const anonymousBtnContents = document.getElementById('anonymous-btn-contents');
+  // 버튼/모달 요소
+  const loginBtn = document.getElementById('login-btn-contents');
+  const anonymousBtn = document.getElementById('anonymous-btn-contents');
   const authModal = document.getElementById('auth-modal');
   const anonymousModal = document.getElementById('anonymous-modal');
-  if (loginBtnContents && authModal) {
-    loginBtnContents.onclick = () => {
-      authModal.classList.remove('hidden');
+  const profileModal = document.getElementById('profile-modal');
+  const closeModal = document.getElementById('close-modal');
+  const closeAnonymousModal = document.getElementById('close-anonymous-modal');
+  const closeProfileModal = document.getElementById('close-profile-modal');
+  const loginTab = document.querySelector('.auth-tab[data-tab="login"]');
+  const signupTab = document.querySelector('.auth-tab[data-tab="signup"]');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const loginEmail = document.getElementById('login-email');
+  const loginPassword = document.getElementById('login-password');
+  const loginSubmit = document.getElementById('login-submit');
+  const loginError = document.getElementById('login-error');
+  const signupEmail = document.getElementById('signup-email');
+  const signupPassword = document.getElementById('signup-password');
+  const signupUsername = document.getElementById('signup-username');
+  const signupSubmit = document.getElementById('signup-submit');
+  const signupError = document.getElementById('signup-error');
+  const anonymousName = document.getElementById('anonymous-name');
+  const anonymousSubmit = document.getElementById('anonymous-submit');
+  const anonymousError = document.getElementById('anonymous-error');
+  const profileUsername = document.getElementById('profile-username');
+  const profileSubmit = document.getElementById('profile-submit');
+  const profileError = document.getElementById('profile-error');
+
+  // 모달 열기/닫기
+  if (loginBtn && authModal) loginBtn.onclick = () => { authModal.classList.remove('hidden'); };
+  if (anonymousBtn && anonymousModal) anonymousBtn.onclick = () => { anonymousModal.classList.remove('hidden'); };
+  if (closeModal && authModal) closeModal.onclick = () => { authModal.classList.add('hidden'); clearErrors(); };
+  if (closeAnonymousModal && anonymousModal) closeAnonymousModal.onclick = () => { anonymousModal.classList.add('hidden'); clearErrors(); };
+  if (closeProfileModal && profileModal) closeProfileModal.onclick = () => { profileModal.classList.add('hidden'); clearErrors(); };
+
+  // 탭 전환
+  if (loginTab && signupTab && loginForm && signupForm) {
+    loginTab.onclick = () => {
+      loginTab.classList.add('active'); signupTab.classList.remove('active');
+      loginForm.classList.remove('hidden'); signupForm.classList.add('hidden'); clearErrors();
+    };
+    signupTab.onclick = () => {
+      signupTab.classList.add('active'); loginTab.classList.remove('active');
+      signupForm.classList.remove('hidden'); loginForm.classList.add('hidden'); clearErrors();
     };
   }
-  if (anonymousBtnContents && anonymousModal) {
-    anonymousBtnContents.onclick = () => {
-      anonymousModal.classList.remove('hidden');
+
+  // 로그인
+  if (loginSubmit) loginSubmit.onclick = async () => {
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+    if (!email || !password) return showError(loginError, '이메일과 비밀번호를 입력하세요.');
+    try {
+      loginSubmit.disabled = true;
+      await authSystem.loginWithEmail(email, password);
+      authModal.classList.add('hidden');
+      clearForm(loginEmail, loginPassword);
+    } catch (e) {
+      showError(loginError, e.message);
+    } finally {
+      loginSubmit.disabled = false;
+    }
+  };
+
+  // 회원가입
+  if (signupSubmit) signupSubmit.onclick = async () => {
+    const email = signupEmail.value.trim();
+    const password = signupPassword.value.trim();
+    const username = signupUsername.value.trim();
+    if (!email || !password || !username) return showError(signupError, '모든 필드를 입력하세요.');
+    if (password.length < 6) return showError(signupError, '비밀번호는 6자 이상이어야 합니다.');
+    try {
+      signupSubmit.disabled = true;
+      await authSystem.signupWithEmail(email, password, username);
+      authModal.classList.add('hidden');
+      clearForm(signupEmail, signupPassword, signupUsername);
+    } catch (e) {
+      showError(signupError, e.message);
+    } finally {
+      signupSubmit.disabled = false;
+    }
+  };
+
+  // 익명 참여
+  if (anonymousSubmit) anonymousSubmit.onclick = async () => {
+    const name = anonymousName.value.trim();
+    if (!name) return showError(anonymousError, '사용자명을 입력하세요.');
+    if (name.length < 2) return showError(anonymousError, '사용자명은 2자 이상이어야 합니다.');
+    try {
+      anonymousSubmit.disabled = true;
+      await authSystem.joinAnonymously(name);
+      anonymousModal.classList.add('hidden');
+      clearForm(anonymousName);
+    } catch (e) {
+      showError(anonymousError, e.message);
+    } finally {
+      anonymousSubmit.disabled = false;
+    }
+  };
+
+  // 닉네임 변경(프로필)
+  if (profileSubmit) profileSubmit.onclick = async () => {
+    const username = profileUsername.value.trim();
+    if (!username) return showError(profileError, '사용자명을 입력하세요.');
+    if (username.length > 20) return showError(profileError, '사용자명은 20자 이하여야 합니다.');
+    try {
+      profileSubmit.disabled = true;
+      await authSystem.updateUserName(username);
+      profileModal.classList.add('hidden');
+      clearForm(profileUsername);
+    } catch (e) {
+      showError(profileError, e.message);
+    } finally {
+      profileSubmit.disabled = false;
+    }
+  };
+
+  // 인증 상태 변경 시 UI 동기화 및 starSystem/chat/contact-chat에 상태 전달
+  authSystem.onAuthStateChanged(user => {
+    // 버튼 노출/숨김
+    if (loginBtn) loginBtn.style.display = user ? 'none' : '';
+    if (anonymousBtn) anonymousBtn.style.display = user ? 'none' : '';
+    // 미니게임/기부/랭킹 등 UI 활성/비활성 처리(예시)
+    // ... (여기서 starSystem, chat, contact-chat에 user 전달) ...
+  });
+
+  // 유틸
+  function showError(el, msg) { if (el) { el.textContent = msg; el.classList.remove('hidden'); } }
+  function clearErrors() {
+    [loginError, signupError, anonymousError, profileError].forEach(e => { if (e) e.classList.add('hidden'); });
+  }
+  function clearForm(...inputs) { inputs.forEach(i => { if (i) i.value = ''; }); }
+});
+
+// === UI 연동 예시 ===
+// (슬롯머신, 기부, 랭킹 등 기존 Firestore 접근 코드 제거 후 아래처럼 starSystem 메서드만 호출)
+// 예시: document.getElementById('slot-btn').onclick = () => starSystem.playSlot(...)
+// 인증 상태는 authSystem.user로 확인, UI 활성/비활성 처리
+
+// 슬롯머신 플레이 함수 리팩토링
+async function playSlotMachine() {
+  const user = window.firebaseAuth && window.firebaseAuth.currentUser;
+  if (!user) {
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
+    return;
+  }
+  let stars = await starSystem.getCurrentUserStars();
+  if (stars < 100) {
+    alert('별가루가 100개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
+    return;
+  }
+  stars -= 100;
+  const slots = [getRandomSlot(), getRandomSlot(), getRandomSlot()];
+  const counts = {};
+  slots.forEach(e => counts[e] = (counts[e]||0)+1);
+  let maxMatch = Math.max(...Object.values(counts));
+  // 보상 로직: 1개 일치=0, 2개=100, 3개=200
+  let reward = 0;
+  if (maxMatch === 2) reward = 100;
+  else if (maxMatch === 3) reward = 200;
+  stars += reward;
+  await starSystem.setCurrentUserStars(stars);
+  document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개   보상: ${reward} 별가루`;
+  document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
+  if (window.updateStarBalanceUI) window.updateStarBalanceUI();
+}
+
+// DOMContentLoaded 시 별가루 UI 동기화
+async function updateSlotBalanceUI() {
+  const el = document.getElementById('slot-balance');
+  if (!el) return;
+  const stars = await starSystem.getCurrentUserStars();
+  el.textContent = `별가루: ${stars}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  authSystem.onAuthStateChanged((user) => {
+    if (!user) {
+      // 로그인 안내 또는 별가루 기능 제한
+      return;
+    }
+    // 별가루 관련 함수/이벤트/UI 초기화는 여기서만!
+    // 슬롯머신 UI, 버튼 바인딩, 기부 버튼 바인딩, 별가루 잔고 UI 등
+    const slotUi = document.getElementById('slot-ui');
+    if (slotUi) {
+      slotUi.innerHTML = `
+        <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
+        <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+        <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
+      `;
+      document.getElementById('slot-btn').onclick = () => starSystem.playSlot();
+      updateSlotBalanceUI();
+    }
+    // 기부 버튼 바인딩
+    setupDonateUI();
+    // 별가루 잔고 UI 동기화
+    updateStarBalanceUI();
+    // 기부 랭킹 구독
+    subscribeDonationRanking();
+  });
+});
+
+// updateUserStars 함수 Firestore만 사용하도록 수정
+window.updateUserStars = async function(newStars) {
+  await starSystem.setCurrentUserStars(newStars);
+  await updateSlotBalanceUI();
+};
+
+// 별가루 잔고 UI 동기화 함수도 Firestore만 사용
+async function updateStarBalanceUI() {
+  const el = document.getElementById('star-balance');
+  if (!el) return;
+  const stars = await starSystem.getCurrentUserStars();
+  el.textContent = `별가루 잔고: ${stars}`;
+}
+window.updateStarBalanceUI = updateStarBalanceUI;
+
+// 기부 버튼 동작도 Firestore만 사용
+function setupDonateUI() {
+  const donateBtn = document.getElementById('donate-btn');
+  if (donateBtn) {
+    donateBtn.onclick = async function() {
+      const user = window.firebaseAuth && window.firebaseAuth.currentUser;
+      if (!user) {
+        alert('로그인 후 기부할 수 있습니다.');
+        return;
+      }
+      const { uid, displayName, email } = user;
+      const { getDoc, setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const userDoc = await getDoc(doc(window.firebaseDB, 'users', uid));
+      const userData = userDoc.data();
+      const stars = (userData && typeof userData.stars === 'number') ? userData.stars : 0;
+      if (stars <= 0) {
+        alert('기부할 별가루가 없습니다.');
+        return;
+      }
+      const name = userData.userName || displayName || (email ? email.split('@')[0] : '익명');
+      await setDoc(doc(window.firebaseDB, 'donation-ranking', uid), {
+        userName: name,
+        stars: stars,
+        updatedAt: new Date()
+      }, { merge: true });
+      await starSystem.setCurrentUserStars(0);
+      alert(`별가루 ${stars}개를 전액 기부했습니다!`);
+      await updateStarBalanceUI();
     };
   }
-  // 로그인/익명 상태에 따라 버튼 숨김/노출
-  function updateAuthBtns() {
-    const isAuthed = !!starSystem.user;
-    if (loginBtnContents) loginBtnContents.style.display = isAuthed ? 'none' : '';
-    if (anonymousBtnContents) anonymousBtnContents.style.display = isAuthed ? 'none' : '';
-  }
-  // 인증 상태 변경 시마다 동기화
-  import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ onAuthStateChanged }) => {
-    onAuthStateChanged(starSystem.auth, () => {
-      updateAuthBtns();
+}
+
+// 별가루 변동 시 잔고 UI 자동 갱신
+const prevUpdateUserStars = window.updateUserStars;
+window.updateUserStars = async function(newStars) {
+  if (prevUpdateUserStars) await prevUpdateUserStars(newStars);
+  await updateStarBalanceUI();
+};
+
+// 기부 랭킹 실시간 구독 함수 추가
+import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+function subscribeDonationRanking() {
+  if (!window.firebaseDB) return;
+  const q = query(collection(window.firebaseDB, 'donation-ranking'), orderBy('stars', 'desc'));
+  onSnapshot(q, (snapshot) => {
+    const ranking = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (typeof data.stars === 'number') ranking.push(data);
+    });
+    const rankingBox = document.getElementById('donation-ranking-list');
+    if (!rankingBox) return;
+    rankingBox.innerHTML = '';
+    ranking.forEach((u, i) => {
+      const li = document.createElement('li');
+      li.textContent = `${i+1}위: ${u.userName || u.name || '익명'} - 기부: ${u.stars}`;
+      rankingBox.appendChild(li);
     });
   });
-  // 페이지 로드시 1회 동기화
-  updateAuthBtns();
-});
+}
 
 

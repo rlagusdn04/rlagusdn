@@ -1302,3 +1302,157 @@ body.utest-page {
 .hidden {
   display: none !important;
 }
+
+.user-auth-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.user-auth-bar .btn {
+  font-size: 0.95rem;
+  padding: 0.3em 0.9em;
+  border-radius: 1.5em;
+  background: #23272f;
+  color: #fff;
+  border: 1px solid #444;
+  transition: background 0.2s, color 0.2s;
+}
+
+.user-auth-bar .btn:hover {
+  background: #3a3f4b;
+  color: #ffd700;
+}
+
+@media (max-width: 700px) {
+  .user-auth-bar {
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+}
+
+#anonymous-modal .modal-content {
+  max-width: 350px;
+  padding: 2.2em 1.5em 1.5em 1.5em;
+  border-radius: 1.5em;
+  background: #23272f;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  color: #fff;
+}
+#anonymous-modal h3 {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: #ffd700;
+  text-align: center;
+}
+#anonymous-modal .anonymous-profile-preview img {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: #181a20;
+}
+#anonymous-modal input[type="text"] {
+  background: #181a20;
+  color: #fff;
+  border: 1.5px solid #ffd700;
+  outline: none;
+  margin-bottom: 10px;
+  transition: border 0.2s;
+}
+#anonymous-modal input[type="text"]:focus {
+  border: 2px solid #ffea00;
+}
+#anonymous-modal .btn.primary-btn {
+  background: linear-gradient(90deg, #ffd700 60%, #ffea00 100%);
+  color: #23272f;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.08);
+}
+#anonymous-modal .btn.primary-btn:hover {
+  background: linear-gradient(90deg, #ffea00 60%, #ffd700 100%);
+  color: #181a20;
+}
+#anonymous-modal p[style*="color: #b0b0b0"] {
+  color: #b0b0b0 !important;
+  font-size: 1.05em;
+  font-weight: 500;
+}
+
+/* Contact 채팅 스타일 */
+.contact-chat-container {
+  border: 1px solid #444;
+}
+
+.contact-chat-container .message {
+  margin-bottom: 0.8em;
+  padding: 0.6em 0.8em;
+  border-radius: 0.8em;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.contact-chat-container .message.own {
+  background: linear-gradient(135deg, #ffd700 0%, #ffea00 100%);
+  color: #23272f;
+  margin-left: auto;
+  text-align: right;
+}
+
+.contact-chat-container .message.other {
+  background: #3a3f4b;
+  color: #fff;
+  margin-right: auto;
+}
+
+.contact-chat-container .message-header {
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-bottom: 0.3em;
+  opacity: 0.8;
+}
+
+.contact-chat-container .message-content {
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+.contact-chat-container .message-time {
+  font-size: 0.75em;
+  opacity: 0.6;
+  margin-top: 0.3em;
+}
+
+.contact-chat-container .welcome-message {
+  text-align: center;
+  color: #b0b0b0;
+  padding: 1em;
+}
+
+.contact-chat-container .welcome-message p {
+  margin: 0.3em 0;
+  font-size: 0.9em;
+}
+
+.contact-chat-container input[type="text"]:focus {
+  border-color: #ffea00;
+  outline: none;
+}
+
+.contact-chat-container .btn.primary-btn:hover {
+  background: linear-gradient(135deg, #ffea00 0%, #ffd700 100%);
+  transform: translateY(-1px);
+}
+
+/* 반응형 Contact 채팅 */
+@media (max-width: 700px) {
+  .contact-chat-container {
+    max-width: 95% !important;
+    margin: 0 auto;
+  }
+  
+  .contact-chat-container .message {
+    max-width: 90%;
+  }
+}
