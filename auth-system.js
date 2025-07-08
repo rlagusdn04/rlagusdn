@@ -66,8 +66,12 @@ export class AuthSystem {
     await setDoc(doc(this.db, 'users', userCredential.user.uid), {
       userName,
       email,
-      createdAt: serverTimestamp()
-    });
+      stars: 500,
+      lastAttendance: new Date(),
+      inventory: [],
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    }, { merge: true });
     // 상태 갱신은 onAuthStateChanged에서 자동 처리
   }
 
@@ -85,11 +89,16 @@ export class AuthSystem {
     localStorage.setItem('anonymousUser', JSON.stringify(this.anonymousUser));
     this.user = null;
     this.userName = name;
-    // Firestore에 익명 사용자 정보 저장
+    // Firestore에 익명 사용자 정보 저장 (필수 필드 포함)
     const { setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
     await setDoc(doc(this.db, 'users', uid), {
       userName: name,
-      createdAt: serverTimestamp()
+      email: null,
+      stars: 500,
+      lastAttendance: new Date(),
+      inventory: [],
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     }, { merge: true });
     this._listeners.forEach(cb => cb(this.getCurrentUser()));
   }
