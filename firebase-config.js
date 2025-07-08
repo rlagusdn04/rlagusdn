@@ -33,6 +33,9 @@ window.firebaseAuth = auth;
 window.firebaseDB = db;
 window.firebaseAnalytics = analytics;
 
+// 모듈로 내보내기
+export { auth as firebaseAuth, db as firebaseDB, analytics as firebaseAnalytics };
+
 // Firebase 초기화 확인
 console.log('Firebase 초기화 완료:');
 console.log('- Auth:', !!auth);
@@ -51,4 +54,4 @@ function checkFirebaseConnection() {
   }
   
   return true;
-} 
+}

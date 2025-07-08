@@ -9,6 +9,19 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
 </head>
 <body class="dark-theme">
+  <!-- 사이드바 토글 버튼 -->
+  <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+  <!-- 사이드바 메뉴 -->
+  <nav id="sidebar" class="sidebar hidden">
+    <ul>
+      <li><a href="#hero">홈</a></li>
+      <li><a href="#projects">프로젝트</a></li>
+      <li><a href="#about">About Me</a></li>
+      <li><a href="#contents-section">Contents</a></li>
+      <li><a href="#chat-section">채팅</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
   <canvas id="bgFractal" class="background-canvas"></canvas>
   <div class="container">
     <header class="header">
@@ -28,8 +41,185 @@
         <button id="profile-btn" class="btn secondary-btn hidden">프로필 설정</button>
       </div>
     </header>
-    <!-- 이하 기존 대화 기준 채팅/Contact 1:1/인증/익명/기본 UI 구조 복원 -->
-    <!-- ... (이전 대화에서 제공된 전체 index.html 내용 복원) ... -->
+
+    <section id="hero" class="hero-section">
+      <div class="hero-content">
+        <h2 class="hero-title" data-original-text="안녕하세요, 김현우입니다."><span>안</span><span>녕</span><span>하</span><span>세</span><span>요</span><span>,</span><span> </span><span>김</span><span>현</span><span>우</span><span>입</span><span>니</span><span>다</span><span>.</span></h2>
+        <p class="hero-subtitle">Hello, I'm Hyunwoo Kim.</p>
+        <div class="hero-actions">
+          <a href="https://github.com/rlagusdn04" class="btn primary-btn" target="_blank">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.372 0 0 5.372 0 12c0 5.303 3.438 9.799 8.207 11.387.6.11.82-.26.82-.577 0-.285-.01-1.04-.015-2.04-3.338.725-4.043-1.61-4.043-1.61-.546-1.387-1.334-1.757-1.334-1.757-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.238 1.838 1.238 1.07 1.835 2.809 1.305 3.492.998.108-.775.418-1.305.762-1.605-2.665-.3-5.464-1.33-5.464-5.93 0-1.31.465-2.38 1.235-3.22-.12-.3-.535-1.525.117-3.175 0 0 1.008-.32 3.301 1.23.957-.266 1.983-.4 3.003-.405 1.02.005 2.046.139 3.003.405 2.29-1.55 3.297-1.23 3.297-1.23.653 1.65.238 2.875.118 3.175.77.84 1.233 1.91 1.233 3.22 0 4.61-2.8 5.62-5.475 5.92.43.37.81 1.1.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .318.21.69.825.57C20.565 21.8 24 17.303 24 12c0-6.628-5.372-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="#" class="btn secondary-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+            Contact Me
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="music-player" class="section music-section">
+      <h2 class="section-title">Background Music</h2>
+      <div class="music-controls-container">
+        <span id="music-title" class="music-title"></span>
+        <div class="music-player-controls">
+          <button id="play-pause-btn" class="music-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="volume-slider">
+          <span id="volume-value" class="volume-value">50%</span>
+        </div>
+        <audio id="audio-player" src="Music/Time to Start Another Day.mp3"></audio>
+      </div>
+      <div style="text-align:center; margin-top:10px;">
+        <br> <br>
+        <a href="https://music.youtube.com/playlist?list=PL8JTl25swucTeLQQgh7MExrb27SgI0IOC" class="btn secondary-btn" target="_blank">Daily Music &rarr;</a>
+      </div>
+    </section>
+
+    <section id="projects" class="section projects-section">
+      <h2 class="section-title">My Projects</h2>
+      <div class="project-navigation">
+        <button id="prev-project" class="nav-btn">‹</button>
+        <button id="next-project" class="nav-btn">›</button>
+      </div>
+      <div class="project-grid">
+        <div class="project-card">
+          <div class="project-number">1</div>
+          <h3>🎮 2D 탑뷰 게임 개발 (Pygame 기반)</h3>
+          <p><strong>Pygame</strong>을 활용한 2D 탑뷰 형식의 시뮬레이션 게임입니다.<br>
+          맵 구조 설계, 충돌 판정, 맵 전환 시스템 등을 통해 게임 개발의 전반적인 구조를 학습하고 있으며,<br>
+          <strong>음원 추출 및 파일 변환 기능</strong>을 포함해 개발 편의성을 높였습니다.</p>
+          <div class="tech-stack">
+            <strong>기술 스택:</strong> Python, Pygame, FFmpeg, JSON, OOP 구조 설계
+          </div>
+          <a href="https://github.com/rlagusdn04/demo_game3" class="project-link" target="_blank">View Project &rarr;</a>
+        </div>
+        <div class="project-card">
+          <div class="project-number">2</div>
+          <h3>🔗 XRPL 기반 실물 거래 플랫폼</h3>
+          <p><strong>블록체인(XRPL + Solidity)</strong> 기술을 이용한 실물 자산 거래 플랫폼입니다.<br>
+          NFT 민팅, 거래 내역 기록, 소유권 이전 등 실물과의 연계를 중심으로 구현하고 있으며,<br>
+          추후 <strong>이더리움 생태계와의 완전한 통합</strong>을 목표로 확장 중입니다.</p>
+          <div class="tech-stack">
+            <strong>기술 스택:</strong> XRP Ledger API, Solidity, Web3.js, Hardhat, MetaMask, EVM 사이드체인
+          </div>
+          <div class="collaborators">
+            <strong>공동 작업자:</strong> 유승기
+          </div>
+          <a href="https://github.com/rlagusdn04/XRPL" class="project-link" target="_blank">View Project &rarr;</a>
+        </div>
+        <div class="project-card">
+          <div class="project-number">3</div>
+          <h3>🎵 디스코드 음악 봇 – <em>Rlagu</em></h3>
+          <p>디스코드에서 <strong>유튜브 기반 음악 재생</strong>이 가능한 음악 봇입니다.<br>
+          재생목록 관리, 검색, 스트리밍 기능 등을 구현했으며,<br>
+          현재는 서버 미운영으로 실행이 불가하지만, 추후 재배포 예정입니다.</p>
+          <div class="tech-stack">
+            <strong>기술 스택:</strong> Python, discord.py, youtube_dl, FFmpeg, asyncio
+          </div>
+          <a href="#" class="project-link">View Project &rarr;</a>
+        </div>
+        <div class="project-card">
+          <div class="project-number">4</div>
+          <h3>🔍 Text Recognizer – Android + TensorFlow</h3>
+          <p><strong>Android Studio와 TensorFlow</strong>를 활용해 개발한 텍스트 인식 앱입니다.<br>
+          카메라 또는 이미지 속 글씨를 <strong>실시간 인식</strong>하고,<br>
+          <strong>글꼴 변경</strong>, <strong>모자이크 처리</strong> 기능을 통해<br>
+          <strong>난독증 환자 및 시각적 가독성 향상</strong>이 필요한 사용자에게 도움이 되도록 설계되었습니다.</p>
+          <div class="tech-stack">
+            <strong>기술 스택:</strong> Android Studio (Java/Kotlin), TensorFlow Lite, OpenCV, ML Kit
+          </div>
+          <div class="collaborators">
+            <strong>공동 작업자:</strong> 김기범, 김해원
+          </div>
+          <a href="https://github.com/rlagusdn04/text-recognize" class="project-link" target="_blank">View Project &rarr;</a>
+        </div>
+        <div class="project-card">
+          <div class="project-number">5</div>
+          <h3>🧠 Flow차트 메모장 – 아이디어 흐름 시각화 도구</h3>
+          <p>노드 기반의 메모 시스템으로,<br>
+          <strong>아이디어, 스토리, 기획 흐름을 시각적으로 정리</strong>할 수 있도록 개발 중입니다.<br>
+          텍스트 노드 생성, 노드 간 연결, 위치 이동 등을 통해<br>
+          단순 메모를 넘어 <strong>구조적 사고를 지원하는 창작 도구</strong>를 지향합니다.</p>
+          <div class="tech-stack">
+            <strong>기술 스택:</strong> JavaScript, HTML/CSS, D3.js 또는 React + SVG, drag-and-drop 인터랙션
+          </div>
+          <div class="collaborators">
+            <strong>공동 작업자:</strong> 서준희
+          </div>
+          <a href="https://github.com/rlagusdn04/Rootin" class="project-link" target="_blank">View Project &rarr;</a>
+        </div>
+      </div>
+    </section>
+    <section id="about" class="section about-section">
+      <h2 class="section-title">About Me</h2>
+      <div class="lang-toggle-container">
+        <button id="lang-toggle-btn" class="btn secondary-btn">한/영</button>
+      </div>
+      <div class="about-content">
+        <div class="profile-image-container">
+          <img src="assets/profiles/0.jpg" alt="Profile Image" class="profile-image">
+        </div>
+        <div class="about-text">
+          <div id="about-content-ko" class="lang-content">
+            <div class="skills-tools">
+              <h3>🔧 Skills & Tools</h3>
+              <p><strong>Languages:</strong> Python, Java, R, C++, Solidity</p>
+              <p><strong>Frameworks & Tools:</strong> VS Code, TensorFlow, Git, Firebase</p>
+            </div>
+            <div class="awards-hackathon">
+              <h3>🏆 Awards & 🚀 Hackathon Participation</h3>
+              <div class="award-list">
+                <div class="award-item">한국코드페어</div>
+                <div class="award-item">DE-BUTHON</div>
+                <div class="award-item">AI Play</div>
+                <div class="award-item">SW중심대학 공동 해커톤</div>
+              </div>
+            </div>
+            <div class="about-desc">
+              <p>이런저런 소프트웨어를 만드는 사람입니다.<br>
+              AI 활용과 멀티태스킹 기반 개발에 관심이 많으며, <br>
+              새로운 기술은 직접 프로젝트로 구현하며 익히는 방식을 선호합니다.</p>
+              <p>취미로서의 소프트웨어 개발은 저에게 아이디어를 표현하고 공유하는 하나의 방식입니다.<br>
+              사유의 과정이 실제로 구현되고, 그것이 세상에서 사용되는 순간을 좋아합니다.<br>
+              좋은 아이디어가 있으시다면 함께 나눠보는 것은 어떨까요? </p>
+              <p>해커톤, 공모전, 농구 동아리에 관심 있으시다면 부담 없이 말씀해주세요.<br>
+              동아리는 현재 서울과 세종(고려대 세종캠퍼스)에서 운영 중입니다.</p>
+            </div>
+          </div>
+          <div id="about-content-en" class="lang-content hidden">
+            <div class="skills-tools">
+              <h3>🔧 Skills & Tools</h3>
+              <p><strong>Languages:</strong> Python, Java, R, C++, Solidity</p>
+              <p><strong>Frameworks & Tools:</strong> VS Code, TensorFlow, Git, Firebase</p>
+            </div>
+            <div class="awards-hackathon">
+              <h3>🏆 Awards & 🚀 Hackathon Participation</h3>
+              <div class="award-list">
+                <div class="award-item">Korea Code Fair</div>
+                <div class="award-item">DE-BUTHON</div>
+                <div class="award-item">AI Play</div>
+                <div class="award-item">SW-Centered University Joint Hackathon</div>
+              </div>
+            </div>
+            <div class="about-desc">
+              <p>I'm someone who creates various kinds of software.<br>
+              I'm interested in AI utilization and multitasking-based development, and I prefer to learn new technologies by implementing them directly in projects.</p>
+              <p>Software development as a hobby is one way for me to express and share ideas.<br>
+              I enjoy the moment when the process of thinking is actually implemented and used in the world.<br>
+              If you have good ideas, I'd love to share them anytime.</p>
+              <p>I enjoy novels and immersive time listening to Jazz and lo-fi.<br>
+              I can focus better in team projects in quiet, small-scale environments.</p>
+              <p>If you're interested in hackathons, contests, or basketball clubs, feel free to reach out.<br>
+              The club currently operates in Seoul and Sejong (Korea University Sejong Campus).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="chat-section" class="section chat-section">
       <h2 class="section-title">익명 실시간 채팅</h2>
       <div class="chat-container">
@@ -50,6 +240,7 @@
         </div>
       </div>
     </section>
+
     <section id="contact" class="section contact-section">
       <h2 class="section-title">Get in Touch</h2>
       <p class="contact-description">개발자와 1:1 실시간 채팅이 가능합니다. 궁금한 점이나 문의가 있다면 바로 메시지를 남겨보세요!</p>
@@ -71,64 +262,157 @@
         </div>
       </div>
     </section>
-    <!-- 인증/익명/닉네임 모달 UI -->
-    <div id="auth-modal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-btn" id="close-modal">&times;</span>
-        <div class="auth-tabs">
-          <button class="auth-tab active" data-tab="login">로그인</button>
-          <button class="auth-tab" data-tab="signup">회원가입</button>
+
+    <section id="contents-section" class="section contents-section">
+      <h2 class="section-title">Contents</h2>
+      <div style="text-align:right; margin-bottom:10px;">
+        <button id="login-btn-contents" class="btn secondary-btn" style="margin-right:8px;">로그인</button>
+        <button id="anonymous-btn-contents" class="btn secondary-btn">익명 참여</button>
+      </div>
+      <div class="contents-container">
+        <div class="content-card">
+          <h3>📚 My Book List</h3>
+          <p>제가 읽은 책들의 목록입니다. 좋아하는 책이 있다면 이야기해보세요!</p>
+          <button id="toggle-book-list" class="btn primary-btn">도서 리스트 보기</button>
+          <ul id="book-list" class="hidden">
+            <li>드래곤라자</li>
+            <li>위대한 개츠비</li>
+            <li>나는 고양이로소이다</li>
+            <li>신의 왼손</li>
+            <li>룬의 아이들</li>
+            <li>노인과 바다</li>
+            <li>해변의 카프카</li>
+            <li>리버보이</li>
+            <li>1Q84</li>
+            <li>노르웨이의 숲</li>
+            <li>기사단장 죽이기</li>
+            <li>듄</li>
+            <li>모스크바의 신사</li>
+            <li>장미의 이름</li>
+            <li>햄릿</li>
+            <li>고리오 영감</li>
+            <li>그림자를 판 사나이</li>
+            <li>달리기를 말할 때 내가 하고 싶은 이야기</li>
+            <li>여행의 이유</li>
+            <li>낮</li>
+            <li>여행의 기술</li>
+            <li>하늘 호수로 떠난 여행</li>
+            <li>눈물을 마시는 새</li>
+          </ul>
         </div>
-        <div id="login-form" class="auth-form">
-          <h3>로그인</h3>
-          <input type="email" id="login-email" placeholder="이메일" required>
-          <input type="password" id="login-password" placeholder="비밀번호" required>
-          <button id="login-submit" class="btn primary-btn">로그인</button>
-          <p id="login-error" class="error-message hidden"></p>
+        
+        <div class="content-card">
+          <h3>🍽️ 오늘 뭐 먹지?</h3>
+          <p>점심 메뉴를 고르기 어려우시죠? 룰렛을 돌려서 메뉴를 추천받아보세요!</p>
+          <div class="roulette-container">
+            <p id="roulette-display" class="roulette-display">메뉴를 돌려보세요!</p>
+            <button id="spin-roulette" class="btn primary-btn">Click</button>
+          </div>
         </div>
-        <div id="signup-form" class="auth-form hidden">
-          <h3>회원가입</h3>
-          <input type="email" id="signup-email" placeholder="이메일" required>
-          <input type="password" id="signup-password" placeholder="비밀번호 (6자 이상)" required>
-          <input type="text" id="signup-username" placeholder="사용자명" required>
-          <button id="signup-submit" class="btn primary-btn">회원가입</button>
-          <p id="signup-error" class="error-message hidden"></p>
+        
+        <div class="content-card">
+          <h3>🎮 유사도 테스트</h3>
+          <p>나와 얼마나 닮았을까? 질문들을 통해 알아보세요!</p>
+          <a href="Utest.html" class="btn primary-btn">테스트 시작 &rarr;</a>
+        </div>
+
+        <!-- 슬롯머신 카드 추가 -->
+        <div class="content-card" id="slot-card">
+          <h3>🎰 슬롯머신</h3>
+          <p>이모티콘 슬롯을 돌려서 별가루를 획득하세요! (참가비 100)</p>
+          <div id="slot-ui"></div>
+        </div>
+
+        <!-- 낚시 미니게임 카드 추가 -->
+        <div class="content-card">
+          <h3>🎣 조용한 호숫가 낚시</h3>
+          <p>조용한 호수에서 다양한 물고기를 잡아보세요!</p>
+          <button class="btn primary-btn" onclick="window.open('fishing.html', '_blank')">낚시하러 가기</button>
+        </div>
+
+        <div class="content-card">
+          <h3>🏆 별가루 기부 랭킹</h3>
+          <ul id="donation-ranking-list"></ul>
+          <div id="star-balance" style="margin-top:10px; font-weight:bold;">별가루 잔고: 0</div>
+          <div id="donate-ui" style="margin-top:6px;">
+            <button class="btn primary-btn" id="donate-btn">전액 기부하기</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="anonymous-modal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-btn" id="close-anonymous-modal">&times;</span>
-        <div class="anonymous-profile-preview" style="text-align:center; margin-bottom:10px;">
-          <img src="assets/profiles/0.jpg" alt="Profile Preview" id="anonymous-profile-img" style="width:60px; height:60px; border-radius:50%; border:2px solid #888; margin-bottom:8px;">
-        </div>
-        <h3 style="margin-bottom:8px;">익명 사용자 이름 설정</h3>
-        <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center; font-size:1.05em; font-weight:500;">
-          채팅에서 사용할 이름을 입력해주세요.<br>다른 서비스에서도 동일하게 사용됩니다.
-        </p>
-        <input type="text" id="anonymous-name" placeholder="사용자명 (예: 익명123)" maxlength="20" required style="font-size:1.1em; padding:0.7em 1em; border-radius:1.2em; border:1.5px solid #aaa; margin-bottom:10px; width:90%; display:block; margin-left:auto; margin-right:auto;">
-        <button id="anonymous-submit" class="btn primary-btn" style="width:90%; font-size:1.1em; border-radius:1.2em;">채팅 참여</button>
-        <p id="anonymous-error" class="error-message hidden" style="margin-top:10px;"></p>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2025 Hyunwoo Kim. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- 인증/익명/닉네임 모달 UI -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-modal">&times;</span>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">로그인</button>
+        <button class="auth-tab" data-tab="signup">회원가입</button>
       </div>
-    </div>
-    <div id="profile-modal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-btn" id="close-profile-modal">&times;</span>
-        <h3>프로필 설정</h3>
-        <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center;">
-          채팅에서 사용할 이름을 설정해주세요.
-        </p>
-        <input type="text" id="profile-username" placeholder="사용자명" maxlength="20" required>
-        <button id="profile-submit" class="btn primary-btn">저장</button>
-        <p id="profile-error" class="error-message hidden"></p>
+      
+      <div id="login-form" class="auth-form">
+        <h3>로그인</h3>
+        <input type="email" id="login-email" placeholder="이메일" required>
+        <input type="password" id="login-password" placeholder="비밀번호" required>
+        <button id="login-submit" class="btn primary-btn">로그인</button>
+        <p id="login-error" class="error-message hidden"></p>
+      </div>
+      
+      <div id="signup-form" class="auth-form hidden">
+        <h3>회원가입</h3>
+        <input type="email" id="signup-email" placeholder="이메일" required>
+        <input type="password" id="signup-password" placeholder="비밀번호 (6자 이상)" required>
+        <input type="text" id="signup-username" placeholder="사용자명" required>
+        <button id="signup-submit" class="btn primary-btn">회원가입</button>
+        <p id="signup-error" class="error-message hidden"></p>
       </div>
     </div>
   </div>
+
+  <!-- 익명 사용자 이름 설정 모달 -->
+  <div id="anonymous-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-anonymous-modal">&times;</span>
+      <div class="anonymous-profile-preview" style="text-align:center; margin-bottom:10px;">
+        <img src="assets/profiles/0.jpg" alt="Profile Preview" id="anonymous-profile-img" style="width:60px; height:60px; border-radius:50%; border:2px solid #888; margin-bottom:8px;">
+      </div>
+      <h3 style="margin-bottom:8px;">익명 사용자 이름 설정</h3>
+      <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center; font-size:1.05em; font-weight:500;">
+        채팅에서 사용할 이름을 입력해주세요.<br>다른 서비스에서도 동일하게 사용됩니다.
+      </p>
+      <input type="text" id="anonymous-name" placeholder="사용자명 (예: 익명123)" maxlength="20" required style="font-size:1.1em; padding:0.7em 1em; border-radius:1.2em; border:1.5px solid #aaa; margin-bottom:10px; width:90%; display:block; margin-left:auto; margin-right:auto;">
+      <button id="anonymous-submit" class="btn primary-btn" style="width:90%; font-size:1.1em; border-radius:1.2em;">채팅 참여</button>
+      <p id="anonymous-error" class="error-message hidden" style="margin-top:10px;"></p>
+    </div>
+  </div>
+
+  <!-- 프로필 설정 모달 -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-profile-modal">&times;</span>
+      <h3>프로필 설정</h3>
+      <p style="color: #b0b0b0; margin-bottom: 20px; text-align: center;">
+        채팅에서 사용할 이름을 설정해주세요.
+      </p>
+      <input type="text" id="profile-username" placeholder="사용자명" maxlength="20" required>
+      <button id="profile-submit" class="btn primary-btn">저장</button>
+      <p id="profile-error" class="error-message hidden"></p>
+    </div>
+  </div>
+
+  <canvas id="mouseCanvas" class="mouse-canvas"></canvas>
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="chat-auth.js"></script>
   <script type="module" src="contact-chat.js"></script>
   <script src="fractal-bg.js"></script>
   <script src="mouse-animation.js"></script>
-  <script src="main.js"></script>
+  <script type="module" src="main.js"></script>
+  <link rel="stylesheet" href="sidebar.css" />
+  <script src="sidebar.js"></script>
 </body>
 </html>
