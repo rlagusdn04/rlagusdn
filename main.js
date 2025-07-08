@@ -11,43 +11,7 @@ const musicList = [
 let currentMusicIdx = 3; // Default to 'Time to Start Another Day'
 
 // 전역 변수 선언
-let playPauseBtn = document.getElementById('play-pause-btn');
-let volumeSlider = document.getElementById('volume-slider');
-let musicTitle = document.getElementById('music-title');
-let audioPlayer = document.getElementById('audio-player');
-let volumeValue = document.getElementById('volume-value');
-
-document.addEventListener('DOMContentLoaded', function() {
-  // 요소 할당
-  playPauseBtn = document.getElementById('play-pause-btn');
-  volumeSlider = document.getElementById('volume-slider');
-  musicTitle = document.getElementById('music-title');
-  audioPlayer = document.getElementById('audio-player');
-  volumeValue = document.getElementById('volume-value');
-
-  // 이벤트 바인딩 (모두 null 체크)
-  if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
-  if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
-  if (musicTitle) musicTitle.addEventListener('click', () => {
-    let nextIdx;
-    do {
-      nextIdx = Math.floor(Math.random() * musicList.length);
-    } while (nextIdx === currentMusicIdx && musicList.length > 1);
-    currentMusicIdx = nextIdx;
-    updateMusicInfo();
-    if (audioPlayer) audioPlayer.play();
-  });
-  if (audioPlayer && playPauseBtn) {
-    audioPlayer.addEventListener('play', () => {
-      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>';
-    });
-    audioPlayer.addEventListener('pause', () => {
-      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause icon
-    });
-  }
-  updateMusicInfo();
-  updateVolume();
-});
+let playPauseBtn, volumeSlider, musicTitle, audioPlayer, volumeValue;
 
 function updateMusicInfo() {
   if (!musicTitle || !audioPlayer) return;
@@ -73,246 +37,265 @@ function updateVolume() {
 }
 
 // Smooth scrolling for navigation links
-const anchorLinks = document.querySelectorAll('a[href^="#"]');
-if (anchorLinks && anchorLinks.length > 0) {
-  anchorLinks.forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
+function initSmoothScrolling() {
+    const anchorLinks = document.querySelectorAll('a[href^="#"]');
+    if (anchorLinks && anchorLinks.length > 0) {
+      anchorLinks.forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    }
 }
+
 
 // Language Toggle Logic
-const langToggleButton = document.getElementById('lang-toggle-btn');
-const aboutContentEn = document.getElementById('about-content-en');
-const aboutContentKo = document.getElementById('about-content-ko');
+function initLangToggle() {
+    const langToggleButton = document.getElementById('lang-toggle-btn');
+    const aboutContentEn = document.getElementById('about-content-en');
+    const aboutContentKo = document.getElementById('about-content-ko');
 
-if (langToggleButton && aboutContentEn && aboutContentKo) {
-  langToggleButton.addEventListener('click', () => {
-    if (aboutContentEn.classList.contains('hidden')) {
-      // Currently showing Korean, switch to English
-      aboutContentEn.classList.remove('hidden');
-      aboutContentKo.classList.add('hidden');
-      langToggleButton.textContent = '한/영';
-    } else {
-      // Currently showing English, switch to Korean
-      aboutContentEn.classList.add('hidden');
-      aboutContentKo.classList.remove('hidden');
-      langToggleButton.textContent = 'Eng/Kor';
-    }
-  });
-
-  // Initial language setup on page load
-  document.addEventListener('DOMContentLoaded', () => {
-    aboutContentEn.classList.remove('hidden');
-    aboutContentKo.classList.add('hidden');
-    langToggleButton.textContent = '한/영';
-  });
-}
-
-// Mosaic Animation Logic
-const heroTitle = document.querySelector('.hero-title');
-if (heroTitle) {
-  function startMosaicAnimation() {
-    const originalText = heroTitle.dataset.originalText;
-    heroTitle.innerHTML = originalText.split('').map(char => `<span>${char}</span>`).join('');
-    const spans = heroTitle.querySelectorAll('span');
-
-    let intervalId;
-
-    function applyMosaic() {
-      const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
-      const indicesToMask = new Set();
-
-      while (indicesToMask.size < numToMask) {
-        const randomIndex = Math.floor(Math.random() * originalText.length);
-        if (originalText[randomIndex] !== ' ') { // Don't mask spaces
-          indicesToMask.add(randomIndex);
-        }
-      }
-
-      spans.forEach((span, index) => {
-        if (indicesToMask.has(index)) {
-          span.classList.add('mosaic');
+    if (langToggleButton && aboutContentEn && aboutContentKo) {
+      langToggleButton.addEventListener('click', () => {
+        if (aboutContentEn.classList.contains('hidden')) {
+          // Currently showing Korean, switch to English
+          aboutContentEn.classList.remove('hidden');
+          aboutContentKo.classList.add('hidden');
+          langToggleButton.textContent = '한/영';
         } else {
-          span.classList.remove('mosaic');
+          // Currently showing English, switch to Korean
+          aboutContentEn.classList.add('hidden');
+          aboutContentKo.classList.remove('hidden');
+          langToggleButton.textContent = 'Eng/Kor';
         }
       });
 
-      setTimeout(() => {
-        spans.forEach(span => span.classList.remove('mosaic'));
-      }, 1500); // 1.5초 후 원래대로 돌아옴
+      // Initial language setup on page load
+      aboutContentEn.classList.remove('hidden');
+      aboutContentKo.classList.add('hidden');
+      langToggleButton.textContent = '한/영';
     }
-
-    intervalId = setInterval(applyMosaic, 3000); // 3초마다 애니메이션 실행
-  }
-  document.addEventListener('DOMContentLoaded', startMosaicAnimation);
 }
+
+
+// Mosaic Animation Logic
+function initMosaicAnimation() {
+    const heroTitle = document.querySelector('.hero-title');
+    if (heroTitle) {
+      function startMosaicAnimation() {
+        const originalText = heroTitle.dataset.originalText;
+        heroTitle.innerHTML = originalText.split('').map(char => `<span>${char}</span>`).join('');
+        const spans = heroTitle.querySelectorAll('span');
+
+        let intervalId;
+
+        function applyMosaic() {
+          const numToMask = Math.floor(Math.random() * 6) + 1; // 1 to 6 characters
+          const indicesToMask = new Set();
+
+          while (indicesToMask.size < numToMask) {
+            const randomIndex = Math.floor(Math.random() * originalText.length);
+            if (originalText[randomIndex] !== ' ') { // Don't mask spaces
+              indicesToMask.add(randomIndex);
+            }
+          }
+
+          spans.forEach((span, index) => {
+            if (indicesToMask.has(index)) {
+              span.classList.add('mosaic');
+            } else {
+              span.classList.remove('mosaic');
+            }
+          });
+
+          setTimeout(() => {
+            spans.forEach(span => span.classList.remove('mosaic'));
+          }, 1500); // 1.5초 후 원래대로 돌아옴
+        }
+
+        intervalId = setInterval(applyMosaic, 3000); // 3초마다 애니메이션 실행
+      }
+      startMosaicAnimation();
+    }
+}
+
 
 // Book List Logic
-const toggleBookListBtn = document.getElementById('toggle-book-list');
-const bookList = document.getElementById('book-list');
-if (toggleBookListBtn && bookList) {
-  toggleBookListBtn.addEventListener('click', () => {
-    bookList.classList.toggle('hidden');
-    if (bookList.classList.contains('hidden')) {
-      toggleBookListBtn.textContent = '도서 리스트 보기';
-    } else {
-      toggleBookListBtn.textContent = '도서 리스트 숨기기';
+function initBookList() {
+    const toggleBookListBtn = document.getElementById('toggle-book-list');
+    const bookList = document.getElementById('book-list');
+    if (toggleBookListBtn && bookList) {
+      toggleBookListBtn.addEventListener('click', () => {
+        bookList.classList.toggle('hidden');
+        if (bookList.classList.contains('hidden')) {
+          toggleBookListBtn.textContent = '도서 리스트 보기';
+        } else {
+          toggleBookListBtn.textContent = '도서 리스트 숨기기';
+        }
+      });
     }
-  });
 }
+
 
 // Daily Menu Roulette Logic
-const menuItems = [
-  '삼겹살', '치킨', '라면', '초밥', '김치찌개', '떡볶이', '족발', '라멘', '리조또', '제육볶음', '감자탕', '갈비탕', '갈비', '돈까스', '냉면', '햄버거', '피자', '파스타', '우동', '생선구이', '게장', '백반', '국밥', '칼국수', '편의점', '카레', '덮밥', '알밥', '치마덮', '샐러드', '포케'
-];
-const rouletteDisplay = document.getElementById('roulette-display');
-const spinRouletteBtn = document.getElementById('spin-roulette');
-if (spinRouletteBtn && rouletteDisplay) {
-  spinRouletteBtn.addEventListener('click', () => {
-    spinRouletteBtn.disabled = true;
-    let spinCount = 0;
-    const totalSpins = 30;
-    const minDelay = 30; // 가장 빠를 때 딜레이(ms)
-    const maxDelay = 300; // 가장 느릴 때 딜레이(ms)
-    const slowDownRatio = 0.7; // 느려지는 구간을 더 길게
+function initRoulette() {
+    const menuItems = [
+      '삼겹살', '치킨', '라면', '초밥', '김치찌개', '떡볶이', '족발', '라멘', '리조또', '제육볶음', '감자탕', '갈비탕', '갈비', '돈까스', '냉면', '햄버거', '피자', '파스타', '우동', '생선구이', '게장', '백반', '국밥', '칼국수', '편의점', '카레', '덮밥', '알밥', '치마덮', '샐러드', '포케'
+    ];
+    const rouletteDisplay = document.getElementById('roulette-display');
+    const spinRouletteBtn = document.getElementById('spin-roulette');
+    if (spinRouletteBtn && rouletteDisplay) {
+      spinRouletteBtn.addEventListener('click', () => {
+        spinRouletteBtn.disabled = true;
+        let spinCount = 0;
+        const totalSpins = 30;
+        const minDelay = 30; // 가장 빠를 때 딜레이(ms)
+        const maxDelay = 300; // 가장 느릴 때 딜레이(ms)
+        const slowDownRatio = 0.7; // 느려지는 구간을 더 길게
 
-    function customEase(t) {
-      // 느려지는 구간을 더 길게: t가 slowDownRatio 이상일 때 더 급격히 느려짐
-      if (t < (1 - slowDownRatio)) {
-        // 초반: 빠르게 가속
-        return 2 * t * t;
-      } else {
-        // 후반: 더 천천히 감속
-        const slowT = (t - (1 - slowDownRatio)) / slowDownRatio;
-        return 1 - Math.pow(1 - slowT, 2);
-      }
+        function customEase(t) {
+          // 느려지는 구간을 더 길게: t가 slowDownRatio 이상일 때 더 급격히 느려짐
+          if (t < (1 - slowDownRatio)) {
+            // 초반: 빠르게 가속
+            return 2 * t * t;
+          } else {
+            // 후반: 더 천천히 감속
+            const slowT = (t - (1 - slowDownRatio)) / slowDownRatio;
+            return 1 - Math.pow(1 - slowT, 2);
+          }
+        }
+
+        function spinRoulette() {
+          const randomIndex = Math.floor(Math.random() * menuItems.length);
+          rouletteDisplay.textContent = menuItems[randomIndex];
+          spinCount++;
+
+          if (spinCount > totalSpins / 2) {
+            rouletteDisplay.style.transition = 'all 0.5s cubic-bezier(.4,0,.2,1)';
+          } else {
+            rouletteDisplay.style.transition = 'none';
+          }
+
+          if (spinCount < totalSpins) {
+            const t = spinCount / totalSpins;
+            const delay = minDelay + (maxDelay - minDelay) * customEase(t);
+            setTimeout(spinRoulette, delay);
+          } else {
+            spinRouletteBtn.disabled = false;
+            const finalIndex = Math.floor(Math.random() * menuItems.length);
+            rouletteDisplay.textContent = menuItems[finalIndex];
+            // 빛나는 효과
+            rouletteDisplay.classList.add('roulette-flash');
+            setTimeout(() => {
+              rouletteDisplay.classList.remove('roulette-flash');
+            }, 400);
+          }
+        }
+
+        spinRoulette();
+      });
     }
-
-    function spinRoulette() {
-      const randomIndex = Math.floor(Math.random() * menuItems.length);
-      rouletteDisplay.textContent = menuItems[randomIndex];
-      spinCount++;
-
-      if (spinCount > totalSpins / 2) {
-        rouletteDisplay.style.transition = 'all 0.5s cubic-bezier(.4,0,.2,1)';
-      } else {
-        rouletteDisplay.style.transition = 'none';
-      }
-
-      if (spinCount < totalSpins) {
-        const t = spinCount / totalSpins;
-        const delay = minDelay + (maxDelay - minDelay) * customEase(t);
-        setTimeout(spinRoulette, delay);
-      } else {
-        spinRouletteBtn.disabled = false;
-        const finalIndex = Math.floor(Math.random() * menuItems.length);
-        rouletteDisplay.textContent = menuItems[finalIndex];
-        // 빛나는 효과
-        rouletteDisplay.classList.add('roulette-flash');
-        setTimeout(() => {
-          rouletteDisplay.classList.remove('roulette-flash');
-        }, 400);
-      }
-    }
-
-    spinRoulette();
-  });
 }
+
 
 // Project Navigation Logic
-const projectGrid = document.querySelector('.project-grid');
-const prevBtn = document.getElementById('prev-project');
-const nextBtn = document.getElementById('next-project');
+function initProjectNavigation() {
+    const projectGrid = document.querySelector('.project-grid');
+    const prevBtn = document.getElementById('prev-project');
+    const nextBtn = document.getElementById('next-project');
 
-function updateNavButtons() {
-  if (!projectGrid || !prevBtn || !nextBtn) return;
-  if (projectGrid.scrollLeft <= 0) {
-    prevBtn.disabled = true;
-  } else {
-    prevBtn.disabled = false;
-  }
-  if (projectGrid.scrollLeft >= projectGrid.scrollWidth - projectGrid.clientWidth) {
-    nextBtn.disabled = true;
-  } else {
-    nextBtn.disabled = false;
-  }
+    function updateNavButtons() {
+      if (!projectGrid || !prevBtn || !nextBtn) return;
+      if (projectGrid.scrollLeft <= 0) {
+        prevBtn.disabled = true;
+      } else {
+        prevBtn.disabled = false;
+      }
+      if (projectGrid.scrollLeft >= projectGrid.scrollWidth - projectGrid.clientWidth) {
+        nextBtn.disabled = true;
+      } else {
+        nextBtn.disabled = false;
+      }
+    }
+
+    if (prevBtn && projectGrid) {
+      prevBtn.addEventListener('click', () => {
+        const card = projectGrid.querySelector('.project-card');
+        const cardWidth = card ? card.offsetWidth : 450;
+        const gap = 32;
+        const scrollDistance = cardWidth + gap;
+        projectGrid.scrollBy({
+          left: -scrollDistance,
+          behavior: 'smooth'
+        });
+      });
+    }
+    if (nextBtn && projectGrid) {
+      nextBtn.addEventListener('click', () => {
+        const card = projectGrid.querySelector('.project-card');
+        const cardWidth = card ? card.offsetWidth : 450;
+        const gap = 32;
+        const scrollDistance = cardWidth + gap;
+        projectGrid.scrollBy({
+          left: scrollDistance,
+          behavior: 'smooth'
+        });
+      });
+    }
+    if (projectGrid) {
+      projectGrid.addEventListener('scroll', updateNavButtons);
+      updateNavButtons();
+    }
 }
 
-if (prevBtn && projectGrid) {
-  prevBtn.addEventListener('click', () => {
-    const card = projectGrid.querySelector('.project-card');
-    const cardWidth = card ? card.offsetWidth : 450;
-    const gap = 32;
-    const scrollDistance = cardWidth + gap;
-    projectGrid.scrollBy({
-      left: -scrollDistance,
-      behavior: 'smooth'
-    });
-  });
-}
-if (nextBtn && projectGrid) {
-  nextBtn.addEventListener('click', () => {
-    const card = projectGrid.querySelector('.project-card');
-    const cardWidth = card ? card.offsetWidth : 450;
-    const gap = 32;
-    const scrollDistance = cardWidth + gap;
-    projectGrid.scrollBy({
-      left: scrollDistance,
-      behavior: 'smooth'
-    });
-  });
-}
-if (projectGrid) {
-  projectGrid.addEventListener('scroll', updateNavButtons);
-  document.addEventListener('DOMContentLoaded', updateNavButtons);
-}
 
 // 프로필 이미지 1분마다 교체 + 클릭 시 수동 변경
-const profileImage = document.querySelector('.profile-image');
-const profileImages = [
-  'assets/profiles/0.jpg',
-  'assets/profiles/1.jpg',
-  'assets/profiles/2.jpg',
-  'assets/profiles/3.jpg',
-  'assets/profiles/4.jpg',
-  'assets/profiles/5.jpg',
-  'assets/profiles/6.jpg',
-  'assets/profiles/7.jpg',
-  'assets/profiles/8.jpg',
-  'assets/profiles/9.jpg',
-  'assets/profiles/10.PNG',
-  'assets/profiles/11.jpg',
-  'assets/profiles/12.PNG',
-  'assets/profiles/13.PNG',
-  'assets/profiles/14.PNG',
-  'assets/profiles/15.PNG',
-  'assets/profiles/16.PNG',
-  'assets/profiles/17.PNG',
-  'assets/profiles/18.jpg',
-  'assets/profiles/19.jpg',
-  'assets/profiles/20.PNG',
-  'assets/profiles/21.jpg',
-  'assets/profiles/22.jpg'
-];
-let currentProfileIdx = 0;
+function initProfileImageChanger() {
+    const profileImage = document.querySelector('.profile-image');
+    const profileImages = [
+      'assets/profiles/0.jpg',
+      'assets/profiles/1.jpg',
+      'assets/profiles/2.jpg',
+      'assets/profiles/3.jpg',
+      'assets/profiles/4.jpg',
+      'assets/profiles/5.jpg',
+      'assets/profiles/6.jpg',
+      'assets/profiles/7.jpg',
+      'assets/profiles/8.jpg',
+      'assets/profiles/9.jpg',
+      'assets/profiles/10.PNG',
+      'assets/profiles/11.jpg',
+      'assets/profiles/12.PNG',
+      'assets/profiles/13.PNG',
+      'assets/profiles/14.PNG',
+      'assets/profiles/15.PNG',
+      'assets/profiles/16.PNG',
+      'assets/profiles/17.PNG',
+      'assets/profiles/18.jpg',
+      'assets/profiles/19.jpg',
+      'assets/profiles/20.PNG',
+      'assets/profiles/21.jpg',
+      'assets/profiles/22.jpg'
+    ];
+    let currentProfileIdx = 0;
 
-function showNextProfileImage() {
-  if (!profileImage) return;
-  currentProfileIdx = (currentProfileIdx + 1) % profileImages.length;
-  profileImage.src = profileImages[currentProfileIdx];
+    function showNextProfileImage() {
+      if (!profileImage) return;
+      currentProfileIdx = (currentProfileIdx + 1) % profileImages.length;
+      profileImage.src = profileImages[currentProfileIdx];
+    }
+
+    // 자동 변경 (1분마다)
+    setInterval(showNextProfileImage, 60000);
+
+    // 클릭 시 수동 변경
+    profileImage.addEventListener('click', showNextProfileImage);
 }
 
-// 자동 변경 (1분마다)
-setInterval(showNextProfileImage, 60000);
-
-// 클릭 시 수동 변경
-profileImage.addEventListener('click', showNextProfileImage);
 
 // 슬롯머신 이모티콘 배열 복구
 const slotEmojis = ['🫨','😡','😮‍💨','🤗','🤔','🤭','🥺'];
@@ -329,7 +312,7 @@ const starSystem = new StarSystem({ auth: firebaseAuth, db: firebaseDB });
 const authSystem = new AuthSystem({ auth: firebaseAuth, db: firebaseDB });
 
 // === 인증/익명/닉네임 UI 연동 ===
-document.addEventListener('DOMContentLoaded', () => {
+function initAuthUI() {
   // 버튼/모달 요소
   const loginBtn = document.getElementById('login-btn-contents');
   const anonymousBtn = document.getElementById('anonymous-btn-contents');
@@ -463,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     [loginError, signupError, anonymousError, profileError].forEach(e => { if (e) e.classList.add('hidden'); });
   }
   function clearForm(...inputs) { inputs.forEach(i => { if (i) i.value = ''; }); }
-});
+}
 
 // === UI 연동 예시 ===
 // (슬롯머신, 기부, 랭킹 등 기존 Firestore 접근 코드 제거 후 아래처럼 starSystem 메서드만 호출)
@@ -506,7 +489,7 @@ async function updateSlotBalanceUI() {
   el.textContent = `별가루: ${stars}`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initStarSystemUI() {
   authSystem.onAuthStateChanged((user) => {
     if (!user) {
       // 로그인 안내 또는 별가루 기능 제한
@@ -531,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 기부 랭킹 구독
     subscribeDonationRanking();
   });
-});
+}
 
 // updateUserStars 함수 Firestore만 사용하도록 수정
 window.updateUserStars = async function(newStars) {
@@ -611,4 +594,44 @@ function subscribeDonationRanking() {
   });
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+  // 요소 할당
+  playPauseBtn = document.getElementById('play-pause-btn');
+  volumeSlider = document.getElementById('volume-slider');
+  musicTitle = document.getElementById('music-title');
+  audioPlayer = document.getElementById('audio-player');
+  volumeValue = document.getElementById('volume-value');
 
+  // 이벤트 바인딩 (모두 null 체크)
+  if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
+  if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
+  if (musicTitle) musicTitle.addEventListener('click', () => {
+    let nextIdx;
+    do {
+      nextIdx = Math.floor(Math.random() * musicList.length);
+    } while (nextIdx === currentMusicIdx && musicList.length > 1);
+    currentMusicIdx = nextIdx;
+    updateMusicInfo();
+    if (audioPlayer) audioPlayer.play();
+  });
+  if (audioPlayer && playPauseBtn) {
+    audioPlayer.addEventListener('play', () => {
+      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>';
+    });
+    audioPlayer.addEventListener('pause', () => {
+      playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause icon
+    });
+  }
+  updateMusicInfo();
+  updateVolume();
+
+  initSmoothScrolling();
+  initLangToggle();
+  initMosaicAnimation();
+  initBookList();
+  initRoulette();
+  initProjectNavigation();
+  initProfileImageChanger();
+  initAuthUI();
+  initStarSystemUI();
+});
