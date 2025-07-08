@@ -319,4 +319,4 @@ if (donateBtn) {
     alert(`별가루 ${amount}개를 기부했습니다!`);
     input.value = '';
   };
-} 
+}

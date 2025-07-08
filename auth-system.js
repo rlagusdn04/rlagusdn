@@ -85,6 +85,12 @@ export class AuthSystem {
     localStorage.setItem('anonymousUser', JSON.stringify(this.anonymousUser));
     this.user = null;
     this.userName = name;
+    // Firestore에 익명 사용자 정보 저장
+    const { setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    await setDoc(doc(this.db, 'users', uid), {
+      userName: name,
+      createdAt: serverTimestamp()
+    }, { merge: true });
     this._listeners.forEach(cb => cb(this.getCurrentUser()));
   }
 
