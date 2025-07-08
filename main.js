@@ -306,10 +306,10 @@ function getRandomSlot() {
 // === star-system, auth-system 연동 ===
 import { StarSystem } from './star-system.js';
 import { AuthSystem } from './auth-system.js';
-import { firebaseAuth, firebaseDB } from './firebase-config.js';
+import './firebase-config.js';
 
-const starSystem = new StarSystem({ auth: firebaseAuth, db: firebaseDB });
-const authSystem = new AuthSystem({ auth: firebaseAuth, db: firebaseDB });
+const starSystem = new StarSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
+const authSystem = new AuthSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
 
 // === 인증/익명/닉네임 UI 연동 ===
 function initAuthUI() {

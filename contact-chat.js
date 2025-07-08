@@ -13,9 +13,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { AuthSystem } from './auth-system.js';
-import { firebaseAuth, firebaseDB } from './firebase-config.js';
 import './firebase-config.js';
-const authSystem = new AuthSystem({ auth: firebaseAuth, db: firebaseDB });
+const authSystem = new AuthSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
 
 // Contact 채팅 관련 DOM 요소들
 const contactChatMessages = document.getElementById('contact-chat-messages');
