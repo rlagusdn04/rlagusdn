@@ -356,8 +356,52 @@ starSystem.onStarsChanged = (stars) => {
   starBalanceEl.textContent = `별가루: ${stars}`;
 };
 
-// 인증 상태 감지 및 동기화 시작
-starSystem.initAuthListener();
+// === 인증 상태에 따라 미니게임/기부 UI 활성/비활성 ===
+function updateGameUIAuthState() {
+  const slotBtn = document.getElementById('slot-spin-btn');
+  const slotResult = document.getElementById('slot-result');
+  const fishingBtn = document.getElementById('fishing-btn');
+  const sellFishBtn = document.getElementById('sell-fish-btn');
+  const fishingResult = document.getElementById('fishing-result');
+  const donateBtn = document.getElementById('donate-btn');
+  const donateAmount = document.getElementById('donate-amount');
+  const donateResult = document.getElementById('donate-result');
+
+  const isAuthed = !!starSystem.user;
+
+  // 슬롯머신
+  if (slotBtn) {
+    slotBtn.disabled = !isAuthed;
+    if (!isAuthed && slotResult) slotResult.textContent = '로그인 또는 익명 참여 후 이용 가능합니다.';
+    else if (slotResult && slotResult.textContent === '로그인 또는 익명 참여 후 이용 가능합니다.') slotResult.textContent = '';
+  }
+  // 낚시
+  if (fishingBtn) {
+    fishingBtn.disabled = !isAuthed;
+    if (!isAuthed && fishingResult) fishingResult.textContent = '로그인 또는 익명 참여 후 이용 가능합니다.';
+    else if (fishingResult && fishingResult.textContent === '로그인 또는 익명 참여 후 이용 가능합니다.') fishingResult.textContent = '';
+  }
+  if (sellFishBtn) sellFishBtn.disabled = !isAuthed;
+  // 기부
+  if (donateBtn) donateBtn.disabled = !isAuthed;
+  if (donateAmount) donateAmount.disabled = !isAuthed;
+  if (!isAuthed && donateResult) donateResult.textContent = '로그인 또는 익명 참여 후 이용 가능합니다.';
+  else if (donateResult && donateResult.textContent === '로그인 또는 익명 참여 후 이용 가능합니다.') donateResult.textContent = '';
+}
+
+// 인증 상태 변경 시마다 UI 동기화
+starSystem._origInitAuthListener = starSystem.initAuthListener;
+starSystem.initAuthListener = function() {
+  this._origInitAuthListener();
+  // 인증 상태 변경 감지 시 UI 동기화
+  import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ onAuthStateChanged }) => {
+    onAuthStateChanged(this.auth, () => {
+      updateGameUIAuthState();
+    });
+  });
+};
+// 페이지 로드시 1회 동기화
+updateGameUIAuthState();
 
 // === 슬롯머신, 낚시, 기부 카드 UI 연동 ===
 document.addEventListener('DOMContentLoaded', () => {
@@ -465,6 +509,36 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Contents 섹션 로그인/익명 참여 버튼 연동
+  const loginBtnContents = document.getElementById('login-btn-contents');
+  const anonymousBtnContents = document.getElementById('anonymous-btn-contents');
+  const authModal = document.getElementById('auth-modal');
+  const anonymousModal = document.getElementById('anonymous-modal');
+  if (loginBtnContents && authModal) {
+    loginBtnContents.onclick = () => {
+      authModal.classList.remove('hidden');
+    };
+  }
+  if (anonymousBtnContents && anonymousModal) {
+    anonymousBtnContents.onclick = () => {
+      anonymousModal.classList.remove('hidden');
+    };
+  }
+  // 로그인/익명 상태에 따라 버튼 숨김/노출
+  function updateAuthBtns() {
+    const isAuthed = !!starSystem.user;
+    if (loginBtnContents) loginBtnContents.style.display = isAuthed ? 'none' : '';
+    if (anonymousBtnContents) anonymousBtnContents.style.display = isAuthed ? 'none' : '';
+  }
+  // 인증 상태 변경 시마다 동기화
+  import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ onAuthStateChanged }) => {
+    onAuthStateChanged(starSystem.auth, () => {
+      updateAuthBtns();
+    });
+  });
+  // 페이지 로드시 1회 동기화
+  updateAuthBtns();
 });
 
 
