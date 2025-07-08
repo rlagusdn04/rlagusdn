@@ -1,86 +1,50 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>낚시 게임</title>
-  <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #eaf6fb; margin: 0; padding: 0; }
-    .container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #0001; padding: 24px; }
-    h1 { text-align: center; color: #2a6fa1; }
-    #star-balance { font-size: 1.1em; font-weight: bold; margin-bottom: 16px; text-align: right; }
-    #fishing-inventory { min-height: 60px; background: #f4f8fa; border-radius: 8px; padding: 12px; margin-bottom: 16px; }
-    .btn { padding: 10px 18px; border: none; border-radius: 6px; background: #2a6fa1; color: #fff; font-size: 1em; cursor: pointer; margin-right: 8px; }
-    .btn:disabled { background: #aaa; cursor: not-allowed; }
-    #msg { margin: 12px 0; color: #d9534f; min-height: 20px; text-align: center; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>조용한 호숫가 낚시</title>
+  <link rel="stylesheet" href="fishing.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
-<body>
-  <div class="container">
-    <h1>🎣 낚시 게임</h1>
-    <div id="star-balance">별가루: -</div>
-    <div id="fishing-inventory">인벤토리 불러오는 중...</div>
-    <button id="fish-btn" class="btn">낚시하기 (-30)</button>
-    <button id="sell-btn" class="btn">모두 판매</button>
-    <div id="msg"></div>
+<body class="fishing-bg night">
+  <div class="fishing-container">
+    <header class="fishing-header">
+      <span class="emoji">🎣</span>
+      <div id="fishing-stars">별가루: 0</div>
+      <button class="btn" onclick="window.location.href='index.html'">메인으로</button>
+    </header>
+    <main>
+      <div class="lake-area" style="height:340px;">
+        <div class="lake-bg"></div>
+        <div id="float" class="float"></div>
+        <div id="fish-anim" class="fish-anim"></div>
+      </div>
+      <div class="fishing-controls">
+        <button id="cast-btn" class="btn">찌 드리우기</button>
+        <button id="catch-btn" class="btn hidden">낚아채기</button>
+      </div>
+      <div class="fishing-info">
+        <div id="catch-result"></div>
+        <div id="fishing-reward"></div>
+      </div>
+      <div class="fishing-bottom-panel">
+        <div id="fish-counts"></div>
+        <button class="btn" id="sell-fish">물고기 판매</button>
+        <button class="btn" id="upgrade-rod">낚싯대 업그레이드</button>
+      </div>
+    </main>
+    <aside>
+      <div class="fishing-album"></div>
+      <div class="fishing-ranking"></div>
+      <div id="star-balance" style="margin-top:10px; font-weight:bold;">별가루 잔고: 0</div>
+      <div id="donate-ui" style="margin-top:6px;">
+        <input type="number" id="donate-amount" min="1" placeholder="기부할 별가루" style="width:90px;">
+        <button class="btn" id="donate-btn">기부하기</button>
+      </div>
+    </aside>
   </div>
-  <script type="module">
-    import './firebase-config.js';
-    import { StarSystem } from './star-system.js';
-    import './fishing.js';
-
-    // 로그인 상태 확인
-    function getCurrentUser() {
-      return window.firebaseAuth && window.firebaseAuth.currentUser;
-    }
-
-    const msgBox = document.getElementById('msg');
-    function showMsg(msg, color='#2a6fa1') {
-      msgBox.textContent = msg;
-      msgBox.style.color = color;
-    }
-
-    let starSystem, fishingGame;
-    async function updateStarBalance() {
-      if (!starSystem) return;
-      try {
-        const stars = await starSystem.getCurrentUserStars();
-        document.getElementById('star-balance').textContent = `별가루: ${stars}`;
-      } catch {
-        document.getElementById('star-balance').textContent = '별가루: -';
-      }
-    }
-
-    async function init() {
-      if (!getCurrentUser()) {
-        showMsg('로그인 후 이용해 주세요.', '#d9534f');
-        document.getElementById('fish-btn').disabled = true;
-        document.getElementById('sell-btn').disabled = true;
-        return;
-      }
-      starSystem = new StarSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
-      starSystem.setUser(getCurrentUser());
-      fishingGame = new window.FishingGame(starSystem);
-      await fishingGame.loadInventory();
-      await updateStarBalance();
-      showMsg('낚시를 시작해보세요!');
-      document.getElementById('fish-btn').onclick = async () => {
-        await fishingGame.fish();
-        await updateStarBalance();
-      };
-      document.getElementById('sell-btn').onclick = async () => {
-        await fishingGame.sellAll();
-        await updateStarBalance();
-      };
-    }
-
-    // Firebase 인증 상태 변화 감지
-    import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(mod => {
-      const onAuthStateChanged = mod.onAuthStateChanged || (mod.default && mod.default.onAuthStateChanged);
-      if (typeof onAuthStateChanged !== 'function') return;
-      onAuthStateChanged(window.firebaseAuth, () => {
-        init();
-      });
-    });
-  </script>
+  <script type="module" src="main.js"></script>
+  <script src="fishing.js"></script>
 </body>
 </html> 

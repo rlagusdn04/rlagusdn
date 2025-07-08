@@ -306,10 +306,10 @@ function getRandomSlot() {
 // === star-system, auth-system 연동 ===
 import { StarSystem } from './star-system.js';
 import { AuthSystem } from './auth-system.js';
-import './firebase-config.js';
+import { firebaseAuth, firebaseDB } from './firebase-config.js';
 
-const starSystem = new StarSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
-const authSystem = new AuthSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
+const starSystem = new StarSystem({ auth: firebaseAuth, db: firebaseDB });
+const authSystem = new AuthSystem({ auth: firebaseAuth, db: firebaseDB });
 
 // === 인증/익명/닉네임 UI 연동 ===
 function initAuthUI() {
@@ -455,112 +455,38 @@ function initAuthUI() {
 
 // 슬롯머신 플레이 함수 리팩토링
 async function playSlotMachine() {
-  let stars = await starSystem.getCurrentUserStars();
-  const COST = 50;
-  if (stars < COST) {
-    alert('별가루가 50개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
+  const user = window.firebaseAuth && window.firebaseAuth.currentUser;
+  if (!user) {
+    alert('로그인한 유저만 별가루 기능을 사용할 수 있습니다.');
     return;
   }
-  // 슬롯 결과(이모티콘 3개)
+  let stars = await starSystem.getCurrentUserStars();
+  if (stars < 100) {
+    alert('별가루가 100개 이상 있어야 슬롯머신을 돌릴 수 있습니다.');
+    return;
+  }
+  stars -= 100;
   const slots = [getRandomSlot(), getRandomSlot(), getRandomSlot()];
-  // 일치 개수 계산
   const counts = {};
   slots.forEach(e => counts[e] = (counts[e]||0)+1);
-  const maxMatch = Math.max(...Object.values(counts));
-  // 보상 계산
+  let maxMatch = Math.max(...Object.values(counts));
+  // 보상 로직: 1개 일치=0, 2개=100, 3개=200
   let reward = 0;
   if (maxMatch === 2) reward = 100;
-  else if (maxMatch === 3) reward = 300;
-  stars = stars - COST + reward;
+  else if (maxMatch === 3) reward = 200;
+  stars += reward;
   await starSystem.setCurrentUserStars(stars);
   document.getElementById('slot-result').textContent = `결과: ${slots.join(' ')} | 일치: ${maxMatch}개   보상: ${reward} 별가루`;
   document.getElementById('slot-balance').textContent = `별가루: ${stars}`;
+  if (window.updateStarBalanceUI) window.updateStarBalanceUI();
 }
 
-// 인증 상태 체크 함수
-function isLoggedIn() {
-  return window.firebaseAuth && window.firebaseAuth.currentUser && starSystem.user && starSystem.user.uid;
-}
-
-// 별가루 잔고 UI 동기화 함수 예시
+// DOMContentLoaded 시 별가루 UI 동기화
 async function updateSlotBalanceUI() {
   const el = document.getElementById('slot-balance');
   if (!el) return;
-  if (!isLoggedIn()) {
-    el.textContent = '별가루: -';
-    // 슬롯머신 버튼 등도 비활성화
-    const slotBtn = document.getElementById('slot-btn');
-    if (slotBtn) slotBtn.disabled = true;
-    return;
-  }
   const stars = await starSystem.getCurrentUserStars();
   el.textContent = `별가루: ${stars}`;
-  const slotBtn = document.getElementById('slot-btn');
-  if (slotBtn) slotBtn.disabled = false;
-}
-
-// 슬롯머신 버튼 등 주요 기능 버튼 바인딩 시
-const slotBtn = document.getElementById('slot-btn');
-if (slotBtn) {
-  slotBtn.onclick = async () => {
-    if (!isLoggedIn()) {
-      alert('로그인 후 이용해 주세요.');
-      return;
-    }
-    await playSlotMachine();
-  };
-}
-
-// 안내 메시지 출력 함수
-function showMessage(msg, type = 'info') {
-  const el = document.getElementById('ui-message');
-  if (!el) return;
-  el.textContent = msg;
-  el.className = `msg-${type}`;
-  el.style.display = 'block';
-  setTimeout(() => {
-    el.style.display = 'none';
-  }, 3000);
-}
-
-// 인증 상태 변경 시 UI 및 안내 메시지 갱신
-if (window.authSystem && typeof window.authSystem.onAuthStateChanged === 'function') {
-  window.authSystem.onAuthStateChanged(user => {
-    starSystem.setUser(user);
-    updateSlotBalanceUI();
-    if (user) {
-      showMessage('로그인되었습니다.', 'success');
-    } else {
-      showMessage('로그아웃되었습니다.', 'info');
-    }
-    // ... 기타 UI도 로그인 상태에 따라 활성/비활성 처리 ...
-  });
-}
-
-// 주요 기능 버튼 예시 (슬롯머신)
-if (slotBtn) {
-  slotBtn.onclick = async () => {
-    if (!isLoggedIn()) {
-      showMessage('로그인 후 이용해 주세요.', 'warning');
-      return;
-    }
-    try {
-      await playSlotMachine();
-    } catch (e) {
-      showMessage('에러: ' + (e.message || e), 'error');
-      // 추가로 콘솔에 상세 로그
-      console.error('[슬롯머신 에러]', e);
-    }
-  };
-}
-
-// 인증 상태 변경 시 UI 즉시 갱신
-if (window.authSystem && typeof window.authSystem.onAuthStateChanged === 'function') {
-  window.authSystem.onAuthStateChanged(user => {
-    starSystem.setUser(user);
-    updateSlotBalanceUI();
-    // ... 기타 UI도 로그인 상태에 따라 활성/비활성 처리 ...
-  });
 }
 
 function initStarSystemUI() {
@@ -574,11 +500,11 @@ function initStarSystemUI() {
     const slotUi = document.getElementById('slot-ui');
     if (slotUi) {
       slotUi.innerHTML = `
-  <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-50)</button>
-  <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
-  <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
-  `;
-      document.getElementById('slot-btn').onclick = playSlotMachine;
+        <button id="slot-btn" class="btn primary-btn" style="margin-bottom:8px;">슬롯 돌리기 (-100)</button>
+        <div id="slot-result" style="font-size:2em; margin-bottom:8px;">결과: -</div>
+        <div id="slot-balance" style="font-size:1em; font-weight:600;">별가루: -</div>
+      `;
+      document.getElementById('slot-btn').onclick = () => starSystem.playSlot();
       updateSlotBalanceUI();
     }
     // 기부 버튼 바인딩
@@ -592,30 +518,15 @@ function initStarSystemUI() {
 
 // updateUserStars 함수 Firestore만 사용하도록 수정
 window.updateUserStars = async function(newStars) {
-  if (!window.firebaseAuth || !window.firebaseDB || !window.firebaseAuth.currentUser) return;
-  const { uid } = window.firebaseAuth.currentUser;
-  newStars = Math.max(0, Number(newStars) || 0); // 음수 및 NaN 방지
-  await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ setDoc, doc }) =>
-    setDoc(doc(window.firebaseDB, 'users', uid), { stars: newStars }, { merge: true })
-  );
-  if (window.updateStarBalance) window.updateStarBalance();
+  await starSystem.setCurrentUserStars(newStars);
+  await updateSlotBalanceUI();
 };
 
 // 별가루 잔고 UI 동기화 함수도 Firestore만 사용
 async function updateStarBalanceUI() {
   const el = document.getElementById('star-balance');
   if (!el) return;
-  if (!window.firebaseAuth || !window.firebaseDB || !window.firebaseAuth.currentUser) {
-    el.textContent = '별가루 잔고: 0';
-    return;
-  }
-  const { uid } = window.firebaseAuth.currentUser;
-  const stars = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ getDoc, doc }) =>
-    getDoc(doc(window.firebaseDB, 'users', uid)).then(snap => {
-      const data = snap.data();
-      return (data && typeof data.stars === 'number') ? data.stars : 0;
-    })
-  );
+  const stars = await starSystem.getCurrentUserStars();
   el.textContent = `별가루 잔고: ${stars}`;
 }
 window.updateStarBalanceUI = updateStarBalanceUI;
