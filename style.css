@@ -275,6 +275,13 @@ body.dark-theme {
   color: #764ba2;
 }
 
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  margin-top: 0.5em;
+}
+
 /* About Section */
 .about-section {
   position: relative;
