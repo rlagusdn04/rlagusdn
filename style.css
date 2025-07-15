@@ -1456,13 +1456,3 @@ body.utest-page {
     max-width: 90%;
   }
 }
-
-#ui-message.msg-info    { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-#ui-message.msg-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #81c784; }
-#ui-message.msg-warning { background: #fffde7; color: #f9a825; border: 1px solid #ffe082; }
-#ui-message.msg-error   { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
-#ui-message {
-  opacity: 0.98;
-  pointer-events: none;
-  transition: opacity 0.3s, top 0.3s;
-}
