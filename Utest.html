@@ -1,32 +1,80 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>:)</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Pretendard:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>유사도 테스트</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f8f6fa; margin: 0; padding: 0; }
+    .container { max-width: 420px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #0001; padding: 24px; }
+    h1 { text-align: center; color: #6f2aa1; }
+    #utest-progress { font-size: 1em; color: #6f2aa1; margin-bottom: 8px; text-align: right; }
+    #utest-question { font-size: 1.1em; font-weight: bold; margin-bottom: 16px; min-height: 32px; }
+    #utest-options { margin-bottom: 16px; }
+    .utest-btn { padding: 10px 18px; border: none; border-radius: 6px; background: #6f2aa1; color: #fff; font-size: 1em; cursor: pointer; margin: 6px 8px 0 0; }
+    .utest-btn:disabled { background: #aaa; cursor: not-allowed; }
+    #utest-result { margin: 24px 0 0 0; text-align: center; min-height: 60px; }
+    #msg { margin: 12px 0; color: #d9534f; min-height: 20px; text-align: center; }
+  </style>
 </head>
 <body>
-  <div class="utest-background-overlay"></div>
-  <div class="container" id="main-container">
-    <h1 class="utest-title">:)</h1>
-    <div id="question-box">
-      <p id="question-text">질문을 불러오는 중...</p>
-      <div class="options-grid" id="options-container"></div>
-      <div id="progress"></div>
-    </div>
-    <div id="result-box" style="display:none;">
-      <div class="result-card">
-        <h2 id="result-title">으으음 .... </h2>
-        <p id="result-score"></p>
-        <div class="result-actions">
-          <button id="retry-btn" class="utest-btn">다시하기</button>
-          <button id="go-title-btn" class="utest-btn">🏠 홈</button>
-        </div>
-      </div>
-    </div>
+  <div class="container">
+    <h1>🧑‍🤝‍🧑 유사도 테스트</h1>
+    <div id="utest-progress"></div>
+    <div id="utest-question"></div>
+    <div id="utest-options"></div>
+    <div id="utest-result"></div>
+    <div id="msg"></div>
   </div>
-  <script src="Utest.js"></script>
+  <script type="module">
+    import './firebase-config.js';
+    import { StarSystem } from './star-system.js';
+    import './utest.js';
+
+    // 퀴즈 데이터(샘플, 실제로는 더 많은 질문 가능)
+    const quiz = [
+      { question: "추억을 떠올리는 감각은?", options: ["냄새", "소리", "촉각(온도, 질감)", "미각"], answer: ["촉각", "소리"] },
+      { question: "가장 그리운 시절은?", options: ["걱정 없던 어린 시절", "자각 없이 지나간 어느 때", "후회가 많던 순간들", "지금 이 무렵"], answer: ["자각 없이 지나간 어느 때", "지금 이 무렵"] },
+      { question: "좋아하는 날씨는?", options: ["맑음", "비", "눈", "흐림"], answer: ["맑음"] },
+      { question: "선호하는 시간의 체감은?", options: ["여유로움", "뿌듯함", "자유로움", "일상적임"], answer: ["여유로움", "자유로움"] },
+      { question: "편한 대화 상대는?", options: ["서로의 침묵도 편안한 사람", "활기차고 즐거운 분위기의 사람", "무슨 생각인지 알기 어려운 사람", "익숙하고 반복되는 이야기의 사람"], answer: ["서로의 침묵도 편안한 사람", "무슨 생각인지 알기 어려운 사람"] },
+      { question: "사람들이 당신을 볼 때 가장 자주 말하는 평가는?", options: ["깊이 있고 생각이 많은 사람", "따뜻하고 편안한 사람", "특이하고 독창적인 사람", "성실하고 책임감 있는 사람"], answer: ["깊이 있고 생각이 많은 사람", "특이하고 독창적인 사람"] },
+      { question: "지쳤을 때 찾는 것은?", options: ["위로해줄 누군가", "치유받는 장소", "즐거움, 쾌락", "혼자만의 시간"], answer: ["혼자만의 시간", "치유받는 장소"] },
+      { question: "지금 가장 필요한 감정은?", options: ["위로", "자극", "안정", "몰입"], answer: ["안정", "몰입"] },
+      { question: "기억을 선명하게 만드는 것은?", options: ["감각", "사진", "익숙한 장소", "꿈"], answer: ["꿈", "감각"] },
+      { question: "가장 좋아하는 계절은?", options: ["봄", "여름", "가을", "겨울"], answer: ["가을", "봄"] }
+    ];
+
+    function getCurrentUser() {
+      return window.firebaseAuth && window.firebaseAuth.currentUser;
+    }
+
+    const msgBox = document.getElementById('msg');
+    function showMsg(msg, color='#6f2aa1') {
+      msgBox.textContent = msg;
+      msgBox.style.color = color;
+    }
+
+    let starSystem, utest;
+    async function init() {
+      if (!getCurrentUser()) {
+        showMsg('로그인 후 이용해 주세요.', '#d9534f');
+        return;
+      }
+      starSystem = new StarSystem({ auth: window.firebaseAuth, db: window.firebaseDB });
+      starSystem.setUser(getCurrentUser());
+      utest = new window.UTest(starSystem, quiz);
+      utest.startQuiz();
+      showMsg('질문에 답해보세요!');
+    }
+
+    // Firebase 인증 상태 변화 감지
+    import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(mod => {
+      const onAuthStateChanged = mod.onAuthStateChanged || (mod.default && mod.default.onAuthStateChanged);
+      if (typeof onAuthStateChanged !== 'function') return;
+      onAuthStateChanged(window.firebaseAuth, () => {
+        init();
+      });
+    });
+  </script>
 </body>
 </html>

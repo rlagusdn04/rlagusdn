@@ -84,9 +84,16 @@ export class AuthSystem {
 
   // 익명 참여(닉네임 입력)
   async joinAnonymously(name) {
-    const uid = 'anon_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+    // localStorage에 uid가 있으면 재사용, 없으면 새로 생성
+    let anonUser = JSON.parse(localStorage.getItem('anonymousUser'));
+    let uid;
+    if (anonUser && anonUser.uid) {
+      uid = anonUser.uid;
+    } else {
+      uid = 'anon_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+      localStorage.setItem('anonymousUser', JSON.stringify({ uid, name }));
+    }
     this.anonymousUser = { uid, name, isAnonymous: true };
-    localStorage.setItem('anonymousUser', JSON.stringify(this.anonymousUser));
     this.user = null;
     this.userName = name;
     // Firestore에 익명 사용자 정보 저장 (필수 필드 포함)
